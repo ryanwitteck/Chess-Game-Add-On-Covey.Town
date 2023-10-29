@@ -17,7 +17,7 @@ export type TownJoinResponse = {
   interactables: TypedInteractable[];
 }
 
-export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea';
+export type InteractableType = 'ConversationArea' | 'ViewingArea' | 'TicTacToeArea' | 'ChessArea';
 export interface Interactable {
   type: InteractableType;
   id: InteractableID;
@@ -108,6 +108,22 @@ export interface TicTacToeMove {
   col: TicTacToeGridPosition;
 }
 
+
+export type ChessSquare = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type ChessPiece = 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
+export type ChessColor = 'W' | 'B';
+export type ChessPosition = {file: ChessSquare, rank: ChessSquare};
+
+/**
+ * Type for a move in Chess
+ */
+
+export interface ChessMove {
+  gamePiece: ChessPiece | undefined;
+  start: ChessPosition;
+  dest: ChessPosition;
+  color: ChessColor;
+}
 /**
  * Type for the state of a TicTacToe game
  * The state of the game is represented as a list of moves, and the playerIDs of the players (x and o)
@@ -119,6 +135,16 @@ export interface TicTacToeGameState extends WinnableGameState {
   o?: PlayerID;
 }
 
+/**
+ * Type for the state of a Chess game
+ * The state of the game is represented as a list of moves, and the playerIDs of the players (white and black)
+ * The first player to join the game is white, the second is black
+ */
+export interface ChessGameState extends WinnableGameState {
+  moves: ReadonlyArray<ChessMove>;
+  whitePlayer?: PlayerID;
+  blackPlayer?: PlayerID;
+}
 export type InteractableID = string;
 export type GameInstanceID = string;
 
@@ -174,7 +200,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -191,10 +217,12 @@ export interface GameMoveCommand<MoveType> {
   gameID: GameInstanceID;
   move: MoveType;
 }
+
 export type InteractableCommandReturnType<CommandType extends InteractableCommand> = 
   CommandType extends JoinGameCommand ? { gameID: string}:
   CommandType extends ViewingAreaUpdateCommand ? undefined :
   CommandType extends GameMoveCommand<TicTacToeMove> ? undefined :
+  CommandType extends GameMoveCommand<ChessMove> ? undefined :
   CommandType extends LeaveGameCommand ? undefined :
   never;
 
