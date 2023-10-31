@@ -33,7 +33,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private get _board() {
-    return this._chessBoard;
+    return this._chessBoard; // TODO
   }
 
   private _checkForGameEnding() {
