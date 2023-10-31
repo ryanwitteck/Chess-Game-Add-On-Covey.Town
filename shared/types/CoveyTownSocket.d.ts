@@ -108,6 +108,14 @@ export interface TicTacToeMove {
   col: TicTacToeGridPosition;
 }
 
+// export interface IChessPiece {
+//   color: ChessColor;
+//   row: ChessSquare;
+//   col: ChessSquare;
+
+//   move (newRow: ChessSquare, newCol: ChessSquare);
+// }
+
 export type ChessSquare = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type ChessPiece = 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 export type ChessColor = 'W' | 'B';
@@ -123,8 +131,8 @@ export interface ChessMove {
   start: ChessPosition;
   dest: ChessPosition;
   color: ChessColor;
-  row : number;
-  col : number;
+  row : ChessSquare;
+  col : ChessSquare;
 }
 /**
  * Type for the state of a TicTacToe game
