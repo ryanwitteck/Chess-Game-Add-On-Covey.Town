@@ -137,8 +137,8 @@ export interface ChessMove {
  */
 export interface ChessGameState extends WinnableGameState {
   moves: ReadonlyArray<TicTacToeMove>;
-  x?: PlayerID;
-  o?: PlayerID;
+  w?: PlayerID;
+  b?: PlayerID;
 }
 
 
@@ -210,7 +210,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | ChessMoveCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -227,6 +227,8 @@ export interface GameMoveCommand<MoveType> {
   gameID: GameInstanceID;
   move: MoveType;
 }
+
+// HZ_NOTE: this shouldn't be needed, since we can just specify MoveType
 export interface ChessMoveCommand {
   type: 'ChessMove';
   gameID: GameInstanceID;
