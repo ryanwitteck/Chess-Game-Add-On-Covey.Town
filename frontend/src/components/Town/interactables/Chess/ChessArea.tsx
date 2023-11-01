@@ -29,6 +29,8 @@ import {
   
   /**
    * Chess Area Component
+   * 
+   * TODO: Remove TicTacToe influences, change over to Chess
    *
    */
   function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.Element {
