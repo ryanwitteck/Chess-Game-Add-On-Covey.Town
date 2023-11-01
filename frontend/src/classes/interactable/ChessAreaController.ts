@@ -30,7 +30,6 @@ export default class ChessAreaController extends GameAreaController<
   protected _board: IChessPiece[][] = []; // here we instantiate an empty board
 
   /**
-   * Returns the current state of the board.
    * TODO: add documentation
    */
   get board(): IChessPiece[][] {
