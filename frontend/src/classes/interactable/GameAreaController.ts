@@ -40,8 +40,9 @@ export default abstract class GameAreaController<
     this._townController = townController;
 
     const game = gameArea.game;
-    if (game && game.players)
+    if (game && game.players) {
       this._players = game.players.map(playerID => this._townController.getPlayer(playerID));
+    }
   }
 
   get history(): GameResult[] {
