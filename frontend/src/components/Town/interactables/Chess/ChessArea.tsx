@@ -18,7 +18,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
-import ChessAreaController from '../../../../classes/interactable/TicTacToeAreaController';
+import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
@@ -42,8 +42,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
   const [joiningGame, setJoiningGame] = useState(false);
-  const [x, setX] = useState<PlayerController | undefined>(gameAreaController.x);
-  const [o, setO] = useState<PlayerController | undefined>(gameAreaController.o);
+  const [white, setWhite] = useState<PlayerController | undefined>(gameAreaController.white);
+  const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
   const toast = useToast();
 
   useEffect(() => {
@@ -52,8 +52,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setGameStatus(gameAreaController.status || 'WAITING_TO_START');
       setMoveCount(gameAreaController.moveCount || 0);
       setObservers(gameAreaController.observers);
-      setX(gameAreaController.x);
-      setO(gameAreaController.o);
+      setWhite(gameAreaController.white);
+      setBlack(gameAreaController.black);
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
@@ -166,8 +166,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       </Accordion>
       {gameStatusText}
       <List aria-label='list of players in the game'>
-        <ListItem>X: {x?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>O: {o?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>White: {white?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>Black: {black?.userName || '(No player yet!)'}</ListItem>
       </List>
       <ChessBoard gameAreaController={gameAreaController} />
     </Container>
