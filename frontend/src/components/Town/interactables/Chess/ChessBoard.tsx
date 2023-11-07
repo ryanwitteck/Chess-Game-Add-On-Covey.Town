@@ -1,7 +1,10 @@
 import { Button, chakra, Container, useToast } from '@chakra-ui/react';
+import { getActiveElement } from '@testing-library/user-event/dist/types/utils';
 import React, { useEffect, useState } from 'react';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
-import { IChessPiece } from '../../../../types/CoveyTownSocket';
+import TownController from '../../../../classes/TownController';
+import useTownController from '../../../../hooks/useTownController';
+import { ChessMove, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -13,11 +16,12 @@ export type ChessGameProps = {
  */
 const StyledChessSquareLight = chakra(Button, {
   baseStyle: {
+    background: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     flexBasis: '33%',
-    border: '1px solid black',
-    height: '33%',
+    width: '12%',
+    height: '12%',
     fontSize: '50px',
     _disabled: {
       opacity: '100%',
@@ -31,11 +35,12 @@ const StyledChessSquareLight = chakra(Button, {
  */
 const StyledChessSquareDark = chakra(Button, {
   baseStyle: {
+    background: 'black',
     justifyContent: 'center',
     alignItems: 'center',
     flexBasis: '33%',
-    border: '1px solid black',
-    height: '33%',
+    width: '12.5%',
+    height: '12.5%',
     fontSize: '50px',
     _disabled: {
       opacity: '100%',
@@ -43,16 +48,14 @@ const StyledChessSquareDark = chakra(Button, {
   },
 });
 
-
 /**
  * A component that will render the TicTacToe board, styled
  */
-const StyledTicTacToeBoard = chakra(Container, {
-  // include the file and rank markings
+const StyledChessBoard = chakra(Container, {
   baseStyle: {
     display: 'flex',
-    width: '400px',
-    height: '400px',
+    width: '800px',
+    height: '800px',
     padding: '5px',
     flexWrap: 'wrap',
   },
@@ -64,8 +67,11 @@ const StyledTicTacToeBoard = chakra(Container, {
  * @param gameAreaController the controller for the Chess game
  */
 export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.Element {
+  const townController = useTownController();
+
   const [board, setBoard] = useState<IChessPiece[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
+
   const toast = useToast();
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsOurTurn);
@@ -76,6 +82,46 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     };
   }, [gameAreaController]);
 
-  return (<></>
+  return (
+    <StyledChessBoard aria-label='Chessboard'>
+      {board.map((row, rowIndex) => {
+        return row.map((cell, colIndex) => {
+
+          if (townController.ourPlayer === gameAreaController.white) {
+            // render the board from the white players POV
+
+          } else {
+            // render the board from the black players POV
+
+          }
+
+          return (
+            <StyledChessSquareDark
+              key={`${rowIndex}.${colIndex}`}
+              onClick={async () => {
+                try {
+                  await gameAreaController.makeMove(
+                    {
+                      gamePiece: undefined,
+                      newRow: 0,
+                      newCol: 0,
+                    } as ChessMove
+                  );
+                } catch (e) {
+                  toast({
+                    title: 'Invalid Move!',
+                    description: (e as Error).toString(),
+                    status: 'error',
+                  });
+                }
+              }}
+              disabled={!isOurTurn}
+              aria-label={`Cell ${rowIndex},${colIndex}`}>
+              {cell}
+            </StyledChessSquareDark>
+          );
+        });
+      })}
+    </StyledChessBoard>
   );
 }

@@ -40,7 +40,7 @@ export default class ChessAreaController extends GameAreaController<
    * Returns the player with the white pieces, if there is one, or undefined otherwise
    */
   get white(): PlayerController | undefined {
-    const w = this._model.game?.state.w;
+    const w = this._model.game?.state.white;
     if (w) {
       return this.occupants.find(eachOccupant => eachOccupant.id === w);
     }
@@ -51,7 +51,7 @@ export default class ChessAreaController extends GameAreaController<
    * Returns the player with the black pieces, if there is one, or undefined otherwise
    */
   get black(): PlayerController | undefined {
-    const b = this._model.game?.state.b;
+    const b = this._model.game?.state.black;
     if (b) {
       return this.occupants.find(eachOccupant => eachOccupant.id === b);
     }

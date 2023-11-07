@@ -60,6 +60,7 @@ export default function TicTacToeBoard({ gameAreaController }: TicTacToeGameProp
   const [board, setBoard] = useState<TicTacToeCell[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
   const toast = useToast();
+  
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsOurTurn);
     gameAreaController.addListener('boardChanged', setBoard);
