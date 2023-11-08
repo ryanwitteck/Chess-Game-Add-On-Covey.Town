@@ -6,6 +6,7 @@ import SocialSidebar from '../SocialSidebar/SocialSidebar';
 import NewConversationModal from './interactables/NewCoversationModal';
 import TownGameScene from './TownGameScene';
 import TicTacToeAreaWrapper from './interactables/TicTacToe/TicTacToeArea';
+import ChessAreaWrapper from './interactables/Chess/ChessArea';
 
 export default function TownMap(): JSX.Element {
   const coveyTownController = useTownController();
@@ -46,10 +47,12 @@ export default function TownMap(): JSX.Element {
     };
   }, [coveyTownController]);
 
+  // HZ NOTE: We may need a ChessAreaWrapper here!
   return (
     <div id='app-container'>
       <NewConversationModal />
       <TicTacToeAreaWrapper />
+      <ChessAreaWrapper />
 
       <div id='map-container' />
       <div id='social-container'>

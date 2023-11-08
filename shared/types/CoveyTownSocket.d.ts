@@ -136,9 +136,9 @@ export interface ChessMove {
  * The first player to join the game is white, the second is black
  */
 export interface ChessGameState extends WinnableGameState {
-  moves: ReadonlyArray<TicTacToeMove>;
-  x?: PlayerID;
-  o?: PlayerID;
+  moves: ReadonlyArray<ChessMove>;
+  white?: PlayerID;
+  black?: PlayerID;
 }
 
 
@@ -210,7 +210,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | LeaveGameCommand | ChessMoveCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -227,6 +227,8 @@ export interface GameMoveCommand<MoveType> {
   gameID: GameInstanceID;
   move: MoveType;
 }
+
+// HZ_NOTE: this shouldn't be needed, since we can just specify MoveType
 export interface ChessMoveCommand {
   type: 'ChessMove';
   gameID: GameInstanceID;
@@ -265,4 +267,4 @@ export interface ClientToServerEvents {
   playerMovement: (movementData: PlayerLocation) => void;
   interactableUpdate: (update: Interactable) => void;
   interactableCommand: (command: InteractableCommand & InteractableCommandBase) => void;
-} ß
+}
