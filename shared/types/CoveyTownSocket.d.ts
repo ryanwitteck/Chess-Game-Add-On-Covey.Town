@@ -136,7 +136,7 @@ export interface ChessMove {
  * The first player to join the game is white, the second is black
  */
 export interface ChessGameState extends WinnableGameState {
-  moves: ReadonlyArray<TicTacToeMove>;
+  moves: ReadonlyArray<ChessMove>;
   white?: PlayerID;
   black?: PlayerID;
 }
