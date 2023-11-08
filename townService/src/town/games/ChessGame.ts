@@ -32,7 +32,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private get _board() {
-    return this._chessBoard; // TODO
+    return this._chessBoard;
   }
 
   private _checkForGameEnding() {
@@ -88,11 +88,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   /*
-   * 
+   * TODO:
    */
   public applyMove(move: GameMove<ChessMove>): void {
     this._validateMove(move.move)
-    move.move.gamePiece?.validate_move(move.move.newRow,move.move.newCol,this._board, this.state.moves)
+    move.move.gamePiece?.validate_move(move.move.newRow,move.move.newCol,this._board);
     this._applyMove(move.move);
   }
 
