@@ -1,8 +1,7 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
-  // GAME_NOT_IN_PROGRESS_MESSAGE,
-  // BOARD_POSITION_NOT_EMPTY_MESSAGE,
-  // MOVE_NOT_YOUR_TURN_MESSAGE,
+  GAME_NOT_IN_PROGRESS_MESSAGE,
+  MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
@@ -67,32 +66,34 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private _applyMove(move: ChessMove): void {
-    // TODO
+    this.state = {
+      ...this.state,
+      moves: [...this.state.moves, move],
+    };
+    this._checkForGameEnding();
+  }
+
+  
+  private _validateMove(move: ChessMove) {
+    // A move is only valid if it is the player's turn
+    if (move.gamePiece?.color === 'W' && this.state.moves.length % 2 === 1) {
+      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
+    } else if (move.gamePiece?.color  === 'B' && this.state.moves.length % 2 === 0) {
+      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
+    }
+    // A move is valid only if game is in progress
+    if (this.state.status !== 'IN_PROGRESS') {
+      throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+    }
   }
 
   /*
-   * Applies a player's move to the game.
-   * Uses the player's ID to determine which game piece they are using (ignores move.gamePiece)
-   * Validates the move before applying it. If the move is invalid, throws an InvalidParametersError with
-   * the error message specified below.
-   * A move is invalid if:
-   *    - The move is out of bounds (not in the 3x3 grid - use MOVE_OUT_OF_BOUNDS_MESSAGE)
-   *    - The move is on a space that is already occupied (use BOARD_POSITION_NOT_EMPTY_MESSAGE)
-   *    - The move is not the player's turn (MOVE_NOT_YOUR_TURN_MESSAGE)
-   *    - The game is not in progress (GAME_NOT_IN_PROGRESS_MESSAGE)
-   *
-   * If the move is valid, applies the move to the game and updates the game state.
-   *
-   * If the move ends the game, updates the game's state.
-   * If the move results in a tie, updates the game's state to set the status to OVER and sets winner to undefined.
-   * If the move results in a win, updates the game's state to set the status to OVER and sets the winner to the player who made the move.
-   * A player wins if they have 3 in a row (horizontally, vertically, or diagonally).
-   *
-   * @param move The move to apply to the game
-   * @throws InvalidParametersError if the move is invalid
+   * 
    */
   public applyMove(move: GameMove<ChessMove>): void {
-    // TODO
+    this._validateMove(move.move)
+    move.move.gamePiece?.validate_move(move.move.newRow,move.move.newCol,this._board)
+    this._applyMove(move.move);
   }
 
   /**
