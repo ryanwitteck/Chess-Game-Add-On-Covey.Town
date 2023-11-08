@@ -27,7 +27,28 @@ export default class ChessAreaController extends GameAreaController<
   ChessEvents
 > {
 
-  protected _board: IChessPiece[][] = []; // here we instantiate an empty board
+
+  // HZ Design request:
+  // can we make sure that [0][0] returns A1, [1][0] returns B1, etc..
+  /* Sort of like this:
+  8
+  7
+  6
+  5 ...
+  4 [0][3] [1][3] ...
+  3 [0][2] [1][2] [2][2] ...
+  2 [0][1] [1][1] [2][1] [3][1]
+  1 [0][0] [1][0] [2][0] [3][0] ...
+       A      B     C     D      E  F  G  H  (x, y)
+
+
+
+
+
+
+
+  */
+  protected _board: IChessPiece[][] = [];
 
   /**
    * TODO: add documentation

@@ -61,6 +61,7 @@ const StyledChessBoard = chakra(Container, {
   },
 });
 
+
 /**
  * TODO: Documentation
  *
@@ -73,6 +74,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
 
   const toast = useToast();
+
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsOurTurn);
     gameAreaController.addListener('boardChanged', setBoard);
@@ -82,46 +84,169 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     };
   }, [gameAreaController]);
 
-  return (
-    <StyledChessBoard aria-label='Chessboard'>
-      {board.map((row, rowIndex) => {
-        return row.map((cell, colIndex) => {
-
-          if (townController.ourPlayer === gameAreaController.white) {
-            // render the board from the white players POV
-
-          } else {
-            // render the board from the black players POV
-
-          }
-
-          return (
+  // TODO: these functions are massive! we need to clean it up.
+  // renders the board from the Black player's POV.
+  function renderBlackPlayerPOV(gameAreaController: ChessAreaController): JSX.Element {
+    const renderBoard: JSX.Element[][] = [];
+    for (let i = 7; i >= 0; i--) {
+      for (let j = 7; j >= 0; j--) {
+        if ((i % 2 === 0 && j % 2 === 0) || (i % 2 != 0 && j % 2 != 0)) {
+          renderBoard[i][j] = (
             <StyledChessSquareDark
-              key={`${rowIndex}.${colIndex}`}
+              key={`${i}.${j}`}
               onClick={async () => {
-                try {
-                  await gameAreaController.makeMove(
-                    {
-                      gamePiece: undefined,
-                      newRow: 0,
-                      newCol: 0,
-                    } as ChessMove
-                  );
+                try { // TODO: makeMove logic
+                      // we need to store a "picked up" variable, or something
+                      // to keep track of when the user is about to move a piece.
+                      //
+                      // a boolean flag should be good enough; if it's our turn, and the
+                      // user has clicked a piece, then we assume that's the piece they
+                      // want to move. the next click on a square then is made as a move.
+                      // if the move is not legal, reject it, and wait until the player makes
+                      // a legal move.
+                  await gameAreaController.makeMove({
+                    gamePiece: undefined,
+                    newRow: 0,
+                    newCol: 0,
+                  });
                 } catch (e) {
                   toast({
-                    title: 'Invalid Move!',
+                    title: 'Error making move',
                     description: (e as Error).toString(),
                     status: 'error',
                   });
                 }
               }}
               disabled={!isOurTurn}
-              aria-label={`Cell ${rowIndex},${colIndex}`}>
-              {cell}
+              aria-label={`Cell ${i},${j}`}>
+              { /* Here, we draw the piece depending on if there's a gamepiece inside*/ }
             </StyledChessSquareDark>
           );
-        });
-      })}
-    </StyledChessBoard>
+        } else {
+          renderBoard[i][j] = (
+            <StyledChessSquareLight
+              key={`${i}.${j}`}
+              onClick={async () => {
+                try { // TODO: makeMove logic
+                      // we need to store a "picked up" variable, or something
+                      // to keep track of when the user is about to move a piece.
+                      //
+                      // a boolean flag should be good enough; if it's our turn, and the
+                      // user has clicked a piece, then we assume that's the piece they
+                      // want to move. the next click on a square then is made as a move.
+                      // if the move is not legal, reject it, and wait until the player makes
+                      // a legal move.
+                  await gameAreaController.makeMove({
+                    gamePiece: undefined,
+                    newRow: 0,
+                    newCol: 0,
+                  });
+                } catch (e) {
+                  toast({
+                    title: 'Error making move',
+                    description: (e as Error).toString(),
+                    status: 'error',
+                  });
+                }
+              }}
+              disabled={!isOurTurn}
+              aria-label={`Cell ${i},${j}`}>
+              { /* Here, we draw the piece depending on if there's a gamepiece inside*/ }
+            </StyledChessSquareLight>
+          );
+        }
+      }
+    }
+  
+    return (
+      <StyledChessBoard aria-label='Chessboard'>
+        { renderBoard }
+      </StyledChessBoard>
+    );
+  }
+
+  // TODO: these functions are massive! we need to clean it up.
+  // Displays the board from the White player's POV.
+  function renderWhitePlayerPOV(gameAreaController: ChessAreaController): JSX.Element {  
+    const renderBoard: JSX.Element[][] = [];
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[0].length; j++) {
+        if ((i % 2 === 0 && j % 2 === 0) || (i % 2 != 0 && j % 2 != 0)) {
+          renderBoard[i][j] = (
+            <StyledChessSquareDark
+              key={`${i}.${j}`}
+              onClick={async () => {
+                try { // TODO: makeMove logic
+                      // we need to store a "picked up" variable, or something
+                      // to keep track of when the user is about to move a piece.
+                      //
+                      // a boolean flag should be good enough; if it's our turn, and the
+                      // user has clicked a piece, then we assume that's the piece they
+                      // want to move. the next click on a square then is made as a move.
+                      // if the move is not legal, reject it, and wait until the player makes
+                      // a legal move.
+                  await gameAreaController.makeMove({
+                    gamePiece: undefined,
+                    newRow: 0,
+                    newCol: 0,
+                  });
+                } catch (e) {
+                  toast({
+                    title: 'Error making move',
+                    description: (e as Error).toString(),
+                    status: 'error',
+                  });
+                }
+              }}
+              disabled={!isOurTurn}
+              aria-label={`Cell ${i},${j}`}>
+              { /* Here, we draw the piece depending on if there's a gamepiece inside*/ }
+            </StyledChessSquareDark>
+          );
+        } else {
+          renderBoard[i][j] = (
+            <StyledChessSquareLight
+              key={`${i}.${j}`}
+              onClick={async () => {
+                try { // TODO: makeMove logic
+                      // we need to store a "picked up" variable, or something
+                      // to keep track of when the user is about to move a piece.
+                      //
+                      // a boolean flag should be good enough; if it's our turn, and the
+                      // user has clicked a piece, then we assume that's the piece they
+                      // want to move. the next click on a square then is made as a move.
+                      // if the move is not legal, reject it, and wait until the player makes
+                      // a legal move.
+                  await gameAreaController.makeMove({
+                    gamePiece: undefined,
+                    newRow: 0,
+                    newCol: 0,
+                  });
+                } catch (e) {
+                  toast({
+                    title: 'Error making move',
+                    description: (e as Error).toString(),
+                    status: 'error',
+                  });
+                }
+              }}
+              disabled={!isOurTurn}
+              aria-label={`Cell ${i},${j}`}>
+              { /* Here, we draw the piece depending on if there's a gamepiece inside*/ }
+            </StyledChessSquareLight>
+          );
+        }
+      }
+    }
+  
+    return (
+      <StyledChessBoard aria-label='Chessboard'>
+        { renderBoard }
+      </StyledChessBoard>
+    );
+  }
+
+  return (
+    <>{renderWhitePlayerPOV(gameAreaController)}</>
   );
 }
