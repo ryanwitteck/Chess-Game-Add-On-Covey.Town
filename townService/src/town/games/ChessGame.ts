@@ -1,8 +1,7 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
-  // GAME_NOT_IN_PROGRESS_MESSAGE,
-  // BOARD_POSITION_NOT_EMPTY_MESSAGE,
-  // MOVE_NOT_YOUR_TURN_MESSAGE,
+  GAME_NOT_IN_PROGRESS_MESSAGE,
+  MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
@@ -67,20 +66,34 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private _applyMove(move: ChessMove): void {
-    // TODO
+    this.state = {
+      ...this.state,
+      moves: [...this.state.moves, move],
+    };
+    this._checkForGameEnding();
+  }
+
+  
+  private _validateMove(move: ChessMove) {
+    // A move is only valid if it is the player's turn
+    if (move.gamePiece?.color === 'W' && this.state.moves.length % 2 === 1) {
+      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
+    } else if (move.gamePiece?.color  === 'B' && this.state.moves.length % 2 === 0) {
+      throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
+    }
+    // A move is valid only if game is in progress
+    if (this.state.status !== 'IN_PROGRESS') {
+      throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+    }
   }
 
   /*
-   * Applies a player's move to the game.
-   * Uses the player's ID to determine which game piece they are using (ignores move.gamePiece)
-   * Validates the move before applying it. If the move is invalid, throws an InvalidParametersError with
-   * the error message specified below.
    * 
-   * @param move The move to apply to the game
-   * @throws InvalidParametersError if the move is invalid
    */
   public applyMove(move: GameMove<ChessMove>): void {
-    // TODO
+    this._validateMove(move.move)
+    move.move.gamePiece?.validate_move(move.move.newRow,move.move.newCol,this._board, this.state.moves)
+    this._applyMove(move.move);
   }
 
   /**
