@@ -1,8 +1,8 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
-  GAME_NOT_IN_PROGRESS_MESSAGE,
-  BOARD_POSITION_NOT_EMPTY_MESSAGE,
-  MOVE_NOT_YOUR_TURN_MESSAGE,
+  // GAME_NOT_IN_PROGRESS_MESSAGE,
+  // BOARD_POSITION_NOT_EMPTY_MESSAGE,
+  // MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../lib/InvalidParametersError';
@@ -103,7 +103,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * @param player The player to join the game
    * @throws InvalidParametersError if the player is already in the game (PLAYER_ALREADY_IN_GAME_MESSAGE)
    *  or the game is full (GAME_FULL_MESSAGE)
-   * 
    */
   protected _join(player: Player): void {
     if (this.state.white === player.id || this.state.black === player.id) {

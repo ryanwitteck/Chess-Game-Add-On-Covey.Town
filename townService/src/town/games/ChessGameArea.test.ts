@@ -8,11 +8,11 @@ import {
 } from '../../lib/InvalidParametersError';
 import Player from '../../lib/Player';
 import {
-  GameInstanceID,
+  // GameInstanceID,
   ChessGameState,
   ChessMove,
   TownEmitter,
-  IChessPiece,
+  // IChessPiece,
 } from '../../types/CoveyTownSocket';
 import * as ChessGameModule from './ChessGame';
 import ChessGameArea from './ChessGameArea';
@@ -118,7 +118,7 @@ describe('ChessArea', () => {
         });
       });
     });
-   /* describe('[T3.2] when given a GameMove command', () => {
+    /* describe('[T3.2] when given a GameMove command', () => {
       it('should throw an error when there is no game in progress', () => {
         const chessPiece : IChessPiece = {color: 'W', row: 1, col: 1, type: 'B', validate_move: () => ()}
         expect(() =>
