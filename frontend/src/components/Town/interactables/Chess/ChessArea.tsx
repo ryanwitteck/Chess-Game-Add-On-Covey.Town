@@ -29,7 +29,7 @@ import ChessBoard from './ChessBoard';
 
 /**
  * Chess Area Component
- * 
+ *
  * TODO: Remove TicTacToe influences, change over to Chess
  *
  */

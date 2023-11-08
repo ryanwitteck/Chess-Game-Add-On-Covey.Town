@@ -5,7 +5,7 @@ import {
   ChessGameState,
   IChessPiece,
   ChessColor,
-  ChessMove
+  ChessMove,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
@@ -22,12 +22,7 @@ export type ChessEvents = GameEventTypes & {
 /**
  * This class is responsible for managing the state of the Chess game, and for sending commands to the server
  */
-export default class ChessAreaController extends GameAreaController<
-  ChessGameState,
-  ChessEvents
-> {
-
-
+export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
   // HZ Design request:
   // can we make sure that [0][0] returns A1, [1][0] returns B1, etc..
   /* Sort of like this:
@@ -40,13 +35,6 @@ export default class ChessAreaController extends GameAreaController<
   2 [0][1] [1][1] [2][1] [3][1]
   1 [0][0] [1][0] [2][0] [3][0] ...
        A      B     C     D      E  F  G  H  (x, y)
-
-
-
-
-
-
-
   */
   protected _board: IChessPiece[][] = [];
 

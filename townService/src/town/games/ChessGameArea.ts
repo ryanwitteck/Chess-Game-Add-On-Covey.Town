@@ -31,8 +31,10 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       if (gameID && !this._history.find(eachResult => eachResult.gameID === gameID)) {
         const { white, black } = updatedState.state;
         if (white && black) {
-          const whiteName = this._occupants.find(eachPlayer => eachPlayer.id === white)?.userName || white;
-          const blackName = this._occupants.find(eachPlayer => eachPlayer.id === black)?.userName || black;
+          const whiteName =
+            this._occupants.find(eachPlayer => eachPlayer.id === white)?.userName || white;
+          const blackName =
+            this._occupants.find(eachPlayer => eachPlayer.id === black)?.userName || black;
           this._history.push({
             gameID,
             scores: {
@@ -111,6 +113,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }
+
     throw new InvalidParametersError(INVALID_COMMAND_MESSAGE);
   }
 }
