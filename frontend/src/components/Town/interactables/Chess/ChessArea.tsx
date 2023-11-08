@@ -180,7 +180,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
  * renders the TicTacToeArea component in a modal.
  *
  */
-export default function TicTacToeAreaWrapper(): JSX.Element {
+export default function ChessAreaWrapper(): JSX.Element {
   const gameArea = useInteractable<GameAreaInteractable>('gameArea');
   const townController = useTownController();
   const closeModal = useCallback(() => {
@@ -191,7 +191,7 @@ export default function TicTacToeAreaWrapper(): JSX.Element {
     }
   }, [townController, gameArea]);
 
-  if (gameArea && gameArea.getData('type') === 'TicTacToe') {
+  if (gameArea && gameArea.getData('type') === 'Chess') {
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false}>
         <ModalOverlay />
