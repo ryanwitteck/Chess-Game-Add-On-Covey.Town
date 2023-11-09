@@ -1,5 +1,5 @@
-import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../lib/InvalidParametersError';
-import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../types/CoveyTownSocket';
+import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../../../lib/InvalidParametersError';
+import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 class Pawn implements IChessPiece {
   color: ChessColor;

@@ -4,10 +4,10 @@ import InvalidParametersError, {
   MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
-} from '../../lib/InvalidParametersError';
-import Player from '../../lib/Player';
-import { GameMove, ChessGameState, ChessMove, IChessPiece } from '../../types/CoveyTownSocket';
-import Game from './Game';
+} from '../../../lib/InvalidParametersError';
+import Player from '../../../lib/Player';
+import { GameMove, ChessGameState, ChessMove, IChessPiece } from '../../../types/CoveyTownSocket';
+import Game from '../Game';
 
 /**
  * A ChessGame is a Game that implements the rules of chess.

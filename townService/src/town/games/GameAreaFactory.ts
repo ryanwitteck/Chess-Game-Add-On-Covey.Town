@@ -1,8 +1,8 @@
 import { ITiledMapObject } from '@jonbell/tiled-map-type-guard';
 import { BoundingBox, TownEmitter } from '../../types/CoveyTownSocket';
 import InteractableArea from '../InteractableArea';
-import ChessGameArea from './ChessGameArea';
-import TicTacToeGameArea from './TicTacToeGameArea';
+import ChessGameArea from './Chess/ChessGameArea';
+import TicTacToeGameArea from './TicTacToe/TicTacToeGameArea';
 
 /**
  * Creates a new GameArea from a map object
