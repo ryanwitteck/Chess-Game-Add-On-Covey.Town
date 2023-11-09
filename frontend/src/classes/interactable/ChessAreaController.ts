@@ -14,8 +14,10 @@ export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
+export type ChessCell = IChessPiece | undefined;
+
 export type ChessEvents = GameEventTypes & {
-  boardChanged: (board: IChessPiece[][]) => void;
+  boardChanged: (board: ChessCell[][]) => void;
   turnChanged: (isOurTurn: boolean) => void;
 };
 
@@ -36,12 +38,12 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   1 [0][0] [1][0] [2][0] [3][0] ...
        A      B     C     D      E  F  G  H  (x, y)
   */
-  protected _board: IChessPiece[][] = [];
+  protected _board: ChessCell[][] = [];
 
   /**
    * TODO: add documentation
    */
-  get board(): IChessPiece[][] {
+  get board(): ChessCell[][] {
     return [][0];
   }
 
@@ -166,7 +168,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const newState = newModel.game;
     if (newState) {
       // normally, the TicTacToe game makes a new board here
-      const newBoard: IChessPiece[][] = [];
+      const newBoard: ChessCell[][] = [];
 
       // then, it fills it up
       /*
