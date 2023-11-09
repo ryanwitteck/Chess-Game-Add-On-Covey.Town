@@ -73,17 +73,24 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._checkForGameEnding();
   }
 
-  
   private _validateMove(move: ChessMove) {
     // A move is only valid if it is the player's turn
     if (move.gamePiece?.color === 'W' && this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece?.color  === 'B' && this.state.moves.length % 2 === 0) {
+    } else if (move.gamePiece?.color === 'B' && this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
     // A move is valid only if game is in progress
     if (this.state.status !== 'IN_PROGRESS') {
       throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+    }
+    const ourColor = move.gamePiece?.color;
+    const ourBoard = this._board;
+    // First Check if our dest space is
+    if (ourBoard[move.newRow][move.newCol].color === ourColor) {
+      throw new InvalidParametersError(
+        'INVALID MOVE: CANNOT TAKE YOUR OWN PIECE (ChessGame.ts - _validateMove)',
+      );
     }
   }
 
@@ -91,8 +98,13 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * TODO:
    */
   public applyMove(move: GameMove<ChessMove>): void {
-    this._validateMove(move.move)
-    move.move.gamePiece?.validate_move(move.move.newRow,move.move.newCol,this._board);
+    this._validateMove(move.move);
+    move.move.gamePiece?.validate_move(
+      move.move.newRow,
+      move.move.newCol,
+      this._board,
+      this.state.moves,
+    );
     this._applyMove(move.move);
   }
 
