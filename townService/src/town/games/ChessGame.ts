@@ -31,6 +31,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
   }
 
+
   private get _board() {
     return this._chessBoard;
   }
@@ -102,7 +103,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     move.move.gamePiece?.validate_move(
       move.move.newRow,
       move.move.newCol,
-      this._board,
+      this._board, 
       this.state.moves,
     );
     this._applyMove(move.move);
