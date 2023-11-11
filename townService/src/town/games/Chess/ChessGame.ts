@@ -9,31 +9,44 @@ import Player from '../../../lib/Player';
 import { GameMove, ChessGameState, ChessMove, IChessPiece } from '../../../types/CoveyTownSocket';
 import Game from '../Game';
 
+import Pawn from '../Chess/ChessPieces/Pawn'
+import King from '../Chess/ChessPieces/King'
 /**
  * A ChessGame is a Game that implements the rules of chess.
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
 
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
-  private _chessBoard: IChessPiece[][];
 
   public constructor() {
     super({
       moves: [],
       status: 'WAITING_TO_START',
     });
-    this._chessBoard = [[], [], [], [], [], [], [], []];
-    for (let row = 0; row < 8; row++) {
-      this._chessBoard[row] = [];
-      for (let col = 0; col < 8; col++) {
-        this._chessBoard[row][col] = {} as IChessPiece;
-      }
-    }
+    
   }
 
 
   private get _board() {
-    return this._chessBoard;
+    const { moves } = this.state;
+    const board =  [
+      [undefined,undefined,undefined,undefined,new King("B",7,4),undefined,undefined,undefined],
+      [new Pawn("B",7,0),new Pawn("B",7,1),new Pawn("B",7,2),new Pawn("B",7,3),new Pawn("B",7,4),new Pawn("B",7,5),new Pawn("B",7,6),new Pawn("B",7,7)],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",1,2),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
+      [undefined,undefined,undefined,undefined,new King("W",0,4),undefined,undefined,undefined],
+    ];
+    for (const move of moves) {
+      const gp = move.gamePiece;
+        if (gp != undefined) {
+          board[gp?.row][gp?.col] = undefined;
+          board[move.newRow][move.newCol] = gp;
+        }
+    }
+    return board;
   }
 
   private _checkForGameEnding() {
@@ -41,11 +54,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     let bk = 0;
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        if (this._chessBoard[row][col].type === 'K') {
-          if (this._chessBoard[row][col].color === 'W') {
+        if (this._board[row][col]?.type === 'K') {
+          if (this._board[row][col]?.color === 'W') {
             wk += 1;
           }
-          if (this._chessBoard[row][col].color === 'B') {
+          if (this._board[row][col]?.color === 'B') {
             bk += 1;
           }
         }
@@ -88,7 +101,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     const ourColor = move.gamePiece?.color;
     const ourBoard = this._board;
     // First Check if our dest space is
-    if (ourBoard[move.newRow][move.newCol].color === ourColor) {
+    if (ourBoard[move.newRow][move.newCol]?.color === ourColor) {
       throw new InvalidParametersError(
         'INVALID MOVE: CANNOT TAKE YOUR OWN PIECE (ChessGame.ts - _validateMove)',
       );
