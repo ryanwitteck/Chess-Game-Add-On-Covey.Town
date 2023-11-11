@@ -10,6 +10,9 @@ import {
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
+import Pawn from '../../../../townService/src/town/games/Chess/ChessPieces/Pawn'
+import King from '../../../../townService/src/town/games/Chess/ChessPieces/King'
+
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
@@ -38,13 +41,29 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   1 [0][0] [1][0] [2][0] [3][0] ...
        A      B     C     D      E  F  G  H  (x, y)
   */
-  protected _board: ChessCell[][] = [];
+  protected _board: ChessCell[][] = this.init_board();
+
+  /*
+  get board with peices in their starting positions
+  */
+  protected init_board(): ChessCell[][] {
+    return  [
+      [undefined,undefined,undefined,undefined,new King("B",7,4),undefined,undefined,undefined],
+      [new Pawn("B",7,0),new Pawn("B",7,1),new Pawn("B",7,2),new Pawn("B",7,3),new Pawn("B",7,4),new Pawn("B",7,5),new Pawn("B",7,6),new Pawn("B",7,7)],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",1,2),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
+      [undefined,undefined,undefined,undefined,new King("W",0,4),undefined,undefined,undefined],
+    ];
+  }
 
   /**
    * TODO: add documentation
    */
   get board(): ChessCell[][] {
-    return [][0];
+    return this._board;
   }
 
   /**
@@ -168,14 +187,21 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const newState = newModel.game;
     if (newState) {
       // normally, the TicTacToe game makes a new board here
-      const newBoard: ChessCell[][] = [];
 
-      // then, it fills it up
-      /*
+      const newBoard: ChessCell[][] = this.init_board();
+
+      // have not tested thsis, but it remove the gamepeice at its current position,
+      // and puts it in the new spot, updating its row and column position
       newState.state.moves.forEach(move => {
-        newBoard[move.row][move.col] = move.gamePiece;
+        const gp = move.gamePiece;
+        if (gp != undefined) {
+          newBoard[gp?.row][gp?.col] = undefined;
+          gp.row = move.newRow;
+          gp.col = move.newCol;
+          newBoard[move.newRow][move.newCol] = gp;
+        }
       });
-      */
+
       if (!_.isEqual(newBoard, this._board)) {
         this._board = newBoard;
         this.emit('boardChanged', this._board);
