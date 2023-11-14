@@ -108,6 +108,8 @@ export interface TicTacToeMove {
   col: TicTacToeGridPosition;
 }
 
+
+
 export interface IChessPiece {
   color: ChessColor;
   row: ChessSquare;
@@ -116,6 +118,8 @@ export interface IChessPiece {
 
   validate_move(newRow: ChessSquare, newCol: ChessSquare, board: ChessCell[][], moves: ReadonlyArray<ChessMove>);
 }
+
+export type ChessCell = IChessPiece | undefined;
 
 export type ChessSquare = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type ChessColor = 'W' | 'B';

@@ -1,6 +1,5 @@
 import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../../../lib/InvalidParametersError';
-import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
-import ChessCell from '../../../../../../frontend/src/classes/interactable/ChessAreaController';
+import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 export default class King implements IChessPiece {
   color: ChessColor;
