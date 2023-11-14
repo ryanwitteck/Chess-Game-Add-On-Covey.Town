@@ -11,6 +11,7 @@ import Game from '../Game';
 
 import Pawn from '../Chess/ChessPieces/Pawn'
 import King from '../Chess/ChessPieces/King'
+import Queen from '../Chess/ChessPieces/King'
 /**
  * A ChessGame is a Game that implements the rules of chess.
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
@@ -30,14 +31,14 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   private get _board() {
     const { moves } = this.state;
     const board =  [
-      [undefined,undefined,undefined,undefined,new King("B",7,4),undefined,undefined,undefined],
+      [undefined,undefined,undefined,new Queen("B",7,3),new King("B",7,4),undefined,undefined,undefined],
       [new Pawn("B",7,0),new Pawn("B",7,1),new Pawn("B",7,2),new Pawn("B",7,3),new Pawn("B",7,4),new Pawn("B",7,5),new Pawn("B",7,6),new Pawn("B",7,7)],
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",1,2),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
-      [undefined,undefined,undefined,undefined,new King("W",0,4),undefined,undefined,undefined],
+      [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
     ];
     for (const move of moves) {
       const gp = move.gamePiece;
