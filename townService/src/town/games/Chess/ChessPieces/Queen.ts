@@ -1,7 +1,7 @@
 import InvalidParametersError, {
   INVALID_MOVE_MESSAGE,
 } from '../../../../lib/InvalidParametersError';
-import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
+import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 export default class Queen implements IChessPiece {
   color: ChessColor;
