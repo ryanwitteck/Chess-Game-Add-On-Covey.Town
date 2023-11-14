@@ -51,6 +51,7 @@ export default function TownMap(): JSX.Element {
     <div id='app-container'>
       <NewConversationModal />
       <TicTacToeAreaWrapper />
+      <ChessAreaWrapper />
 
       <div id='map-container' />
       <div id='social-container'>
