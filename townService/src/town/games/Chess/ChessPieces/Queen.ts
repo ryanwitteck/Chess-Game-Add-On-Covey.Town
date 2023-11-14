@@ -3,7 +3,7 @@ import InvalidParametersError, {
 } from '../../../../lib/InvalidParametersError';
 import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
 
-class Queen implements IChessPiece {
+export default class Queen implements IChessPiece {
   color: ChessColor;
 
   row: ChessSquare;

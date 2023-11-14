@@ -56,7 +56,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
       [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",1,2),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
-      [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
+      [undefined,undefined,undefined,new Queen("W",0,3), new King("W",0,4),undefined,undefined,undefined],
     ];
   }
 
