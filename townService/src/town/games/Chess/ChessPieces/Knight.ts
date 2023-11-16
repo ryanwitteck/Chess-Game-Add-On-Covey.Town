@@ -9,7 +9,7 @@ import {
   IChessPiece,
 } from '../../../../types/CoveyTownSocket';
 
-export default class King implements IChessPiece {
+export default class Knight implements IChessPiece {
   color: ChessColor;
 
   row: ChessSquare;
