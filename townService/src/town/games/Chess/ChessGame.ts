@@ -31,15 +31,15 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   private get _board() {
     const { moves } = this.state;
     const board =  [
-      [undefined,undefined,undefined,new Queen("B",7,3),new King("B",7,4),undefined,undefined,undefined],
-      [new Pawn("B",7,0),new Pawn("B",7,1),new Pawn("B",7,2),new Pawn("B",7,3),new Pawn("B",7,4),new Pawn("B",7,5),new Pawn("B",7,6),new Pawn("B",7,7)],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",1,2),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
       [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
-    ];
+        [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",2,3),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
+        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+        [new Pawn("B",6,0),new Pawn("B",6,1),new Pawn("B",6,2),new Pawn("B",6,3),new Pawn("B",6,4),new Pawn("B",6,5),new Pawn("B",6,6),new Pawn("B",6,7)],
+        [undefined,undefined,undefined,new Queen("B",7,3),new King("B",7,4),undefined,undefined,undefined],
+      ];
     for (const move of moves) {
       const gp = move.gamePiece;
         if (gp != undefined) {
