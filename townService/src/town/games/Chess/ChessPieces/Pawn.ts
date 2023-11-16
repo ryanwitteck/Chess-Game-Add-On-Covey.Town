@@ -1,12 +1,22 @@
-import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../../../lib/InvalidParametersError';
-import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
+import InvalidParametersError, {
+  INVALID_MOVE_MESSAGE,
+} from '../../../../lib/InvalidParametersError';
+import {
+  ChessCell,
+  ChessColor,
+  ChessMove,
+  ChessSquare,
+  IChessPiece,
+} from '../../../../types/CoveyTownSocket';
 
 export default class Pawn implements IChessPiece {
   color: ChessColor;
+
   row: ChessSquare;
+
   col: ChessSquare;
 
-  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P' | 'None';
+  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
   constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
     this.color = color;
