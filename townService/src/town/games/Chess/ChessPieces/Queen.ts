@@ -1,7 +1,5 @@
-import InvalidParametersError, {
-  INVALID_MOVE_MESSAGE,
-} from '../../../../lib/InvalidParametersError';
-import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
+import InvalidParametersError from '../../../../lib/InvalidParametersError';
+import { ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 export default class Queen implements IChessPiece {
   color: ChessColor;
@@ -10,7 +8,7 @@ export default class Queen implements IChessPiece {
 
   col: ChessSquare;
 
-  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P' | 'None';
+  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
   constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
     this.color = color;

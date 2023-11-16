@@ -6,47 +6,50 @@ import InvalidParametersError, {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../../lib/InvalidParametersError';
 import Player from '../../../lib/Player';
-import { GameMove, ChessGameState, ChessMove, IChessPiece } from '../../../types/CoveyTownSocket';
+import { GameMove, ChessGameState, ChessMove, ChessCell, ChessSquare } from '../../../types/CoveyTownSocket';
 import Game from '../Game';
-
-import Pawn from '../Chess/ChessPieces/Pawn'
-import King from '../Chess/ChessPieces/King'
-import Queen from '../Chess/ChessPieces/Queen'
+import Pawn from './ChessPieces/Pawn';
+import King from './ChessPieces/King';
+import Queen from './ChessPieces/Queen';
+import Knight from './ChessPieces/Knight';
 /**
  * A ChessGame is a Game that implements the rules of chess.
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
 
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
-
   public constructor() {
     super({
       moves: [],
       status: 'WAITING_TO_START',
     });
-    
   }
-
 
   private get _board() {
     const { moves } = this.state;
-    const board =  [
-      [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
-        [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",2,3),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [new Pawn("B",6,0),new Pawn("B",6,1),new Pawn("B",6,2),new Pawn("B",6,3),new Pawn("B",6,4),new Pawn("B",6,5),new Pawn("B",6,6),new Pawn("B",6,7)],
-        [undefined,undefined,undefined,new Queen("B",7,3),new King("B",7,4),undefined,undefined,undefined],
-      ];
+    const board = [
+      [undefined, undefined, undefined, new Queen("B", 0, 3), new King("B", 0, 4), undefined, undefined, undefined],
+      [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",2,3),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
+      [new Pawn("B",6,0),new Pawn("B",6,1),new Pawn("B",6,2),new Pawn("B",6,3),new Pawn("B",6,4),new Pawn("B",6,5),new Pawn("B",6,6),new Pawn("B",6,7)],
+      [undefined,undefined,undefined,new Queen("B",7,3),new King("B",7,4),undefined,undefined,undefined],
+    ];
+    /* 
+    why don't we just store the board as a field, and then update it each time we make a move?
+    and then we can just return the field directly, which would be a big improvement from
+    manually applying every single move each render
+
     for (const move of moves) {
       const gp = move.gamePiece;
-        if (gp != undefined) {
-          board[gp?.row][gp?.col] = undefined;
-          board[move.newRow][move.newCol] = gp;
-        }
+      if (gp !== undefined) {
+        board[gp?.row][gp?.col] = undefined;
+        board[move.newRow][move.newCol] = gp;
+      }
     }
+    */
     return board;
   }
 
@@ -88,6 +91,15 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._checkForGameEnding();
   }
 
+  /**
+   * TODO: Documentation
+   * Things that are checked:
+   * - Turn order
+   * - Game progress
+   * - Cannot take your own pieces
+   *
+   * @param move
+   */
   private _validateMove(move: ChessMove) {
     // A move is only valid if it is the player's turn
     if (move.gamePiece?.color === 'W' && this.state.moves.length % 2 === 1) {
@@ -95,12 +107,15 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else if (move.gamePiece?.color === 'B' && this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
+
     // A move is valid only if game is in progress
     if (this.state.status !== 'IN_PROGRESS') {
       throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
     }
+
     const ourColor = move.gamePiece?.color;
     const ourBoard = this._board;
+
     // First Check if our dest space is
     if (ourBoard[move.newRow][move.newCol]?.color === ourColor) {
       throw new InvalidParametersError(
@@ -110,14 +125,15 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   /*
-   * TODO:
+   * TODO: Documentation
+   * note: we should change the naming convention here, it might get confusing.
    */
   public applyMove(move: GameMove<ChessMove>): void {
     this._validateMove(move.move);
     move.move.gamePiece?.validate_move(
       move.move.newRow,
       move.move.newCol,
-      this._board, 
+      this._board,
       this.state.moves,
     );
     this._applyMove(move.move);
@@ -194,4 +210,55 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       };
     }
   }
+
+  /**
+   * This function will create a brand new chessboard, with all the pieces properly placed
+   * to start a new game.
+   * 
+   * A quirk behind this implementation is that we will consider row 0 column 0 to be the
+   * BOTTOM LEFT CORNER of the board, or the A1 square on a real chessboard.
+   * 
+   * We are also assuming the board is instantiated as [row][col]
+   * 
+   * @returns 
+   */
+  static createNewBoard(): ChessCell[][] {
+    // fill the board with undefined cells
+    const newBoard = Array.from({ length: 7 }).map(() => Array.from({ length: 7 }).fill(undefined));
+    
+    // instantiate the pawns
+    for (let col = 0; col < 8; col++) {
+      newBoard[1][col] = new Pawn('W', 1, col as ChessSquare);
+      newBoard[6][col] = new Pawn('B', 6, col as ChessSquare);
+    }
+
+    // Add in the Rooks:
+    // newBoard[0][0] = new Rook('W', 0, 0);
+    // newBoard[0][0] = new Rook('W', 7, 0);
+    // newBoard[7][0] = new Rook('B', 0, 7);
+    // newBoard[7][0] = new Rook('W', 7, 7);
+    
+    // Add in the Knights:
+    newBoard[0][1] = new Knight('W', 0, 1);
+    newBoard[0][6] = new Knight('W', 0, 6);
+    newBoard[7][1] = new Knight('B', 7, 1);
+    newBoard[7][6] = new Knight('B', 7, 6);
+
+    // Add in the Bishops:
+    // newBoard[0][0] = new Bishop('W', 0, 0);
+    // newBoard[0][0] = new Bishop('W', 0, 0);
+    // newBoard[0][0] = new Bishop('W', 0, 0);
+    // newBoard[0][0] = new Bishop('W', 0, 0);
+
+    // Add in Queens:
+    newBoard[0][3] = new Queen('W', 0, 3);
+    newBoard[7][3] = new Queen('B', 7, 3);
+
+    // Add in Kings:
+    newBoard[0][3] = new King('W', 0, 4);
+    newBoard[7][3] = new King('B', 7, 4);
+
+    return newBoard as ChessCell[][];
+  }
+
 }

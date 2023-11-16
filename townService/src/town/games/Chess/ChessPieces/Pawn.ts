@@ -5,10 +5,12 @@ import { error } from 'console';
 
 export default class Pawn implements IChessPiece {
   color: ChessColor;
+
   row: ChessSquare;
+
   col: ChessSquare;
 
-  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P' | 'None';
+  type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
   constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
     this.color = color;
