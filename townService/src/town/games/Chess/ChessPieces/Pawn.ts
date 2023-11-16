@@ -1,13 +1,7 @@
-import InvalidParametersError, {
-  INVALID_MOVE_MESSAGE,
-} from '../../../../lib/InvalidParametersError';
-import {
-  ChessCell,
-  ChessColor,
-  ChessMove,
-  ChessSquare,
-  IChessPiece,
-} from '../../../../types/CoveyTownSocket';
+import { move } from 'ramda';
+import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../../../lib/InvalidParametersError';
+import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
+import { error } from 'console';
 
 export default class Pawn implements IChessPiece {
   color: ChessColor;
@@ -31,24 +25,30 @@ export default class Pawn implements IChessPiece {
     board: ChessCell[][],
     moves: ReadonlyArray<ChessMove>,
   ) {
-    if (this.color === 'W') {
-      // pawn must move one row up at a time (unless its first move)
-      if (newRow !== this.row + 1) {
-        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
-      }
-      // standard upward movement
-      if (newCol === this.col) {
-        if (board[newRow][newCol] !== undefined) {
-          throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+    if (this.type === 'P'){
+      if (this.color === 'W') {
+        // first move can move two up directionly up if there isn't a piece there
+        if (this.row == 1 && newRow == 3 && this.col == newCol && board[newRow][newCol] === undefined) {
+          return;
+        } 
+        // otherwise we can online move upward once
+        if (newRow === this.row + 1 && this.col == newCol && board[newRow][newCol] === undefined) {
+          return;
         }
         // diagonal capture
-      } else if (newCol === this.col - 1 || newCol === this.col + 1) {
-        if (board[newRow][newCol] === undefined) {
-          throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+        if (newRow === this.row + 1 && (newCol === this.col - 1 || newCol === this.col + 1) && board[newRow][newCol]?.color === 'B') {
+          return;
         }
-        // en passaunt
+        //  en passaunt
+        if (newRow === this.row + 1 && (newCol === this.col - 1 || newCol === this.col + 1) && board[this.row][newCol]?.type === 'P' && board[this.row][newCol]?.color === 'B') {
+          const i = moves.length-1
+          if (moves[i].gamePiece?.type === 'P' && moves[i].gamePiece?.row === this.row + 2 && moves[i].gamePiece?.col === newCol && moves[i].newCol === newCol && moves[i].newRow === this.row) {
+            return;
+          } 
+        }
+        // promotion
       }
-      // promotion
     }
+    throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
   }
 }
