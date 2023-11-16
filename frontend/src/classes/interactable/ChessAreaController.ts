@@ -6,23 +6,27 @@ import {
   IChessPiece,
   ChessColor,
   ChessMove,
-  ChessCell
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
-import Pawn from '../../../../townService/src/town/games/Chess/ChessPieces/Pawn'
-import King from '../../../../townService/src/town/games/Chess/ChessPieces/King'
-import Queen from '../../../../townService/src/town/games/Chess/ChessPieces/Queen'
-import Rook from '../../../../townService/src/town/games/Chess/ChessPieces/Rook'
-import Knight from '../../../../townService/src/town/games/Chess/ChessPieces/Knight'
-import Bishop from '../../../../townService/src/town/games/Chess/ChessPieces/Bishop'
+import Pawn from '../interactable/ChessPieces/Pawn'
+
+import Bishop from '../interactable/ChessPieces/Bishop'
+
+import Queen from '../interactable/ChessPieces/Queen'
+
+import Rook from '../interactable/ChessPieces/Rook'
+
+import King from '../interactable/ChessPieces/King'
+
+import Knight from '../interactable/ChessPieces/Knight'
 
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
-
+export type ChessCell = IChessPiece | undefined;
 
 export type ChessEvents = GameEventTypes & {
   boardChanged: (board: ChessCell[][]) => void;

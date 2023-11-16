@@ -12,7 +12,7 @@ import Pawn from './ChessPieces/Pawn';
 import King from './ChessPieces/King';
 import Queen from './ChessPieces/Queen';
 import Rook from './ChessPieces/Rook';
-import Bishop from './ChessPieces/Rook';
+import Bishop from './ChessPieces/Bishop';
 import Knight from './ChessPieces/Knight';
 /**
  * A ChessGame is a Game that implements the rules of chess.
