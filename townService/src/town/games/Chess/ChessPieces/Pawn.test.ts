@@ -1,4 +1,4 @@
-import { ChessCell } from '../../../../types/CoveyTownSocket';
+import { ChessCell, ChessMove } from '../../../../types/CoveyTownSocket';
 import Pawn from './Pawn';
 import Queen from './Queen';
 import King from './King';
