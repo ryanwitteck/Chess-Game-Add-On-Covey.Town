@@ -10,17 +10,17 @@ import {
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
- import Pawn from '../interactable/ChessPieces/Pawn'
+import Pawn from '../interactable/ChessPieces/Pawn'
 
- import Bishop from '../interactable/ChessPieces/Bishop'
+import Bishop from '../interactable/ChessPieces/Bishop'
 
- import Queen from '../interactable/ChessPieces/Queen'
+import Queen from '../interactable/ChessPieces/Queen'
 
- import Rook from '../interactable/ChessPieces/Rook'
+import Rook from '../interactable/ChessPieces/Rook'
 
- import King from '../interactable/ChessPieces/King'
+import King from '../interactable/ChessPieces/King'
 
- import Knight from '../interactable/ChessPieces/Knight'
+import Knight from '../interactable/ChessPieces/Knight'
 
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
