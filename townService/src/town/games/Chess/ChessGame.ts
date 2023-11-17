@@ -29,21 +29,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
   private get _board() {
     const { moves } = this.state;
-    const board = [
-      [new Rook("W", 0, 0), new Knight("W",0,1), new Bishop("W",0,2), new Queen("W", 0, 3), new King("W", 0, 4), new Bishop("W",0,5), new Knight("W",0,6), new Rook("W", 7, 0)],
-      [new Pawn("W",1,0),new Pawn("W",1,1),new Pawn("W",2,3),new Pawn("W",1,3),new Pawn("W",1,4),new Pawn("W",1,5),new Pawn("W",1,6),new Pawn("W",1,7)],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-      [new Pawn("B",6,0),new Pawn("B",6,1),new Pawn("B",6,2),new Pawn("B",6,3),new Pawn("B",6,4),new Pawn("B",6,5),new Pawn("B",6,6),new Pawn("B",6,7)],
-      [new Rook("B", 7, 0),new Knight("B",7,1),new Bishop("B",7,2),new Queen("B",7,3),new King("B",7,4),new Bishop("B",7,5),new Knight("B",7,6),new Rook("B", 7, 7)],
-    ];
+    const board = ChessGame.createNewBoard();
     /* 
     why don't we just store the board as a field, and then update it each time we make a move?
     and then we can just return the field directly, which would be a big improvement from
     manually applying every single move each render
-
+    */
     for (const move of moves) {
       const gp = move.gamePiece;
       if (gp !== undefined) {
@@ -51,7 +42,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         board[move.newRow][move.newCol] = gp;
       }
     }
-    */
     return board;
   }
 
@@ -235,10 +225,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
 
     // Add in the Rooks:
-    // newBoard[0][0] = new Rook('W', 0, 0);
-    // newBoard[0][0] = new Rook('W', 7, 0);
-    // newBoard[7][0] = new Rook('B', 0, 7);
-    // newBoard[7][0] = new Rook('W', 7, 7);
+    newBoard[0][0] = new Rook('W', 0, 0);
+    newBoard[0][7] = new Rook('W', 0, 7);
+    newBoard[7][0] = new Rook('B', 7, 0);
+    newBoard[7][7] = new Rook('B', 7, 7);
     
     // Add in the Knights:
     newBoard[0][1] = new Knight('W', 0, 1);
@@ -247,10 +237,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][6] = new Knight('B', 7, 6);
 
     // Add in the Bishops:
-    // newBoard[0][0] = new Bishop('W', 0, 0);
-    // newBoard[0][0] = new Bishop('W', 0, 0);
-    // newBoard[0][0] = new Bishop('W', 0, 0);
-    // newBoard[0][0] = new Bishop('W', 0, 0);
+    newBoard[0][0] = new Bishop('W', 0, 2);
+    newBoard[0][0] = new Bishop('W', 0, 5);
+    newBoard[0][0] = new Bishop('B', 7, 2);
+    newBoard[0][0] = new Bishop('B', 7, 5);
 
     // Add in Queens:
     newBoard[0][3] = new Queen('W', 0, 3);
