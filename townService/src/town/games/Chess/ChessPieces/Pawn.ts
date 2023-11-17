@@ -1,7 +1,6 @@
 import { move } from 'ramda';
 import InvalidParametersError, { INVALID_MOVE_MESSAGE } from '../../../../lib/InvalidParametersError';
 import { ChessCell, ChessColor, ChessMove, ChessSquare, IChessPiece } from '../../../../types/CoveyTownSocket';
-import { error } from 'console';
 
 export default class Pawn implements IChessPiece {
   color: ChessColor;

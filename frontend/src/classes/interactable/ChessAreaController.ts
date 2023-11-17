@@ -5,15 +5,17 @@ import {
   ChessGameState,
   ChessColor,
   ChessMove,
-  ChessCell
+  IChessPiece,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
-import ChessGame from '../../../../townService/src/town/games/Chess/ChessGame'
+
 
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
 
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
+
+export type ChessCell = IChessPiece | undefined;
 
 export type ChessEvents = GameEventTypes & {
   boardChanged: (board: ChessCell[][]) => void;
