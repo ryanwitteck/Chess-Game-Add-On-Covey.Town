@@ -5,20 +5,20 @@ import {
   ChessCell,
   ChessColor,
   ChessMove,
-  ChessSquare,
+  ChessBoardPosition,
   IChessPiece,
 } from '../../../../types/CoveyTownSocket';
 
 export default class Knight implements IChessPiece {
   color: ChessColor;
 
-  row: ChessSquare;
+  row: ChessBoardPosition;
 
-  col: ChessSquare;
+  col: ChessBoardPosition;
 
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
-  constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
+  constructor(color: ChessColor, row: ChessBoardPosition, col: ChessBoardPosition) {
     this.color = color;
     this.row = row;
     this.col = col;
@@ -26,8 +26,8 @@ export default class Knight implements IChessPiece {
   }
 
   validate_move(
-    newRow: ChessSquare,
-    newCol: ChessSquare,
+    newRow: ChessBoardPosition,
+    newCol: ChessBoardPosition,
     board: ChessCell[][],
     moves: ReadonlyArray<ChessMove>,
   ) {

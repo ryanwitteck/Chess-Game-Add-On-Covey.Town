@@ -5,16 +5,16 @@ import {
   ChessCell,
   ChessColor,
   ChessMove,
-  ChessSquare,
+  ChessBoardPosition,
   IChessPiece,
 } from '../../../../types/CoveyTownSocket';
 
 export default class King implements IChessPiece {
   color: ChessColor;
 
-  row: ChessSquare;
+  row: ChessBoardPosition;
 
-  col: ChessSquare;
+  col: ChessBoardPosition;
 
   canCastleShort: boolean;
 
@@ -22,7 +22,7 @@ export default class King implements IChessPiece {
 
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
-  constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
+  constructor(color: ChessColor, row: ChessBoardPosition, col: ChessBoardPosition) {
     this.color = color;
     this.row = row;
     this.col = col;
@@ -32,8 +32,8 @@ export default class King implements IChessPiece {
   }
 
   validate_move(
-    newRow: ChessSquare,
-    newCol: ChessSquare,
+    newRow: ChessBoardPosition,
+    newCol: ChessBoardPosition,
     board: ChessCell[][],
     moves: ReadonlyArray<ChessMove>,
   ) {
@@ -101,11 +101,11 @@ export default class King implements IChessPiece {
     if (this.color === 'B') {
       moves.forEach(move => {
         const piece = move.gamePiece;
-        if (piece?.type !== 'R' && piece?.color !== this.color) {
+        if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
           return;
         }
 
-        if (piece?.col === 7 && piece?.row === 7) {
+        if (piece.file === 7 && piece.rank === 7) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -113,11 +113,11 @@ export default class King implements IChessPiece {
     } else {
       moves.forEach(move => {
         const piece = move.gamePiece;
-        if (piece?.type !== 'R' && piece?.color !== this.color) {
+        if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
           return;
         }
 
-        if (piece?.col === 7 && piece?.row === 0) {
+        if (piece.file === 7 && piece.rank === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -145,11 +145,11 @@ export default class King implements IChessPiece {
     if (this.color === 'B') {
       moves.forEach(move => {
         const piece = move.gamePiece;
-        if (piece?.type !== 'R' && piece?.color !== this.color) {
+        if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
           return;
         }
 
-        if (piece?.col === 7 && piece?.row === 0) {
+        if (piece.file === 7 && piece.rank === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -157,11 +157,11 @@ export default class King implements IChessPiece {
     } else {
       moves.forEach(move => {
         const piece = move.gamePiece;
-        if (piece?.type !== 'R' && piece?.color !== this.color) {
+        if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
           return;
         }
 
-        if (piece?.col === 0 && piece?.row === 0) {
+        if (piece.file === 0 && piece.rank === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
