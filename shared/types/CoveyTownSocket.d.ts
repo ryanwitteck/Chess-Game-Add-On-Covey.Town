@@ -131,9 +131,10 @@ export interface ChessPiecePosition {
  */
 export interface ChessMove {
   gamePiece: ChessPiecePosition;
-  toRow: TicTacToeGridPosition;
-  toCol: TicTacToeGridPosition;
+  toRow: ChessBoardPosition;
+  toCol: ChessBoardPosition;
 }
+
 
 /**
  * Type for the state of a Chess game

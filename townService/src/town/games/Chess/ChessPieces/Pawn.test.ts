@@ -1,4 +1,4 @@
-import { ChessCell, ChessMove } from '../../../../types/CoveyTownSocket';
+import { ChessCell, ChessMove, ChessPiece } from '../../../../types/CoveyTownSocket';
 import Pawn from './Pawn';
 import Queen from './Queen';
 import King from './King';
@@ -34,9 +34,13 @@ describe('ChessGame', () => {
         it('en passant, left, white', () => {
           pawn = new Pawn("W",4,2);
           moves = [{
-            gamePiece: new Pawn("B",6,1),
-            newRow: 4,
-            newCol: 1,
+            gamePiece: {
+              piece: new Pawn("W",6,1),
+              rank: 6,
+              file: 1,
+            },
+            toRow: 4,
+            toCol: 1,
           },]
           board = [
             [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
@@ -53,9 +57,13 @@ describe('ChessGame', () => {
         it('en passant, right, white', () => {
           pawn = new Pawn("W",4,2);
           moves = [{
-            gamePiece: new Pawn("B",6,3),
-            newRow: 4,
-            newCol: 3,
+            gamePiece: {
+              piece:  new Pawn("B",6,3),
+              rank: 6,
+              file: 3,
+            },
+            toRow: 4,
+            toCol: 3,
           },]
           board = [
             [undefined,undefined,undefined,new Queen("W",0,3),new King("W",0,4),undefined,undefined,undefined],
