@@ -3,22 +3,18 @@ import {
   GameArea,
   GameStatus,
   ChessGameState,
-  ChessColor,
   ChessMove,
-  IChessPiece,
+  ChessBoardSquare,
+  ChessColor,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
 
-
 export const PLAYER_NOT_IN_GAME_ERROR = 'Player is not in game';
-
 export const NO_GAME_IN_PROGRESS_ERROR = 'No game in progress';
 
-export type ChessCell = IChessPiece | undefined;
-
-export type ChessEvents = GameEventTypes & {
-  boardChanged: (board: ChessCell[][]) => void;
+type ChessEvents = GameEventTypes & {
+  boardChanged: (board: ChessBoardSquare[][]) => void;
   turnChanged: (isOurTurn: boolean) => void;
 };
 
@@ -26,26 +22,21 @@ export type ChessEvents = GameEventTypes & {
  * This class is responsible for managing the state of the Chess game, and for sending commands to the server
  */
 export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
-  // HZ Design request:
-  // can we make sure that [0][0] returns A1, [1][0] returns B1, etc..
-  /* Sort of like this:
-  8
-  7
-  6
-  5 ...
-  4 [0][3] [1][3] ...
-  3 [0][2] [1][2] [2][2] ...
-  2 [0][1] [1][1] [2][1] [3][1]
-  1 [0][0] [1][0] [2][0] [3][0] ...
-       A      B     C     D      E  F  G  H  (x, y)
-  */
-  protected _board: ChessCell[][] = ChessGame.createNewBoard();
+
+  protected _board: ChessBoardSquare[][] = [];
 
   /**
-   * TODO: add documentation
+   * Returns the current chessboard.
    */
-  get board(): ChessCell[][] {
+  get board(): ChessBoardSquare[][] {
     return this._board;
+  }
+
+  /**
+   * Returns the number of moves that have occurred in this game.
+   */
+  get moveCount(): number {
+    return this._model.game?.state.moves.length || 0;
   }
 
   /**
@@ -61,6 +52,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
 
   /**
    * Returns the player with the black pieces, if there is one, or undefined otherwise
+   * Returns the player with the black pieces, if there is one, or undefined otherwise.
    */
   get black(): PlayerController | undefined {
     const b = this._model.game?.state.black;
@@ -71,14 +63,8 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   }
 
   /**
-   * Returns the number of moves that have been made in the game
-   */
-  get moveCount(): number {
-    return this._model.game?.state.moves.length || 0;
-  }
-
-  /**
    * Returns the winner of the game, if there is one
+   * Returns the winner of the game, if there is one.
    */
   get winner(): PlayerController | undefined {
     const winner = this._model.game?.state.winner;
@@ -107,23 +93,26 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     }
   }
 
+  /**
+   * Docs
+   */
   get isOurTurn(): boolean {
     return this.whoseTurn?.id === this._townController.ourPlayer.id;
   }
 
   /**
-   * Returns true if the current player is a player in this game
-   */
+ * Returns true if the current player is a player in this game
+ */
   get isPlayer(): boolean {
     return this._model.game?.players.includes(this._townController.ourPlayer.id) || false;
   }
 
   /**
-   * Returns the game piece of the current player, if the current player is a player in this game
+   * Returns the game color of the current player, if the current player is a player in this game
    *
    * Throws an error PLAYER_NOT_IN_GAME_ERROR if the current player is not a player in this game
    */
-  get gamePiece(): ChessColor {
+  get gameColor(): ChessColor {
     if (this.white?.id === this._townController.ourPlayer.id) {
       return 'W';
     } else if (this.black?.id === this._townController.ourPlayer.id) {
@@ -167,36 +156,20 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const wasOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     super._updateFrom(newModel);
     const newState = newModel.game;
-
     if (newState) {
-      const newBoard = newModel.game?.state.moves;
-      // check: if there is a difference in the model, we need to update & emit the change.
-      
-
-      /*
-      // have not tested thsis, but it remove the gamepeice at its current position,
-      // and puts it in the new spot, updating its row and column position
-      newState.state.moves.forEach(move => {
-        const gp = move.gamePiece;
-        if (gp != undefined) {
-          newBoard[gp?.row][gp?.col] = undefined;
-          gp.row = move.newRow;
-          gp.col = move.newCol;
-          newBoard[move.newRow][move.newCol] = gp;
-        }
+      const newBoard: ChessBoardSquare[][] = [];
+      newState.state.pieces.forEach(piece => {
+        newBoard[piece.file][piece.rank] = piece.piece;
       });
-      
-
-      // we need to get the old board, not a new board each time
-      if (!_.isEqual(newBoard, this._board)) { 
+      if (!_.isEqual(newBoard, this._board)) {
         this._board = newBoard;
         this.emit('boardChanged', this._board);
       }
-      */
     }
     const isOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     if (wasOurTurn != isOurTurn) this.emit('turnChanged', isOurTurn);
   }
+
 
   /**
    * TODO: documentation

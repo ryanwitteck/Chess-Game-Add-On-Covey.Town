@@ -5,20 +5,20 @@ import {
   ChessCell,
   ChessColor,
   ChessMove,
-  ChessSquare,
+  ChessBoardPosition,
   IChessPiece,
 } from '../../../../types/CoveyTownSocket';
 
 export default class Bishop implements IChessPiece {
   color: ChessColor;
 
-  row: ChessSquare;
+  row: ChessBoardPosition;
 
-  col: ChessSquare;
+  col: ChessBoardPosition;
 
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
-  constructor(color: ChessColor, row: ChessSquare, col: ChessSquare) {
+  constructor(color: ChessColor, row: ChessBoardPosition, col: ChessBoardPosition) {
     this.color = color;
     this.row = row;
     this.col = col;
@@ -27,8 +27,8 @@ export default class Bishop implements IChessPiece {
 
   
   validate_move(
-    newRow: ChessSquare,
-    newCol: ChessSquare,
+    newRow: ChessBoardPosition,
+    newCol: ChessBoardPosition,
     board: ChessCell[][],
     moves: ReadonlyArray<ChessMove>,
   ) {
@@ -52,7 +52,7 @@ export default class Bishop implements IChessPiece {
     }
   }
 
-  private _isPathClear(newRow: ChessSquare, newCol: ChessSquare, board: ChessCell[][]) {
+  private _isPathClear(newRow: ChessBoardPosition, newCol: ChessBoardPosition, board: ChessCell[][]) {
     const rowIncrement = newRow > this.row ? 1 : -1;
     const colIncrement = newCol > this.col ? 1 : -1;
 

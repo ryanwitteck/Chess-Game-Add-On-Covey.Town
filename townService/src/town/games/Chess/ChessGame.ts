@@ -6,7 +6,15 @@ import InvalidParametersError, {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../../lib/InvalidParametersError';
 import Player from '../../../lib/Player';
-import { GameMove, ChessGameState, ChessMove, ChessCell, ChessSquare } from '../../../types/CoveyTownSocket';
+import {
+  GameMove,
+  ChessGameState,
+  ChessMove,
+  ChessCell,
+  ChessBoardPosition,
+  ChessPiecePosition
+} from '../../../types/CoveyTownSocket';
+
 import Game from '../Game';
 import Pawn from './ChessPieces/Pawn';
 import King from './ChessPieces/King';
@@ -14,35 +22,23 @@ import Queen from './ChessPieces/Queen';
 import Rook from './ChessPieces/Rook';
 import Bishop from './ChessPieces/Bishop';
 import Knight from './ChessPieces/Knight';
+
 /**
  * A ChessGame is a Game that implements the rules of chess.
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
-
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
+  board: ChessCell[][];
+  pieces: ChessPiecePosition[];
+
   public constructor() {
     super({
+      pieces: [],
       moves: [],
       status: 'WAITING_TO_START',
     });
-  }
-
-  private get _board() {
-    const { moves } = this.state;
-    const board = ChessGame.createNewBoard();
-    /* 
-    why don't we just store the board as a field, and then update it each time we make a move?
-    and then we can just return the field directly, which would be a big improvement from
-    manually applying every single move each render
-    */
-    for (const move of moves) {
-      const gp = move.gamePiece;
-      if (gp !== undefined) {
-        board[gp?.row][gp?.col] = undefined;
-        board[move.newRow][move.newCol] = gp;
-      }
-    }
-    return board;
+    this.board = ChessGame.createNewBoard();
+    this.pieces = ChessGame.boardToPieceList(this.board);
   }
 
   private _checkForGameEnding() {
@@ -50,11 +46,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     let bk = 0;
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
-        if (this._board[row][col]?.type === 'K') {
-          if (this._board[row][col]?.color === 'W') {
+        if (this.board[row][col]?.type === 'K') {
+          if (this.board[row][col]?.color === 'W') {
             wk += 1;
           }
-          if (this._board[row][col]?.color === 'B') {
+          if (this.board[row][col]?.color === 'B') {
             bk += 1;
           }
         }
@@ -76,27 +72,63 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private _applyMove(move: ChessMove): void {
+    const moveLocationPiece = this.board[move.toRow][move.toCol];
+    // if there is a piece at the resulting space, remove it
+    if (moveLocationPiece) {
+      const index = this.pieces.findIndex((piece) => {
+        return piece.piece.type === moveLocationPiece.type &&
+          piece.piece.color === moveLocationPiece.color &&
+          piece.rank === moveLocationPiece.row &&
+          piece.file === moveLocationPiece.col; 
+      });
+
+      if (index !== -1) {
+        this.pieces.splice(index, 1);
+      }
+    }
+
+    const movePiece = this.board[move.gamePiece.rank][move.gamePiece.file];
+    if (movePiece) {
+      const index = this.pieces.findIndex((piece) => {
+        return piece.piece.type === movePiece.type &&
+          piece.piece.color === movePiece.color &&
+          piece.rank === movePiece.row &&
+          piece.file === movePiece.col; 
+      });
+
+      if (index !== -1) {
+        this.pieces[index] = {
+          piece: { type: movePiece.type, color: movePiece.color, },
+          file: movePiece.col,
+          rank: movePiece.row,
+        };
+      }
+    }
+    
     this.state = {
       ...this.state,
+      pieces: this.pieces,
       moves: [...this.state.moves, move],
     };
     this._checkForGameEnding();
   }
 
   /**
-   * TODO: Documentation
+   * General move validation for a ChessMove. These checks apply
+   * universally to every move that is made, regardless of piece type.
+   * 
    * Things that are checked:
    * - Turn order
    * - Game progress
    * - Cannot take your own pieces
-   *
-   * @param move
    */
-  private _validateMove(move: ChessMove) {
+  private _genericValidateMove(move: ChessMove) {
     // A move is only valid if it is the player's turn
-    if (move.gamePiece?.color === 'W' && this.state.moves.length % 2 === 1) {
+    if (move.gamePiece.piece.color === 'W' && 
+      this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece?.color === 'B' && this.state.moves.length % 2 === 0) {
+    } else if (move.gamePiece.piece.color === 'W' && 
+      this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
 
@@ -104,12 +136,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     if (this.state.status !== 'IN_PROGRESS') {
       throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
     }
+    const ourColor = move.gamePiece.piece.color;
 
-    const ourColor = move.gamePiece?.color;
-    const ourBoard = this._board;
-
-    // First Check if our dest space is
-    if (ourBoard[move.newRow][move.newCol]?.color === ourColor) {
+    // First Check if our dest space is clear, or not occupied by a friendly piece
+    if (this.board[move.toRow][move.toCol]?.color === ourColor) {
       throw new InvalidParametersError(
         'INVALID MOVE: CANNOT TAKE YOUR OWN PIECE (ChessGame.ts - _validateMove)',
       );
@@ -121,14 +151,22 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * note: we should change the naming convention here, it might get confusing.
    */
   public applyMove(move: GameMove<ChessMove>): void {
-    this._validateMove(move.move);
-    move.move.gamePiece?.validate_move(
-      move.move.newRow,
-      move.move.newCol,
-      this._board,
+    const movePiece = this.board[move.move.gamePiece.rank][move.move.gamePiece.rank];
+
+    if (!movePiece) {
+      throw new InvalidParametersError('start location contains no piece to move!');
+    }
+
+    this._genericValidateMove(move.move);
+
+    movePiece.validate_move(
+      move.move.toRow,
+      move.move.toCol,
+      this.board,
       this.state.moves,
     );
     this._applyMove(move.move);
+    // add in logic for moving the physical piece in the board.
   }
 
   /**
@@ -184,6 +222,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     if (this.state.black === undefined) {
       this.state = {
         moves: [],
+        pieces: [],
         status: 'WAITING_TO_START',
       };
       return;
@@ -202,7 +241,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       };
     }
   }
-
   /**
    * This function will create a brand new chessboard, with all the pieces properly placed
    * to start a new game.
@@ -220,8 +258,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     
     // instantiate the pawns
     for (let col = 0; col < 8; col++) {
-      newBoard[1][col] = new Pawn('W', 1, col as ChessSquare);
-      newBoard[6][col] = new Pawn('B', 6, col as ChessSquare);
+      newBoard[1][col] = new Pawn('W', 1, col as ChessBoardPosition);
+      newBoard[6][col] = new Pawn('B', 6, col as ChessBoardPosition);
     }
 
     // Add in the Rooks:
@@ -253,4 +291,19 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     return newBoard as ChessCell[][];
   }
 
+  /**
+   * Converts a ChessBoard into ChessPiecePosition[], where the list holds all
+   * the remaining pieces on the board.
+   */
+    static boardToPieceList(board: ChessCell[][]): ChessPiecePosition[] {
+      return board.flat()
+        .filter(item => item !== undefined)
+        .map(chessPiece => {
+          return {
+            piece: { type: chessPiece?.type, color: chessPiece?.color, },
+            file: chessPiece?.col,
+            rank: chessPiece?.row,
+          } as ChessPiecePosition;
+        });
+    }
 }
