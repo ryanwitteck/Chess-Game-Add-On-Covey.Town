@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 // import TownController from '../../../../classes/TownController';
 import useTownController from '../../../../hooks/useTownController';
-import { IChessPiece } from '../../../../types/CoveyTownSocket';
+import { ChessCell, IChessPiece } from '../../../../types/CoveyTownSocket';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -69,7 +69,7 @@ const StyledChessBoard = chakra(Container, {
 export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.Element {
   const townController = useTownController();
 
-  const [board, setBoard] = useState<IChessPiece[][]>(gameAreaController.board);
+  const [board, setBoard] = useState<ChessCell[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
 
   const toast = useToast();
