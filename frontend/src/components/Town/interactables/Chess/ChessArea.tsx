@@ -155,7 +155,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           <AccordionPanel>
             <List aria-label='list of observers in the game'>
               {observers.map(player => {
-                return <ListItem key={player.id}>{player.userName}</ListItem>;
+                return <ListItem key={player.id}>{player.userName}</ListItem>
               })}
             </List>
           </AccordionPanel>
@@ -196,7 +196,7 @@ export default function ChessAreaWrapper(): JSX.Element {
         <ModalContent>
           <ModalHeader>{gameArea.name}</ModalHeader>
           <ModalCloseButton />
-          <ChessArea interactableID={gameArea.name} />;
+          <ChessArea interactableID={gameArea.name}/>
         </ModalContent>
       </Modal>
     );
