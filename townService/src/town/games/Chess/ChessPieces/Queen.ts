@@ -1,5 +1,13 @@
-import InvalidParametersError from '../../../../lib/InvalidParametersError';
-import { ChessColor, ChessMove, ChessBoardPosition, IChessPiece } from '../../../../types/CoveyTownSocket';
+import InvalidParametersError, {
+  INVALID_MOVE_MESSAGE,
+} from '../../../../lib/InvalidParametersError';
+import {
+  ChessCell,
+  ChessColor,
+  ChessMove,
+  ChessBoardPosition,
+  IChessPiece,
+} from '../../../../types/CoveyTownSocket';
 
 export default class Queen implements IChessPiece {
   color: ChessColor;
@@ -20,12 +28,15 @@ export default class Queen implements IChessPiece {
   validate_move(
     newRow: ChessBoardPosition,
     newCol: ChessBoardPosition,
-    board: IChessPiece[][],
+    board: ChessCell[][],
     moves: ReadonlyArray<ChessMove>,
   ) {
     const rowDiff = Math.abs(newRow - this.row);
     const colDiff = Math.abs(newCol - this.col);
 
+    if (rowDiff === 0 && colDiff === 0) {
+      throw new InvalidParametersError('Cannot move to same place');
+    }
     // Check if the move is vertical, horizontal, or diagonal
     if (
       (rowDiff === colDiff && rowDiff > 0) ||
@@ -36,18 +47,21 @@ export default class Queen implements IChessPiece {
       if (!this._isPathClear(newRow, newCol, board)) {
         throw new InvalidParametersError('Failed path check in Queen');
       }
-
       // Check if the destination square is empty or has an opponent's piece
       const destinationPiece = board[newRow][newCol];
-      if (!(destinationPiece === null || destinationPiece.color !== this.color)) {
+      if (!(destinationPiece === null || destinationPiece?.color !== this.color)) {
         throw new InvalidParametersError('Failed dest check in Queen');
       }
+    } else {
+      throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
     }
-
-    return false;
   }
 
-  private _isPathClear(newRow: ChessBoardPosition, newCol: ChessBoardPosition, board: IChessPiece[][]) {
+  private _isPathClear(
+    newRow: ChessBoardPosition,
+    newCol: ChessBoardPosition,
+    board: ChessCell[][],
+  ) {
     // eslint-disable-next-line no-nested-ternary
     const rowIncrement = newRow > this.row ? 1 : newRow < this.row ? -1 : 0;
     // eslint-disable-next-line no-nested-ternary

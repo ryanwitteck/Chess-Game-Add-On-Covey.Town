@@ -51,9 +51,29 @@ export default class Rook implements IChessPiece {
     }
   }
 
-  private _isPathClear(newRow: ChessBoardPosition, newCol: ChessBoardPosition, board: ChessCell[][]) {
-    const rowIncrement = newRow > this.row ? 1 : newRow < this.row ? -1 : 0;
-    const colIncrement = newCol > this.col ? 1 : newCol < this.col ? -1 : 0;
+  private _isPathClear(
+    newRow: ChessBoardPosition,
+    newCol: ChessBoardPosition,
+    board: ChessCell[][],
+  ) {
+    let rowIncrement;
+    let colIncrement;
+
+    if (newRow > this.row) {
+      rowIncrement = 1;
+    } else if (newRow < this.row) {
+      rowIncrement = -1;
+    } else {
+      rowIncrement = 0;
+    }
+
+    if (newCol > this.col) {
+      colIncrement = 1;
+    } else if (newCol < this.col) {
+      colIncrement = -1;
+    } else {
+      colIncrement = 0;
+    }
 
     let currentRow = this.row + rowIncrement;
     let currentCol = this.col + colIncrement;
