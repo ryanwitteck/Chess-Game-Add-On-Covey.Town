@@ -246,7 +246,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    */
   static createNewBoard(): ChessCell[][] {
     // fill the board with undefined cells
-    const newBoard = Array.from({ length: 7 }).map(() => Array.from({ length: 7 }).fill(undefined));
+    const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
 
     // instantiate the pawns
     for (let col = 0; col < 8; col++) {
