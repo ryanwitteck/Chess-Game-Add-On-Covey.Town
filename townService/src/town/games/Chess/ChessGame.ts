@@ -12,7 +12,7 @@ import {
   ChessMove,
   ChessCell,
   ChessBoardPosition,
-  ChessPiecePosition
+  ChessPiecePosition,
 } from '../../../types/CoveyTownSocket';
 
 import Game from '../Game';
@@ -29,6 +29,7 @@ import Knight from './ChessPieces/Knight';
  */
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
   board: ChessCell[][];
+
   pieces: ChessPiecePosition[];
 
   public constructor() {
@@ -75,13 +76,13 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     const moveLocationPiece = this.board[move.toRow][move.toCol];
     // if there is a piece at the resulting space, remove it
     if (moveLocationPiece) {
-      const index = this.pieces.findIndex((piece) => {
-        return piece.piece.type === moveLocationPiece.type &&
+      const index = this.pieces.findIndex(
+        piece =>
+          piece.piece.type === moveLocationPiece.type &&
           piece.piece.color === moveLocationPiece.color &&
           piece.rank === moveLocationPiece.row &&
-          piece.file === moveLocationPiece.col; 
-      });
-
+          piece.file === moveLocationPiece.col,
+      );
       if (index !== -1) {
         this.pieces.splice(index, 1);
       }
@@ -89,22 +90,23 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
     const movePiece = this.board[move.gamePiece.rank][move.gamePiece.file];
     if (movePiece) {
-      const index = this.pieces.findIndex((piece) => {
-        return piece.piece.type === movePiece.type &&
+      const index = this.pieces.findIndex(
+        piece =>
+          piece.piece.type === movePiece.type &&
           piece.piece.color === movePiece.color &&
           piece.rank === movePiece.row &&
-          piece.file === movePiece.col; 
-      });
+          piece.file === movePiece.col,
+      );
 
       if (index !== -1) {
         this.pieces[index] = {
-          piece: { type: movePiece.type, color: movePiece.color, },
+          piece: { type: movePiece.type, color: movePiece.color },
           file: movePiece.col,
           rank: movePiece.row,
         };
       }
     }
-    
+
     this.state = {
       ...this.state,
       pieces: this.pieces,
@@ -116,7 +118,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   /**
    * General move validation for a ChessMove. These checks apply
    * universally to every move that is made, regardless of piece type.
-   * 
    * Things that are checked:
    * - Turn order
    * - Game progress
@@ -124,11 +125,9 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    */
   private _genericValidateMove(move: ChessMove) {
     // A move is only valid if it is the player's turn
-    if (move.gamePiece.piece.color === 'W' && 
-      this.state.moves.length % 2 === 1) {
+    if (move.gamePiece.piece.color === 'W' && this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece.piece.color === 'W' && 
-      this.state.moves.length % 2 === 0) {
+    } else if (move.gamePiece.piece.color === 'W' && this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
 
@@ -159,12 +158,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
     this._genericValidateMove(move.move);
 
-    movePiece.validate_move(
-      move.move.toRow,
-      move.move.toCol,
-      this.board,
-      this.state.moves,
-    );
+    movePiece.validate_move(move.move.toRow, move.move.toCol, this.board, this.state.moves);
     this._applyMove(move.move);
     // add in logic for moving the physical piece in the board.
   }
@@ -241,21 +235,19 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       };
     }
   }
+
   /**
    * This function will create a brand new chessboard, with all the pieces properly placed
    * to start a new game.
-   * 
    * A quirk behind this implementation is that we will consider row 0 column 0 to be the
    * BOTTOM LEFT CORNER of the board, or the A1 square on a real chessboard.
-   * 
    * We are also assuming the board is instantiated as [row][col]
-   * 
-   * @returns 
+   * @returns
    */
   static createNewBoard(): ChessCell[][] {
     // fill the board with undefined cells
-    const newBoard = Array.from({ length: 7 }).map(() => Array.from({ length: 7 }).fill(undefined));
-    
+    const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
+
     // instantiate the pawns
     for (let col = 0; col < 8; col++) {
       newBoard[1][col] = new Pawn('W', 1, col as ChessBoardPosition);
@@ -267,7 +259,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[0][7] = new Rook('W', 0, 7);
     newBoard[7][0] = new Rook('B', 7, 0);
     newBoard[7][7] = new Rook('B', 7, 7);
-    
+
     // Add in the Knights:
     newBoard[0][1] = new Knight('W', 0, 1);
     newBoard[0][6] = new Knight('W', 0, 6);
@@ -275,10 +267,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][6] = new Knight('B', 7, 6);
 
     // Add in the Bishops:
-    newBoard[0][0] = new Bishop('W', 0, 2);
-    newBoard[0][0] = new Bishop('W', 0, 5);
-    newBoard[0][0] = new Bishop('B', 7, 2);
-    newBoard[0][0] = new Bishop('B', 7, 5);
+    newBoard[0][2] = new Bishop('W', 0, 2);
+    newBoard[0][5] = new Bishop('W', 0, 5);
+    newBoard[7][2] = new Bishop('B', 7, 2);
+    newBoard[7][5] = new Bishop('B', 7, 5);
 
     // Add in Queens:
     newBoard[0][3] = new Queen('W', 0, 3);
@@ -295,15 +287,17 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * Converts a ChessBoard into ChessPiecePosition[], where the list holds all
    * the remaining pieces on the board.
    */
-    static boardToPieceList(board: ChessCell[][]): ChessPiecePosition[] {
-      return board.flat()
-        .filter(item => item !== undefined)
-        .map(chessPiece => {
-          return {
-            piece: { type: chessPiece?.type, color: chessPiece?.color, },
+  static boardToPieceList(board: ChessCell[][]): ChessPiecePosition[] {
+    return board
+      .flat()
+      .filter(item => item !== undefined)
+      .map(
+        chessPiece =>
+          ({
+            piece: { type: chessPiece?.type, color: chessPiece?.color },
             file: chessPiece?.col,
             rank: chessPiece?.row,
-          } as ChessPiecePosition;
-        });
-    }
+          } as ChessPiecePosition),
+      );
+  }
 }

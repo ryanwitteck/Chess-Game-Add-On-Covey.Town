@@ -189,7 +189,7 @@ export default function ChessAreaWrapper(): JSX.Element {
   }, [townController, gameArea]);
 
   if (gameArea && gameArea.getData('type') === 'Chess') {
-    console.log('IN CHESS AREA')
+    console.log('IN CHESS AREA');
     return (
       <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false} size={'4xl'}>
         <ModalOverlay />

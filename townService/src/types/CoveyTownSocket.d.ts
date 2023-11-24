@@ -26,7 +26,12 @@ export interface IChessPiece {
   col: ChessBoardPosition;
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
-  validate_move(newRow: ChessSquare, newCol: ChessSquare, board: ChessCell[][], moves: ReadonlyArray<ChessMove>);
+  validate_move(
+    newRow: ChessSquare,
+    newCol: ChessSquare,
+    board: ChessCell[][],
+    moves: ReadonlyArray<ChessMove>,
+  );
 }
 export type ChessCell = IChessPiece | undefined;
 
@@ -36,4 +41,3 @@ export type Pawn = IChessPiece;
 export type Queen = IChessPiece;
 export type King = IChessPiece;
 export type Knight = IChessPiece;
-
