@@ -22,7 +22,6 @@ type ChessEvents = GameEventTypes & {
  * This class is responsible for managing the state of the Chess game, and for sending commands to the server
  */
 export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
-
   protected _board: ChessBoardSquare[][] = [];
 
   /**
@@ -101,8 +100,8 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   }
 
   /**
- * Returns true if the current player is a player in this game
- */
+   * Returns true if the current player is a player in this game
+   */
   get isPlayer(): boolean {
     return this._model.game?.players.includes(this._townController.ourPlayer.id) || false;
   }
@@ -169,7 +168,6 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const isOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     if (wasOurTurn != isOurTurn) this.emit('turnChanged', isOurTurn);
   }
-
 
   /**
    * TODO: documentation
