@@ -8,8 +8,6 @@ export type ChessGameProps = {
   gameAreaController: ChessAreaController;
 };
 
-const CHESS_SQUARE_SIZE = 100;
-
 /**
  * A component that will render a single cell on a Chess board, styled.
  */
@@ -18,7 +16,7 @@ const StyledChessSquare = chakra(Button, {
   padding: '0px',
   flexBasis: '12.5%',
   alignItems: 'center',
-  fontSize: '80px',
+  fontSize: '150px',
   borderRadius: '0px',
   _disabled: {
     opacity: '100%',
@@ -63,25 +61,45 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
 
   function RenderWhitePlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
+    console.log(board);
+
 
     for (let i = 7; i >= 0; i--) {
       for (let j = 7; j >= 0; j--) {
         const isDarkSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
         const squareColor = isDarkSquare ? 'DimGrey' : 'WhiteSmoke';
 
-        renderBoard.push(
-          <StyledChessSquare
-            key={`${i}.${j}`}
-            padding={0}
-            borderRadius={0}
-            height={70}
-            width={70}
-            background={squareColor}
-          // Add other props or onClick handlers as needed
-          >
-            {'T'}
-          </StyledChessSquare>
-        );
+        console.log(board[i])
+
+        if (board[i][j]) {
+          renderBoard.push(
+            <StyledChessSquare
+              key={`${i}.${j}`}
+              padding={0}
+              borderRadius={0}
+              height={70}
+              width={70}
+              background={squareColor}
+              color={board[i][j]?.color === 'W' ? 'white' : 'black' ?? 'white'}
+              // Add onClick here
+            >
+              {board[i][j] ? board[i][j]?.type : '' ?? ''}
+            </StyledChessSquare>
+          );
+        } else {
+          renderBoard.push(
+            <StyledChessSquare
+              key={`${i}.${j}`}
+              padding={0}
+              borderRadius={0}
+              height={70}
+              width={70}
+              background={squareColor}
+              // Add onClick here
+            >
+              {''}
+            </StyledChessSquare>);
+        }
       }
     }
 
