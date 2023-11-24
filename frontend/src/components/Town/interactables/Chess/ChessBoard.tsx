@@ -1,6 +1,6 @@
-import { Button, chakra, Container, useToast } from '@chakra-ui/react';
+import { Button, chakra, Container, Grid, SimpleGrid, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { ChessBoardSquare } from '../../../../../../shared/types/CoveyTownSocket';
+import { ChessBoardSquare, ChessPiece } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
 
@@ -8,55 +8,34 @@ export type ChessGameProps = {
   gameAreaController: ChessAreaController;
 };
 
-/**
- * A component that will render a single cell on a Chess board, styled.
- * This component is made specifically to render the light squares.
- */ // ideally, whitesmoke colored
-const StyledChessSquareLight = chakra(Button, {
-  baseStyle: {
-    background: 'WhiteSmoke',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100px',
-    height: '100px',
-    borderRadius: '0px',
-    fontSize: '40px',
-    _disabled: {
-      opacity: '100%',
-    },
-  },
-});
+const CHESS_SQUARE_SIZE = 100;
 
 /**
  * A component that will render a single cell on a Chess board, styled.
- * This component is made specifically to render the dark squares.
- */ // ideally, dimgrey colored
-const StyledChessSquareDark = chakra(Button, {
-  baseStyle: {
-    background: 'DimGrey',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100px',
-    height: '100px',
-    borderRadius: '0px',
-    fontSize: '40px',
-    _disabled: {
-      opacity: '100%',
-    },
+ */
+const StyledChessSquare = chakra(Button, {
+  justifyContent: 'center',
+  padding: '0px',
+  flexBasis: '12.5%',
+  alignItems: 'center',
+  fontSize: '80px',
+  borderRadius: '0px',
+  _disabled: {
+    opacity: '100%',
   },
 });
 
 /**
  * A component that will render the TicTacToe board, styled
  */
-const StyledChessBoard = chakra(Container, {
-  baseStyle: {
-    display: 'table',
-    maxWidth: '1000px',
-    textAlign: 'center',
-    padding: '30px'
-  },
+const StyledChessBoard = chakra(SimpleGrid, {
+  display: 'flex',
+  flexWrap: 'wrap',
+  textAlign: 'center',
+  maxWidth: '800px',
+  maxHeight: '800px',
 });
+
 
 /**
  * TODO: Documentation
@@ -66,12 +45,14 @@ const StyledChessBoard = chakra(Container, {
 export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.Element {
   const townController = useTownController();
 
+  const gameState = gameAreaController.status
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
 
   const toast = useToast();
 
   useEffect(() => {
+    console.log(board);
     gameAreaController.addListener('turnChanged', setIsOurTurn);
     gameAreaController.addListener('boardChanged', setBoard);
     return () => {
@@ -80,67 +61,93 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     };
   }, [gameAreaController]);
 
-  const tempArray = [
-    ["R", "N", "B", "K", "Q", "B", "N", "R"],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    ["R", "N", "B", "K", "Q", "B", "N", "R"],
-  ];
-
-  return (
-    <StyledChessBoard>
-      {tempArray.map((row, i) => (
-        <div key={i}>
-          {row.map((cell, j) => (
-            <StyledChessSquareDark key={j}>{cell}</StyledChessSquareDark>
-          ))}
-        </div>
-      ))}
-    </StyledChessBoard>
-  );
-}
-
-  /* Saved code!
   function RenderWhitePlayerPOV(): JSX.Element {
-    const renderBoard: JSX.Element[][] = [];
+    const renderBoard: JSX.Element[] = [];
 
     for (let i = 7; i >= 0; i--) {
       for (let j = 7; j >= 0; j--) {
-        if ((i % 2 === 0 && j % 2 === 0) || (i % 2 != 0 && j % 2 != 0)) {
-          renderBoard[i][j] = (
+        const isDarkSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
+        const squareColor = isDarkSquare ? 'DimGrey' : 'WhiteSmoke';
+
+        renderBoard.push(
+          <StyledChessSquare
+            key={`${i}.${j}`}
+            padding={0}
+            borderRadius={0}
+            height={70}
+            width={70}
+            background={squareColor}
+          // Add other props or onClick handlers as needed
+          >
+            {'T'}
+          </StyledChessSquare>
+        );
+      }
+    }
+
+    return <StyledChessBoard
+      columns={[8, null, 8]}
+      spacing={0}
+      spacingX='0px'
+      spacingY='0px'
+    >
+      {renderBoard}
+    </StyledChessBoard>;
+  }
+  return (RenderWhitePlayerPOV());
+}
+
+/* Saved code!
             <StyledChessSquareDark
               key={`${i}.${j}`}
               // on-click: move logic
               disabled={!isOurTurn}
-              aria-label={`Cell ${i},${j}`}>
-              { (! board[i][j]) ? '' : board[i][j]?.type }
+              aria-label={`Cell ${i},${j}`}
+              color={board[i][j]?.color === 'W' ? 'white' : 'black' ?? undefined}
+            >
+              {(board[i][j]) ? board[i][j]?.type : ''}
             </StyledChessSquareDark>
-          );
-        } else {
-          renderBoard[i][j] = (
-            <StyledChessSquareLight
+
+
+
+
+
+function RenderWhitePlayerPOV(): JSX.Element {
+  const renderBoard: JSX.Element[][] = [];
+
+  for (let i = 7; i >= 0; i--) {
+    for (let j = 7; j >= 0; j--) {
+      if ((i % 2 === 0 && j % 2 === 0) || (i % 2 != 0 && j % 2 != 0)) {
+        renderBoard[i][j] = (
+          <StyledChessSquareDark
             key={`${i}.${j}`}
             // on-click: move logic
             disabled={!isOurTurn}
             aria-label={`Cell ${i},${j}`}>
             { (! board[i][j]) ? '' : board[i][j]?.type }
-            </StyledChessSquareLight>
-          );
-        }
+          </StyledChessSquareDark>
+        );
+      } else {
+        renderBoard[i][j] = (
+          <StyledChessSquareLight
+          key={`${i}.${j}`}
+          // on-click: move logic
+          disabled={!isOurTurn}
+          aria-label={`Cell ${i},${j}`}>
+          { (! board[i][j]) ? '' : board[i][j]?.type }
+          </StyledChessSquareLight>
+        );
       }
     }
-    return <StyledChessBoard aria-label='Chessboard'>{renderBoard}</StyledChessBoard>;
   }
+  return <StyledChessBoard aria-label='Chessboard'>{renderBoard}</StyledChessBoard>;
+}
 
-  // we need to add a check to determine how to render the board, depending on the player color.
-  return (
-    <RenderWhitePlayerPOV></RenderWhitePlayerPOV>
-  );
-  */
+// we need to add a check to determine how to render the board, depending on the player color.
+return (
+  <RenderWhitePlayerPOV></RenderWhitePlayerPOV>
+);
+*/
 
 // Old Code
 // renders the board from the Black player's POV.

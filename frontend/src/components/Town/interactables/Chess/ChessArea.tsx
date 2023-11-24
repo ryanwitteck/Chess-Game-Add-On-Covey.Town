@@ -128,7 +128,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   }
 
   return (
-    <Container maxW={'4xl'}>
+    <Container maxW={'592px'} alignContent='center'>
       <Accordion allowToggle>
         <AccordionItem>
           <Heading as='h3'>
@@ -166,7 +166,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
         <ListItem>White: {white?.userName || '(No player yet!)'}</ListItem>
         <ListItem>Black: {black?.userName || '(No player yet!)'}</ListItem>
       </List>
-      <ChessBoard gameAreaController={gameAreaController} />
+      <ChessBoard gameAreaController={gameAreaController}/>
     </Container>
   );
 }
