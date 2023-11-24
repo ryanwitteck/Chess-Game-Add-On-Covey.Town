@@ -28,7 +28,7 @@ export default class King implements IChessPiece {
     this.col = col;
     this.type = 'K';
     this.canCastleShort = true;
-    this.canCastleLong = false;
+    this.canCastleLong = true;
   }
 
   validate_move(
@@ -60,19 +60,23 @@ export default class King implements IChessPiece {
      */
 
     // First, we check for castling moves
-    if (Math.abs(newCol - this.col) === 2) {
+    if (Math.abs(newCol - this.col) === 2 && this.row === newRow) {
       if (newCol > this.col) {
         // trying to short castle
-        this._shortCastleCheck(moves);
+        this._shortCastleCheck(board, moves);
         return; // if no error was thrown, then we can make the move!
-      }      
+      }
       // trying to long castle
-      this._longCastleCheck(moves);
+      this._longCastleCheck(board, moves);
       return; // if no error was thrown, then we can make the move!
     }
 
     // If we aren't castling, check that the move is to an adjacent square
-    if (Math.abs(newCol - this.col) > 1 || Math.abs(newRow - this.row) > 1) {
+    if (
+      Math.abs(newCol - this.col) > 1 ||
+      Math.abs(newRow - this.row) > 1 ||
+      board[newRow][newCol]?.color === this.color
+    ) {
       throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
     }
 
@@ -87,7 +91,7 @@ export default class King implements IChessPiece {
    *
    * @param moves
    */
-  private _shortCastleCheck(moves: ReadonlyArray<ChessMove>) {
+  private _shortCastleCheck(board: ChessCell[][], moves: ReadonlyArray<ChessMove>) {
     // first, we check if we can even castle to begin with!
     if (!this.canCastleShort) throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
 
@@ -99,6 +103,10 @@ export default class King implements IChessPiece {
     // if you are the white king: the rook on (7,0) <- using (x,y)
     // if you are the black king: the rook on (7,7) <- using (x,y)
     if (this.color === 'B') {
+      // path has to be clear
+      if (board[7][5] !== undefined && board[7][6] !== undefined) {
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+      }
       moves.forEach(move => {
         const piece = move.gamePiece;
         if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
@@ -111,6 +119,10 @@ export default class King implements IChessPiece {
         }
       });
     } else {
+      // path has to be clear
+      if (board[0][5] !== undefined && board[0][6] !== undefined) {
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+      }
       moves.forEach(move => {
         const piece = move.gamePiece;
         if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
@@ -131,7 +143,7 @@ export default class King implements IChessPiece {
    *
    * @param moves
    */
-  private _longCastleCheck(moves: ReadonlyArray<ChessMove>) {
+  private _longCastleCheck(board: ChessCell[][], moves: ReadonlyArray<ChessMove>) {
     // first, we check if we can even castle to begin with!
     if (!this.canCastleLong) throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
 
@@ -143,18 +155,26 @@ export default class King implements IChessPiece {
     // if you are the white king: the rook on (0,0) <- using (x,y)
     // if you are the black king: the rook on (7,0) <- using (x,y)
     if (this.color === 'B') {
+      // path has to be clear
+      if (board[7][3] !== undefined && board[7][2] !== undefined && board[7][1] !== undefined) {
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+      }
       moves.forEach(move => {
         const piece = move.gamePiece;
         if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
           return;
         }
 
-        if (piece.file === 7 && piece.rank === 0) {
+        if (piece.file === 0 && piece.rank === 7) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
       });
     } else {
+      // path has to be clear
+      if (board[0][3] !== undefined && board[0][2] !== undefined && board[0][1] !== undefined) {
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+      }
       moves.forEach(move => {
         const piece = move.gamePiece;
         if (piece.piece.type !== 'R' && piece.piece.color !== this.color) {
