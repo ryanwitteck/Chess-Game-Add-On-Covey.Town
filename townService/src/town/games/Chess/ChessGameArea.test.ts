@@ -21,6 +21,7 @@ import Game from '../Game';
 class TestingGame extends Game<ChessGameState, ChessMove> {
   public constructor() {
     super({
+      pieces: [],
       moves: [],
       status: 'WAITING_TO_START',
     });

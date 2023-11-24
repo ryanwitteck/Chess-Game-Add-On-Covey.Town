@@ -1,4 +1,5 @@
-import { Button, chakra, Container, useToast } from '@chakra-ui/react';
+//import { Button, chakra, Container, useToast } from '@chakra-ui/react';
+import { Button, chakra, Container } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ChessBoardSquare } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
@@ -12,20 +13,20 @@ export type ChessGameProps = {
  * A component that will render a single cell on a Chess board, styled.
  * This component is made specifically to render the light squares.
  */ // ideally, whitesmoke colored
-const StyledChessSquareLight = chakra(Button, {
-  baseStyle: {
-    background: 'WhiteSmoke',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100px',
-    height: '100px',
-    borderRadius: '0px',
-    fontSize: '40px',
-    _disabled: {
-      opacity: '100%',
-    },
-  },
-});
+// const StyledChessSquareLight = chakra(Button, {
+//   baseStyle: {
+//     background: 'WhiteSmoke',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     width: '100px',
+//     height: '100px',
+//     borderRadius: '0px',
+//     fontSize: '40px',
+//     _disabled: {
+//       opacity: '100%',
+//     },
+//   },
+// });
 
 /**
  * A component that will render a single cell on a Chess board, styled.
@@ -54,7 +55,7 @@ const StyledChessBoard = chakra(Container, {
     display: 'table',
     maxWidth: '1000px',
     textAlign: 'center',
-    padding: '30px'
+    padding: '30px',
   },
 });
 
@@ -69,7 +70,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
 
-  const toast = useToast();
+  // const toast = useToast();
 
   useEffect(() => {
     gameAreaController.addListener('turnChanged', setIsOurTurn);
@@ -78,17 +79,17 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
       gameAreaController.removeListener('boardChanged', setBoard);
       gameAreaController.removeListener('turnChanged', setIsOurTurn);
     };
-  }, [gameAreaController]);
+  }, [gameAreaController, townController, board, isOurTurn]);
 
   const tempArray = [
-    ["R", "N", "B", "K", "Q", "B", "N", "R"],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " ", " "],
-    ["P", "P", "P", "P", "P", "P", "P", "P"],
-    ["R", "N", "B", "K", "Q", "B", "N", "R"],
+    ['R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'],
+    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],
+    ['R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'],
   ];
 
   return (
