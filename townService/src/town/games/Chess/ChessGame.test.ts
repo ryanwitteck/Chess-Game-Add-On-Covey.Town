@@ -1,12 +1,22 @@
 import { createPlayerForTesting } from '../../../TestUtils';
-import {
+import InvalidParametersError, {
   GAME_FULL_MESSAGE,
+  GAME_NOT_IN_PROGRESS_MESSAGE,
+  MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../../lib/InvalidParametersError';
-import ChessGame from './ChessGame';
 import Player from '../../../lib/Player';
-import { ChessBoardSquare, ChessPiecePosition } from '../../../types/CoveyTownSocket';
+import { ChessMove } from '../../../types/CoveyTownSocket';
+import ChessGame from './ChessGame';
+import Game from '../Game';
+import Pawn from './ChessPieces/Pawn';
+import King from './ChessPieces/King';
+import Queen from './ChessPieces/Queen';
+import Rook from './ChessPieces/Rook';
+import Bishop from './ChessPieces/Bishop';
+import Knight from './ChessPieces/Knight';
+import { length } from 'ramda';
 
 describe('ChessGame', () => {
   let game: ChessGame;
@@ -120,97 +130,229 @@ describe('ChessGame', () => {
       });
     });
   });
-
-  // these tests are broken! 
-  describe('ChessGame applyMove', () => {
-    let player1: Player;
-    let player2: Player;
-
-    beforeEach(() => {
-      player1 = createPlayerForTesting();
-      player2 = createPlayerForTesting();
-      game.join(player1);
-      game.join(player2);
-    });
-
-    describe('the starting board positions + piece count', () => {
-      const newBoard: ChessBoardSquare[][] = ChessGame.createNewBoard();
-      // for some reason, the game object is undefined
-      // i have no idea what is happening lmao
-      console.log(`${game}`);
-
-      expect(game.state.white).toEqual(player1.id);
-      expect(game.state.black).toEqual(player2.id);
-      expect(game.board).toEqual(newBoard);
-      expect(game.state.pieces).toHaveLength(32);
-
-      it('has correct starting piece locations', () => {
-        // checks for a rook
-        expect(game.board[0][0]?.type).toEqual('R');
-        expect(game.board[0][0]?.color).toEqual('W');
-        expect(game.board[7][7]?.type).toEqual('R');
-        expect(game.board[7][7]?.color).toEqual('B');
-
-        // checks for a pawn
-        expect(game.board[1][4]?.type).toEqual('P');
-        expect(game.board[1][4]?.color).toEqual('W');
-        expect(game.board[6][4]?.type).toEqual('P');
-        expect(game.board[6][4]?.color).toEqual('B');
-
-        // checks for the kings
-        expect(game.board[0][4]?.type).toEqual('K');
-        expect(game.board[0][4]?.color).toEqual('W');
-        expect(game.board[7][4]?.type).toEqual('K');
-        expect(game.board[7][4]?.color).toEqual('B');
-
-        // checks for the queens
-        expect(game.board[0][3]?.type).toEqual('Q');
-        expect(game.board[0][3]?.color).toEqual('W');
-        expect(game.board[7][3]?.type).toEqual('Q');
-        expect(game.board[7][3]?.color).toEqual('B');
+  describe('applyMove', () => {
+    let moves: ChessMove[] = [];
+    describe('when given an invalid move', () => {
+      it('should throw an error if the game is not in progress', () => {
+        const player1 = createPlayerForTesting();
+        game.join(player1);
+        const testPiece = new King('W', 0, 0);
+        const move: ChessMove = {
+          gamePiece: {
+            piece: testPiece,
+            row: 0,
+            col: 0,
+          },
+          toRow: 0,
+          toCol: 1,
+        };
+        expect(() =>
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move,
+          }),
+        ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
       });
-    });
-
-    // TODO: add tests for mismatched playerID & gameID
-
-    describe('when a legal moves are made:', () => {
-      test('player one makes 1 legal move', () => {
-        const gamePieceToMove = {
-          piece: { type: 'P', color: 'W' },
-          row: 1,
-          col: 2,
-        } as ChessPiecePosition;
-
-        const gamePieceToMoveIndex = game.state.pieces.findIndex(
-          piece =>
-            piece.piece.type === gamePieceToMove.piece.type &&
-            piece.piece.color === gamePieceToMove.piece.color &&
-            piece.row === gamePieceToMove.row &&
-            piece.col === gamePieceToMove.col,
-        );``
-        game.applyMove({
-          playerID: player1.id,
-          gameID: game.id,
-          move: {
-            gamePiece: gamePieceToMove,
+      describe('when the game is in progress', () => {
+        let player1: Player;
+        let player2: Player;
+        beforeEach(() => {
+          player1 = createPlayerForTesting();
+          player2 = createPlayerForTesting();
+          game.join(player1);
+          game.join(player2);
+          expect(game.state.status).toEqual('IN_PROGRESS');
+        });
+        it('should rely on the player ID to determine whose turn it is', () => {
+          const testPiece = new Pawn('W', 1, 1);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 1,
+              col: 1,
+            },
+            toRow: 2,
+            toCol: 1,
+          };
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player2.id,
+              move,
+            }),
+          ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player1.id,
+              move,
+            }),
+          ).not.toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
+        });
+        it('should throw an error if the move is out of turn for the player ID', () => {
+          const testPiece = new Pawn('W', 1, 1);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 1,
+              col: 1,
+            },
+            toRow: 2,
+            toCol: 1,
+          };
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player2.id,
+              move,
+            }),
+          ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move,
+          });
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player1.id,
+              move,
+            }),
+          ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
+          const testPiece1 = new Pawn('W', 2, 1);
+          const move1: ChessMove = {
+            gamePiece: {
+              piece: testPiece1,
+              row: 2,
+              col: 1,
+            },
             toRow: 3,
-            toCol: 2,
-          }
+            toCol: 1,
+          };
+          game.applyMove({
+            gameID: game.id,
+            playerID: player2.id,
+            move: move1,
+          });
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player2.id,
+              move,
+            }),
+          ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
         });
-        expect(game.board[1][2]).toBeUndefined();
-        expect(game.board[3][2]?.type).toEqual('P');
-        expect(game.board[3][2]?.color).toEqual('W');
-        expect(game.state.pieces[gamePieceToMoveIndex]).toEqual({
-          piece: { type: 'P', color: 'W' },
-          row: 3,
-          col: 2,
-        } as ChessPiecePosition);
-      });
-      describe('when a piece takes another piece:', () => {
-        it('', () => {
-  
+        it('should throw an error if the move is on an occupied space of same color', () => {
+          const testPiece = new King('W', 0, 4);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 0,
+              col: 4,
+            },
+            toRow: 0,
+            toCol: 5,
+          };
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player2.id,
+              move,
+            }),
+          ).toThrowError(InvalidParametersError);
+        });
+        it('should throw an error if moving to same square', () => {
+          const testPiece = new King('W', 0, 4);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 0,
+              col: 4,
+            },
+            toRow: 0,
+            toCol: 4,
+          };
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player2.id,
+              move,
+            }),
+          ).toThrowError(InvalidParametersError);
+        });
+        it('should not change whose turn it is when an invalid move is made', () => {
+          const testPiece = new King('W', 0, 4);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 0,
+              col: 4,
+            },
+            toRow: 0,
+            toCol: 5,
+          };
+          expect(() => {
+            game.applyMove({
+              gameID: game.id,
+              playerID: player1.id,
+              move,
+            });
+          }).toThrowError(InvalidParametersError);
+          expect(game.state.moves).toHaveLength(0);
+          const testPiece1 = new Pawn('W', 1, 1);
+          const move1: ChessMove = {
+            gamePiece: {
+              piece: testPiece1,
+              row: 1,
+              col: 1,
+            },
+            toRow: 2,
+            toCol: 1,
+          };
+          game.applyMove({
+            gameID: game.id,
+            playerID: player1.id,
+            move: move1,
+          });
+          expect(game.state.moves).toHaveLength(1);
         });
       });
+    });
+    describe('when given a valid move', () => {
+      let player1: Player;
+      let player2: Player;
+      let numMoves = 0;
+      beforeEach(() => {
+        player1 = createPlayerForTesting();
+        player2 = createPlayerForTesting();
+        numMoves = 0;
+        moves = [];
+        game.join(player1);
+        game.join(player2);
+        expect(game.state.status).toEqual('IN_PROGRESS');
+      });
+      it('Valid move should update board', () => {
+        const testPiece = new Pawn('W', 1, 4);
+        const move: ChessMove = {
+          gamePiece: {
+            piece: testPiece,
+            row: 1,
+            col: 4,
+          },
+          toRow: 2,
+          toCol: 4,
+        };
+        expect(game.board[1][4]?.type).toEqual('P');
+        expect(game.board[2][4]).toBeUndefined()
+        expect(game.state.moves.length).toEqual(0);
+        game.applyMove({gameID: game.id, playerID: player1.id, move});
+        expect(game.state.moves.length).toEqual(1);
+        expect(game.board[1][4]).toBeUndefined()
+        expect(game.board[2][4]?.type).toEqual('P');
+      });
+      
+      
     });
   });
 });

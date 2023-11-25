@@ -127,9 +127,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    */
   private _genericValidateMove(move: ChessMove) {
     // A move is only valid if it is the player's turn
+    // A move is only valid if it is the player's turn
     if (move.gamePiece.piece.color === 'W' && this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
-    } else if (move.gamePiece.piece.color === 'W' && this.state.moves.length % 2 === 0) {
+    } else if (move.gamePiece.piece.color === 'B' && this.state.moves.length % 2 === 0) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
     }
 
@@ -158,11 +159,27 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     if (!movePiece) {
       throw new InvalidParametersError('start location contains no piece to move!');
     }
-
-    this._genericValidateMove(move.move);
-
-    movePiece.validate_move(move.move.toRow, move.move.toCol, this.board, this.state.moves);
-    this._applyMove(move.move);
+    let color: 'W' | 'B';
+    if (move.playerID === this.state.black) {
+      color = 'B';
+    } else {
+      color = 'W';
+    }
+    const piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
+    const cleanMove: ChessMove = {
+      gamePiece: {
+        piece,
+        row: move.move.gamePiece.row,
+        col: move.move.gamePiece.col,
+      },
+      toRow: move.move.toRow,
+      toCol: move.move.toCol,
+    };
+    this._genericValidateMove(cleanMove);
+    piece.validate_move(cleanMove.toRow, cleanMove.toCol, this.board, this.state.moves);
+    this._applyMove(cleanMove);
+    
+    // add in logic for moving the physical piece in the board.
   }
 
   /**
