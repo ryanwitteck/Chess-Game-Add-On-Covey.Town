@@ -113,7 +113,7 @@ export default class King implements IChessPiece {
           return;
         }
 
-        if (piece.file === 7 && piece.rank === 7) {
+        if (piece.col === 7 && piece.row === 7) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -129,7 +129,7 @@ export default class King implements IChessPiece {
           return;
         }
 
-        if (piece.file === 7 && piece.rank === 0) {
+        if (piece.col === 7 && piece.row === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -165,7 +165,7 @@ export default class King implements IChessPiece {
           return;
         }
 
-        if (piece.file === 0 && piece.rank === 7) {
+        if (piece.row === 0 && piece.col === 7) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }
@@ -181,7 +181,7 @@ export default class King implements IChessPiece {
           return;
         }
 
-        if (piece.file === 0 && piece.rank === 0) {
+        if (piece.row === 0 && piece.col === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }

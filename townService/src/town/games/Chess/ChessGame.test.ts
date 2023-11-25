@@ -25,7 +25,7 @@ describe('ChessGame', () => {
     game = new ChessGame();
   });
 
-  describe('[T1.1] _join', () => {
+  describe('ChessGame _join', () => {
     it('should throw an error if the player is already in the game', () => {
       const player = createPlayerForTesting();
       game.join(player);
@@ -40,7 +40,6 @@ describe('ChessGame', () => {
       const player3 = createPlayerForTesting();
       game.join(player1);
       game.join(player2);
-
       expect(() => game.join(player3)).toThrowError(GAME_FULL_MESSAGE);
     });
     describe('When the player can be added', () => {
@@ -72,7 +71,7 @@ describe('ChessGame', () => {
       });
     });
   });
-  describe('[T1.2] _leave', () => {
+  describe('ChessGame _leave', () => {
     it('should throw an error if the player is not in the game', () => {
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
       const player = createPlayerForTesting();
@@ -141,8 +140,8 @@ describe('ChessGame', () => {
         const move: ChessMove = {
           gamePiece: {
             piece: testPiece,
-            rank: 0,
-            file: 0,
+            row: 0,
+            col: 0,
           },
           toRow: 0,
           toCol: 1,
@@ -170,8 +169,8 @@ describe('ChessGame', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 1,
-              file: 1,
+              row: 1,
+              col: 1,
             },
             toRow: 2,
             toCol: 1,
@@ -196,8 +195,8 @@ describe('ChessGame', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 1,
-              file: 1,
+              row: 1,
+              col: 1,
             },
             toRow: 2,
             toCol: 1,
@@ -225,8 +224,8 @@ describe('ChessGame', () => {
           const move1: ChessMove = {
             gamePiece: {
               piece: testPiece1,
-              rank: 2,
-              file: 1,
+              row: 2,
+              col: 1,
             },
             toRow: 3,
             toCol: 1,
@@ -249,8 +248,8 @@ describe('ChessGame', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 4,
+              row: 0,
+              col: 4,
             },
             toRow: 0,
             toCol: 5,
@@ -268,8 +267,8 @@ describe('ChessGame', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 4,
+              row: 0,
+              col: 4,
             },
             toRow: 0,
             toCol: 4,
@@ -287,8 +286,8 @@ describe('ChessGame', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 4,
+              row: 0,
+              col: 4,
             },
             toRow: 0,
             toCol: 5,
@@ -305,8 +304,8 @@ describe('ChessGame', () => {
           const move1: ChessMove = {
             gamePiece: {
               piece: testPiece1,
-              rank: 1,
-              file: 1,
+              row: 1,
+              col: 1,
             },
             toRow: 2,
             toCol: 1,
@@ -338,8 +337,8 @@ describe('ChessGame', () => {
         const move: ChessMove = {
           gamePiece: {
             piece: testPiece,
-            rank: 1,
-            file: 4,
+            row: 1,
+            col: 4,
           },
           toRow: 2,
           toCol: 4,

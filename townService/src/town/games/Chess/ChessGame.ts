@@ -28,9 +28,7 @@ import Knight from './ChessPieces/Knight';
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
-  board: ChessCell[][];
-
-  pieces: ChessPiecePosition[];
+  board: ChessCell[][] = ChessGame.createNewBoard();
 
   public constructor() {
     super({
@@ -38,8 +36,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       moves: [],
       status: 'WAITING_TO_START',
     });
-    this.board = ChessGame.createNewBoard();
-    this.pieces = ChessGame.boardToPieceList(this.board);
+    this.state.pieces = ChessGame.boardToPieceList(this.board);
   }
 
   private _checkForGameEnding() {
@@ -76,42 +73,47 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     const moveLocationPiece = this.board[move.toRow][move.toCol];
     // if there is a piece at the resulting space, remove it
     if (moveLocationPiece) {
-      const index = this.pieces.findIndex(
+      const index = this.state.pieces.findIndex(
         piece =>
           piece.piece.type === moveLocationPiece.type &&
           piece.piece.color === moveLocationPiece.color &&
-          piece.rank === moveLocationPiece.row &&
-          piece.file === moveLocationPiece.col,
+          piece.row === moveLocationPiece.row &&
+          piece.col === moveLocationPiece.col,
       );
       if (index !== -1) {
-        this.pieces.splice(index, 1);
+        this.state.pieces.splice(index, 1);
       }
     }
 
-    const movePiece = this.board[move.gamePiece.rank][move.gamePiece.file];
+    // find the piece we are trying to move
+    const movePiece = this.board[move.gamePiece.row][move.gamePiece.col];
     if (movePiece) {
-      const index = this.pieces.findIndex(
+      const index = this.state.pieces.findIndex(
         piece =>
           piece.piece.type === movePiece.type &&
           piece.piece.color === movePiece.color &&
-          piece.rank === movePiece.row &&
-          piece.file === movePiece.col,
+          piece.row === movePiece.row &&
+          piece.col === movePiece.col,``
       );
-
+      // when we find the piece we are trying to move, we change it in the list of pieces
       if (index !== -1) {
-        this.pieces[index] = {
+        this.state.pieces[index] = {
           piece: { type: movePiece.type, color: movePiece.color },
-          file: movePiece.col,
-          rank: movePiece.row,
+          col: movePiece.col,
+          row: movePiece.row,
         };
       }
     }
 
+    // update the state to match
     this.state = {
       ...this.state,
-      pieces: this.pieces,
       moves: [...this.state.moves, move],
     };
+
+    // check to see if the game is in an end state
+    console.log(`Pieces: ${this.state.pieces}`);
+    console.log(`Moves: ${this.state.moves}`)
     this._checkForGameEnding();
   }
 
@@ -151,7 +153,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * note: we should change the naming convention here, it might get confusing.
    */
   public applyMove(move: GameMove<ChessMove>): void {
-    const movePiece = this.board[move.move.gamePiece.rank][move.move.gamePiece.rank];
+    
+    const movePiece = this.board[move.move.gamePiece.row][move.move.gamePiece.row];
 
     if (!movePiece) {
       throw new InvalidParametersError('start location contains no piece to move!');
@@ -162,12 +165,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else {
       color = 'W';
     }
-    const piece = new Pawn(color, move.move.gamePiece.rank, move.move.gamePiece.file);
+    const piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     const cleanMove: ChessMove = {
       gamePiece: {
         piece,
-        rank: move.move.gamePiece.rank,
-        file: move.move.gamePiece.file,
+        row: move.move.gamePiece.row,
+        col: move.move.gamePiece.col,
       },
       toRow: move.move.toRow,
       toCol: move.move.toCol,
@@ -293,8 +296,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][3] = new Queen('B', 7, 3);
 
     // Add in Kings:
-    newBoard[0][3] = new King('W', 0, 4);
-    newBoard[7][3] = new King('B', 7, 4);
+    newBoard[0][4] = new King('W', 0, 4);
+    newBoard[7][4] = new King('B', 7, 4);
 
     return newBoard as ChessCell[][];
   }
@@ -311,8 +314,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         chessPiece =>
           ({
             piece: { type: chessPiece?.type, color: chessPiece?.color },
-            file: chessPiece?.col,
-            rank: chessPiece?.row,
+            col: chessPiece?.col,
+            row: chessPiece?.row,
           } as ChessPiecePosition),
       );
   }

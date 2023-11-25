@@ -67,8 +67,8 @@ export default class Pawn implements IChessPiece {
           if (
             i !== -1 &&
             moves[i].gamePiece.piece.type === 'P' &&
-            moves[i].gamePiece.rank === this.row + 2 &&
-            moves[i].gamePiece.file === newCol &&
+            moves[i].gamePiece.row === this.row + 2 &&
+            moves[i].gamePiece.col === newCol &&
             moves[i].toCol === newCol &&
             moves[i].toRow === this.row
           ) {
@@ -112,8 +112,8 @@ export default class Pawn implements IChessPiece {
           if (
             i !== -1 &&
             moves[i].gamePiece.piece.type === 'P' &&
-            moves[i].gamePiece.rank === this.row - 2 &&
-            moves[i].gamePiece.file === newCol &&
+            moves[i].gamePiece.row === this.row - 2 &&
+            moves[i].gamePiece.col === newCol &&
             moves[i].toCol === newCol &&
             moves[i].toRow === this.row
           ) {

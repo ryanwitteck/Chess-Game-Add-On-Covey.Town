@@ -154,8 +154,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('W', 0, 0),
-            rank: 0,
-            file: 0,
+            row: 0,
+            col: 0,
           },
           toRow: 0,
           toCol: 1,
@@ -163,8 +163,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('W', 0, 1),
-            rank: 0,
-            file: 1,
+            row: 0,
+            col: 1,
           },
           toRow: 0,
           toCol: 0,
@@ -180,8 +180,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('W', 0, 7),
-            rank: 0,
-            file: 7,
+            row: 0,
+            col: 7,
           },
           toRow: 0,
           toCol: 6,
@@ -189,8 +189,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('W', 0, 6),
-            rank: 0,
-            file: 6,
+            row: 0,
+            col: 6,
           },
           toRow: 0,
           toCol: 7,
@@ -206,8 +206,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('B', 7, 0),
-            rank: 7,
-            file: 0,
+            row: 7,
+            col: 0,
           },
           toRow: 7,
           toCol: 1,
@@ -215,8 +215,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('B', 7, 1),
-            rank: 7,
-            file: 1,
+            row: 7,
+            col: 1,
           },
           toRow: 7,
           toCol: 0,
@@ -232,8 +232,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('B', 7, 7),
-            rank: 7,
-            file: 7,
+            row: 7,
+            col: 7,
           },
           toRow: 7,
           toCol: 6,
@@ -241,8 +241,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Rook('B', 7, 6),
-            rank: 7,
-            file: 6,
+            row: 7,
+            col: 6,
           },
           toRow: 7,
           toCol: 7,
