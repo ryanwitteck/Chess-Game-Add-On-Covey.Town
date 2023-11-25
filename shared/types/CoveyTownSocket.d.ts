@@ -117,13 +117,11 @@ export type ChessBoardSquare = ChessPiece | undefined;
 /**
  * Represents where a ChessPiece is on the chessboard.
  * Note:
- * - file refers to the vertical lines (columns).
- * - rank refers to the horizontal lines (rows).
  */
 export interface ChessPiecePosition {
   piece: ChessPiece;
-  file: ChessBoardPosition;
-  rank: ChessBoardPosition;
+  row: ChessBoardPosition;
+  col: ChessBoardPosition;
 }
 
 /**
@@ -143,7 +141,7 @@ export interface ChessMove {
  * The first player to join the game is white, the second is black
  */
 export interface ChessGameState extends WinnableGameState {
-  pieces: ReadonlyArray<ChessPiecePosition>;
+  pieces: ChessPiecePosition[];
   moves: ReadonlyArray<ChessMove>;
   white?: PlayerID;
   black?: PlayerID;
@@ -252,7 +250,6 @@ export interface GameMoveCommand<MoveType> {
   move: MoveType;
 }
 
-// HZ_NOTE: this shouldn't be needed, since we can just specify MoveType
 export interface ChessMoveCommand {
   type: 'ChessMove';
   gameID: GameInstanceID;

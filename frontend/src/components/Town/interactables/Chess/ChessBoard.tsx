@@ -1,6 +1,7 @@
 import { Button, chakra, SimpleGrid, useToast } from '@chakra-ui/react';
+import { type } from 'os';
 import React, { useEffect, useState } from 'react';
-import { ChessBoardSquare } from '../../../../../../shared/types/CoveyTownSocket';
+import { ChessBoardPosition, ChessBoardSquare, ChessColor, ChessMove, ChessPiecePosition } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
 
@@ -44,10 +45,12 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   const townController = useTownController();
 
   const gameState = gameAreaController.status
+  const [primed, setPrimed] = useState(false);
+  const [primedPiece, setPrimedPiece] = useState<ChessPiecePosition | undefined>(undefined);
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
 
-  // const toast = useToast();
+  const toast = useToast();
 
   useEffect(() => {
     console.log(board);
@@ -57,31 +60,56 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
       gameAreaController.removeListener('boardChanged', setBoard);
       gameAreaController.removeListener('turnChanged', setIsOurTurn);
     };
-  }, [gameAreaController, townController, board, isOurTurn]);
+  }, [gameAreaController, townController, board, isOurTurn, primed, primedPiece]);
 
   function RenderWhitePlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
-    console.log(board);
-
 
     for (let i = 7; i >= 0; i--) {
       for (let j = 7; j >= 0; j--) {
         const isDarkSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
         const squareColor = isDarkSquare ? 'DimGrey' : 'WhiteSmoke';
 
-        console.log(board[i])
-
-        if (board[i][j]) {
+        if (board[i] && board[i][j]) {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
+              disabled={!isOurTurn}
               padding={0}
               borderRadius={0}
               height={70}
               width={70}
               background={squareColor}
               color={board[i][j]?.color === 'W' ? 'white' : 'black' ?? 'white'}
-              // Add onClick here
+              onClick={async () => {
+                if (board[i][j]?.color === gameAreaController.gameColor) {
+                  // if we click on our own piece, we will always be trying to prime it
+                  setPrimed(true);
+                  setPrimedPiece({
+                    piece: {
+                      type: board[i][j]?.type ?? 'P',
+                      color: board[i][j]?.color as ChessColor,
+                    },
+                    file: j as ChessBoardPosition,
+                    rank: i as ChessBoardPosition,
+                  });
+                } else if (primed) {
+                  // now, we know we are primed and we didn't click on our own piece.
+                  try {
+                    await gameAreaController.makeMove({
+                      gamePiece: primedPiece as ChessPiecePosition,
+                      toRow: i as ChessBoardPosition,
+                      toCol: j as ChessBoardPosition,
+                    } as ChessMove);
+                  } catch (e) {
+                    toast({
+                      title: 'Error making move',
+                      description: (e as Error).toString(),
+                      status: 'error',
+                    });
+                  }
+                }
+              }}
             >
               {board[i][j] ? board[i][j]?.type : '' ?? ''}
             </StyledChessSquare>
@@ -90,12 +118,29 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
+              disabled={!isOurTurn}
               padding={0}
               borderRadius={0}
               height={70}
               width={70}
               background={squareColor}
-              // Add onClick here
+              onClick={async () => {
+                if (primed && primedPiece) {
+                  try {
+                    gameAreaController.makeMove({
+                      gamePiece: primedPiece,
+                      toRow: i as ChessBoardPosition,
+                      toCol: j as ChessBoardPosition,
+                    } as ChessMove);
+                  } catch (e) {
+                    toast({
+                      title: 'Error making move',
+                      description: (e as Error).toString(),
+                      status: 'error',
+                    });
+                  }
+                }
+              }}
             >
               {''}
             </StyledChessSquare>);

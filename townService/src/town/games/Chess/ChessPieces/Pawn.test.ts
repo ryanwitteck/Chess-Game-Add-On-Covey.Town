@@ -134,7 +134,7 @@ describe('ChessGame', () => {
     it('white, cannot move backward', () => {
       expect(() => pawn3.validate_move(0, 0, board, [])).toThrowError(INVALID_MOVE_MESSAGE);
     });
-    it('white, cannot move twice if not on the first rank', () => {
+    it('white, cannot move twice if not on the first row', () => {
       expect(() => pawn5.validate_move(3, 7, board, [])).not.toThrowError(INVALID_MOVE_MESSAGE);
       expect(() => pawn5.validate_move(4, 7, board, [])).toThrowError(INVALID_MOVE_MESSAGE);
     });
@@ -255,7 +255,7 @@ describe('ChessGame', () => {
       expect(() => pawn4.validate_move(5, 5, board, [])).not.toThrowError();
       expect(() => pawn4.validate_move(4, 5, board, [])).toThrowError(INVALID_MOVE_MESSAGE);
     });
-    it('black, cannot move up twice not on 7th rank', () => {
+    it('black, cannot move up twice not on 7th row', () => {
       expect(() => pawn5.validate_move(4, 7, board, [])).not.toThrowError();
       expect(() => pawn5.validate_move(3, 7, board, [])).toThrowError(INVALID_MOVE_MESSAGE);
     });
@@ -286,8 +286,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('W', 6, 1),
-            rank: 6,
-            file: 1,
+            row: 6,
+            col: 1,
           },
           toRow: 4,
           toCol: 1,
@@ -356,8 +356,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('B', 6, 3),
-            rank: 6,
-            file: 3,
+            row: 6,
+            col: 3,
           },
           toRow: 4,
           toCol: 3,
@@ -426,8 +426,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('W', 1, 3),
-            rank: 1,
-            file: 3,
+            row: 1,
+            col: 3,
           },
           toRow: 3,
           toCol: 3,
@@ -496,8 +496,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('W', 1, 3),
-            rank: 1,
-            file: 3,
+            row: 1,
+            col: 3,
           },
           toRow: 3,
           toCol: 3,
@@ -566,8 +566,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('W', 1, 3),
-            rank: 1,
-            file: 3,
+            row: 1,
+            col: 3,
           },
           toRow: 3,
           toCol: 3,
@@ -575,8 +575,8 @@ describe('ChessGame', () => {
         {
           gamePiece: {
             piece: new Pawn('W', 1, 0),
-            rank: 1,
-            file: 0,
+            row: 1,
+            col: 0,
           },
           toRow: 1,
           toCol: 3,

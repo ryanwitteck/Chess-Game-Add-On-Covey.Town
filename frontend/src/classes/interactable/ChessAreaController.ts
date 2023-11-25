@@ -156,13 +156,16 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const wasOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     super._updateFrom(newModel);
     const newState = newModel.game;
+    console.log(`newState: ${newModel.game}`)
+    console.log(`move list: ${newState?.state.pieces}`);
     if (newState) {
-      const newBoard: ChessBoardSquare[][] = [];
+      const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
       newState.state.pieces.forEach(piece => {
-        newBoard[piece.file][piece.rank] = piece.piece;
+        console.log(`Filling up slot ${piece.row}.${piece.col} with ${piece.piece.type}`);
+        newBoard[piece.row][piece.col] = piece.piece;
       });
       if (!_.isEqual(newBoard, this._board)) {
-        this._board = newBoard;
+        this._board = newBoard as unknown as ChessBoardSquare[][];
         this.emit('boardChanged', this._board);
       }
     }

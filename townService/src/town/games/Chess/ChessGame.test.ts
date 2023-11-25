@@ -5,6 +5,8 @@ import {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../../lib/InvalidParametersError';
 import ChessGame from './ChessGame';
+import Player from '../../../lib/Player';
+import { ChessBoardSquare, ChessPiecePosition } from '../../../types/CoveyTownSocket';
 
 describe('ChessGame', () => {
   let game: ChessGame;
@@ -13,7 +15,7 @@ describe('ChessGame', () => {
     game = new ChessGame();
   });
 
-  describe('[T1.1] _join', () => {
+  describe('ChessGame _join', () => {
     it('should throw an error if the player is already in the game', () => {
       const player = createPlayerForTesting();
       game.join(player);
@@ -28,7 +30,6 @@ describe('ChessGame', () => {
       const player3 = createPlayerForTesting();
       game.join(player1);
       game.join(player2);
-
       expect(() => game.join(player3)).toThrowError(GAME_FULL_MESSAGE);
     });
     describe('When the player can be added', () => {
@@ -60,7 +61,7 @@ describe('ChessGame', () => {
       });
     });
   });
-  describe('[T1.2] _leave', () => {
+  describe('ChessGame _leave', () => {
     it('should throw an error if the player is not in the game', () => {
       expect(() => game.leave(createPlayerForTesting())).toThrowError(PLAYER_NOT_IN_GAME_MESSAGE);
       const player = createPlayerForTesting();
@@ -116,6 +117,99 @@ describe('ChessGame', () => {
         expect(game.state.black).toBeUndefined();
         expect(game.state.status).toEqual('WAITING_TO_START');
         expect(game.state.winner).toBeUndefined();
+      });
+    });
+  });
+
+  // these tests are broken! 
+  describe('ChessGame applyMove', () => {
+    let player1: Player;
+    let player2: Player;
+
+    beforeEach(() => {
+      player1 = createPlayerForTesting();
+      player2 = createPlayerForTesting();
+      game.join(player1);
+      game.join(player2);
+    });
+
+    describe('the starting board positions + piece count', () => {
+      const newBoard: ChessBoardSquare[][] = ChessGame.createNewBoard();
+      // for some reason, the game object is undefined
+      // i have no idea what is happening lmao
+      console.log(`${game}`);
+
+      expect(game.state.white).toEqual(player1.id);
+      expect(game.state.black).toEqual(player2.id);
+      expect(game.board).toEqual(newBoard);
+      expect(game.state.pieces).toHaveLength(32);
+
+      it('has correct starting piece locations', () => {
+        // checks for a rook
+        expect(game.board[0][0]?.type).toEqual('R');
+        expect(game.board[0][0]?.color).toEqual('W');
+        expect(game.board[7][7]?.type).toEqual('R');
+        expect(game.board[7][7]?.color).toEqual('B');
+
+        // checks for a pawn
+        expect(game.board[1][4]?.type).toEqual('P');
+        expect(game.board[1][4]?.color).toEqual('W');
+        expect(game.board[6][4]?.type).toEqual('P');
+        expect(game.board[6][4]?.color).toEqual('B');
+
+        // checks for the kings
+        expect(game.board[0][4]?.type).toEqual('K');
+        expect(game.board[0][4]?.color).toEqual('W');
+        expect(game.board[7][4]?.type).toEqual('K');
+        expect(game.board[7][4]?.color).toEqual('B');
+
+        // checks for the queens
+        expect(game.board[0][3]?.type).toEqual('Q');
+        expect(game.board[0][3]?.color).toEqual('W');
+        expect(game.board[7][3]?.type).toEqual('Q');
+        expect(game.board[7][3]?.color).toEqual('B');
+      });
+    });
+
+    // TODO: add tests for mismatched playerID & gameID
+
+    describe('when a legal moves are made:', () => {
+      test('player one makes 1 legal move', () => {
+        const gamePieceToMove = {
+          piece: { type: 'P', color: 'W' },
+          row: 1,
+          col: 2,
+        } as ChessPiecePosition;
+
+        const gamePieceToMoveIndex = game.state.pieces.findIndex(
+          piece =>
+            piece.piece.type === gamePieceToMove.piece.type &&
+            piece.piece.color === gamePieceToMove.piece.color &&
+            piece.row === gamePieceToMove.row &&
+            piece.col === gamePieceToMove.col,
+        );``
+        game.applyMove({
+          playerID: player1.id,
+          gameID: game.id,
+          move: {
+            gamePiece: gamePieceToMove,
+            toRow: 3,
+            toCol: 2,
+          }
+        });
+        expect(game.board[1][2]).toBeUndefined();
+        expect(game.board[3][2]?.type).toEqual('P');
+        expect(game.board[3][2]?.color).toEqual('W');
+        expect(game.state.pieces[gamePieceToMoveIndex]).toEqual({
+          piece: { type: 'P', color: 'W' },
+          row: 3,
+          col: 2,
+        } as ChessPiecePosition);
+      });
+      describe('when a piece takes another piece:', () => {
+        it('', () => {
+  
+        });
       });
     });
   });
