@@ -165,7 +165,7 @@ export default class King implements IChessPiece {
           return;
         }
 
-        if (piece.row === 0 && piece.col === 7) {
+        if (piece.row === 7 && piece.col === 0) {
           // if we find the move, that means the piece has made a valid move
           throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
         }

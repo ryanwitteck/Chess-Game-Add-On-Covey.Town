@@ -175,7 +175,7 @@ describe('ChessGame', () => {
       expect(() => king2.validate_move(0, 2, board, moves)).toThrowError();
       expect(() => king2.validate_move(0, 6, board, moves)).toThrowError();
     });
-    it('white, cannot castle long if rook (7,0) has moved', () => {
+    it('white, cannot castle long if rook (0,7) has moved', () => {
       moves = [
         {
           gamePiece: {

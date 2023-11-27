@@ -44,20 +44,47 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
+        // account for en passant
+        if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
+          if (move.gamePiece.piece.color === 'B') {
+            board[move.toRow+1][move.toCol] = undefined;
+          }
+          if (move.gamePiece.piece.color === 'W') {
+            board[move.toRow-1][move.toCol] = undefined;
+          }
+        }
         board[move.toRow][move.toCol] = new Pawn(
           move.gamePiece.piece.color,
           move.toRow,
           move.toCol,
         );
-        // [TODO] account for en passant
       }
       if (move.gamePiece.piece.type === 'K') {
+        // Black long castle
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 4 && move.toCol === 2 && move.toRow === 7) {
+          board[7][0] = undefined;
+          board[7][3] = new Rook('B',7,3);
+        }
+        // Black short castle
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 4 && move.toCol === 6 && move.toRow === 7) {
+          board[7][7] = undefined;
+          board[7][5] = new Rook('B',7,5);
+        }
+        // White long castle
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 4 && move.toCol === 2 && move.toRow === 0) {
+          board[0][0] = undefined;
+          board[0][3] = new Rook('W',0,3);
+        }
+        // Black short castle
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 4 && move.toCol === 6 && move.toRow === 0) {
+          board[0][7] = undefined;
+          board[0][5] = new Rook('W',0,5);
+        }
         board[move.toRow][move.toCol] = new King(
           move.gamePiece.piece.color,
           move.toRow,
           move.toCol,
         );
-        // [TODO] account for castle
       }
       if (move.gamePiece.piece.type === 'Q') {
         board[move.toRow][move.toCol] = new Queen(
@@ -186,7 +213,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else {
       color = 'W';
     }
-    let piece: IChessPiece;
+    let piece : IChessPiece;
     piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     if (move.move.gamePiece.piece.type === 'K') {
       piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);

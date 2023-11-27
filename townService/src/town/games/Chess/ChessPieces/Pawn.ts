@@ -45,6 +45,10 @@ export default class Pawn implements IChessPiece {
         }
         // otherwise we can online move upward once
         if (newRow === this.row + 1 && this.col === newCol && board[newRow][newCol] === undefined) {
+          // promotion
+          if (newRow === 7) {
+            this.type = "Q";
+          }
           return;
         }
         // diagonal capture
@@ -53,6 +57,10 @@ export default class Pawn implements IChessPiece {
           (newCol === this.col - 1 || newCol === this.col + 1) &&
           board[newRow][newCol]?.color === 'B'
         ) {
+          // promotion
+          if (newRow === 7) {
+            this.type = "Q";
+          }
           return;
         }
         //  en passaunt
@@ -90,6 +98,10 @@ export default class Pawn implements IChessPiece {
         }
         // otherwise we can online move upward once
         if (newRow === this.row - 1 && this.col === newCol && board[newRow][newCol] === undefined) {
+          // promotion
+          if (newRow === 0) {
+            this.type = "Q";
+          }
           return;
         }
         // diagonal capture
@@ -98,6 +110,10 @@ export default class Pawn implements IChessPiece {
           (newCol === this.col - 1 || newCol === this.col + 1) &&
           board[newRow][newCol]?.color === 'W'
         ) {
+          // promotion
+          if (newRow === 0) {
+            this.type = "Q";
+          }
           return;
         }
         //  en passaunt
@@ -120,7 +136,8 @@ export default class Pawn implements IChessPiece {
             return;
           }
         }
-        // promotion
+        
+        
       }
     }
     throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
