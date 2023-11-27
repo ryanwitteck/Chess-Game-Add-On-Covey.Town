@@ -1,10 +1,16 @@
 // import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
 import { chakra, SimpleGrid, Image, Button, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
-import { ChessBoardPosition, ChessBoardSquare, ChessColor, ChessMove, ChessPiecePosition } from '../../../../../../shared/types/CoveyTownSocket';
+import {
+  ChessBoardPosition,
+  ChessBoardSquare,
+  ChessColor,
+  ChessMove,
+  ChessPiecePosition,
+} from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
-import { pieceImages } from './pieceimages/index.js'
+import { pieceImages } from './pieceimages/index.js';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -88,7 +94,7 @@ const StyledChessBoard = chakra(SimpleGrid, {
 export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.Element {
   const townController = useTownController();
 
-  const gameState = gameAreaController.status
+  const gameState = gameAreaController.status;
   const [primed, setPrimed] = useState(false);
   const [primedPiece, setPrimedPiece] = useState<ChessPiecePosition | undefined>(undefined);
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
@@ -118,7 +124,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
       } as ChessMove);
       setPrimed(false);
       setPrimedPiece(undefined);
-    }
+    };
 
     for (let i = 7; i >= 0; i--) {
       for (let j = 0; j <= 7; j++) {
@@ -164,8 +170,9 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                     });
                   }
                 }
-              }}
-            >{board[i][j] ? board[i][j]?.type : '' ?? ''}</StyledChessSquare>
+              }}>
+              {board[i][j] ? board[i][j]?.type : '' ?? ''}
+            </StyledChessSquare>,
           );
 
           // This is an empty square
@@ -189,20 +196,17 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                     });
                   }
                 }
-              }}
-            ></StyledChessSquare>);
+              }}></StyledChessSquare>,
+          );
         }
       }
     }
 
-    return <StyledChessBoard
-      columns={[8, null, 8]}
-      spacing={0}
-      spacingX='0px'
-      spacingY='0px'
-    >
-      {renderBoard}
-    </StyledChessBoard>;
+    return (
+      <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
+        {renderBoard}
+      </StyledChessBoard>
+    );
   }
-  return (RenderWhitePlayerPOV());
+  return RenderWhitePlayerPOV();
 }
