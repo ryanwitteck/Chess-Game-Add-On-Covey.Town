@@ -156,12 +156,11 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     const wasOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     super._updateFrom(newModel);
     const newState = newModel.game;
-    console.log(`newState: ${newModel.game}`)
-    console.log(`move list: ${newState?.state.pieces}`);
+
+    console.log(`piece list: ${newState?.state.pieces}`);
     if (newState) {
       const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
       newState.state.pieces.forEach(piece => {
-        console.log(`Filling up slot ${piece.row}.${piece.col} with ${piece.piece.type}`);
         newBoard[piece.row][piece.col] = piece.piece;
       });
       if (!_.isEqual(newBoard, this._board)) {
@@ -182,7 +181,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       throw new Error(NO_GAME_IN_PROGRESS_ERROR);
     }
     await this._townController.sendInteractableCommand(this.id, {
-      type: 'GameMove',
+      type: 'ChessMove',
       gameID: instanceID,
       move: move,
     });
