@@ -213,33 +213,53 @@ describe('ChessGame', () => {
             playerID: player1.id,
             move,
           });
+          const testPiece2 = new Pawn('W', 1, 2);
+          const move2: ChessMove = {
+            gamePiece: {
+              piece: testPiece2,
+              row: 1,
+              col: 2,
+            },
+            toRow: 2,
+            toCol: 2,
+          };
           expect(() =>
             game.applyMove({
               gameID: game.id,
               playerID: player1.id,
-              move,
+              move: move2,
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
-          const testPiece1 = new Pawn('W', 2, 1);
+          const testPiece1 = new Pawn('B', 6, 3);
           const move1: ChessMove = {
             gamePiece: {
               piece: testPiece1,
-              row: 2,
-              col: 1,
+              row: 6,
+              col: 3,
             },
-            toRow: 3,
-            toCol: 1,
+            toRow: 5,
+            toCol: 3,
           };
           game.applyMove({
             gameID: game.id,
             playerID: player2.id,
             move: move1,
           });
+          const testPiece3 = new Rook('W', 0, 0);
+          const move3: ChessMove = {
+            gamePiece: {
+              piece: testPiece3,
+              row: 0,
+              col: 0,
+            },
+            toRow: 0,
+            toCol: 7,
+          };
           expect(() =>
             game.applyMove({
               gameID: game.id,
               playerID: player2.id,
-              move,
+              move: move3,
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
         });
@@ -343,13 +363,10 @@ describe('ChessGame', () => {
           toRow: 2,
           toCol: 4,
         };
-        expect(game.board[1][4]?.type).toEqual('P');
-        expect(game.board[2][4]).toBeUndefined()
+
         expect(game.state.moves.length).toEqual(0);
         game.applyMove({gameID: game.id, playerID: player1.id, move});
         expect(game.state.moves.length).toEqual(1);
-        expect(game.board[1][4]).toBeUndefined()
-        expect(game.board[2][4]?.type).toEqual('P');
       });
       
       

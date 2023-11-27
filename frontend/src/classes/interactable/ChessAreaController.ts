@@ -220,12 +220,12 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     newBoard[7][5] = {type: 'B', color: 'B'} as ChessPiece;
 
     // Add in Queens:
-    newBoard[0][4] = {type: 'Q', color: 'W'} as ChessPiece;
-    newBoard[7][4] = {type: 'Q', color: 'B'} as ChessPiece;
+    newBoard[0][3] = {type: 'Q', color: 'W'} as ChessPiece;
+    newBoard[7][3] = {type: 'Q', color: 'B'} as ChessPiece;
 
     // Add in Kings:
-    newBoard[0][3] = {type: 'K', color: 'W'} as ChessPiece;
-    newBoard[7][3] = {type: 'K', color: 'B'} as ChessPiece;
+    newBoard[0][4] = {type: 'K', color: 'W'} as ChessPiece;
+    newBoard[7][4] = {type: 'K', color: 'B'} as ChessPiece;
 
     return newBoard as ChessBoardSquare[][];
   }
