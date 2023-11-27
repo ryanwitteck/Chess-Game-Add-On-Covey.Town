@@ -29,7 +29,6 @@ import Knight from './ChessPieces/Knight';
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
-
   public constructor() {
     super({
       pieces: [],
@@ -38,34 +37,58 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     });
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
+
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
-        board[move.toRow][move.toCol] = new Pawn(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Pawn(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
         // [TODO] account for en passant
-        
       }
       if (move.gamePiece.piece.type === 'K') {
-        board[move.toRow][move.toCol] = new King(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new King(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
         // [TODO] account for castle
       }
       if (move.gamePiece.piece.type === 'Q') {
-        board[move.toRow][move.toCol] = new Queen(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Queen(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'R') {
-        board[move.toRow][move.toCol] = new Rook(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Rook(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'B') {
-        board[move.toRow][move.toCol] = new Bishop(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Bishop(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'N') {
-        board[move.toRow][move.toCol] = new Knight(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Knight(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
     }
-    
+
     return board;
   }
 
@@ -112,7 +135,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
     // check to see if the game is in an end state
     console.log(`Pieces: ${this.state.pieces}`);
-    console.log(`Moves: ${this.state.moves}`)
+    console.log(`Moves: ${this.state.moves}`);
     this._checkForGameEnding();
   }
 
@@ -163,7 +186,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else {
       color = 'W';
     }
-    let piece : IChessPiece;
+    let piece: IChessPiece;
     piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     if (move.move.gamePiece.piece.type === 'K') {
       piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
@@ -192,7 +215,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._genericValidateMove(cleanMove);
     piece.validate_move(cleanMove.toRow, cleanMove.toCol, board, this.state.moves);
     this._applyMove(cleanMove);
-    
+
     // add in logic for moving the physical piece in the board.
   }
 
