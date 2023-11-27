@@ -245,11 +245,21 @@ describe('ChessGame', () => {
             playerID: player2.id,
             move: move1,
           });
+          const testPiece3 = new Rook('W', 0, 0);
+          const move3: ChessMove = {
+            gamePiece: {
+              piece: testPiece3,
+              row: 0,
+              col: 0,
+            },
+            toRow: 0,
+            toCol: 7,
+          };
           expect(() =>
             game.applyMove({
               gameID: game.id,
               playerID: player2.id,
-              move,
+              move: move3,
             }),
           ).toThrowError(MOVE_NOT_YOUR_TURN_MESSAGE);
         });
