@@ -129,8 +129,8 @@ describe('ChessArea', () => {
               move: {
                 gamePiece: {
                   piece: testPiece,
-                  rank: 0,
-                  file: 0,
+                  row: 0,
+                  col: 0,
                 },
                 toRow: 0,
                 toCol: 1,
@@ -153,8 +153,8 @@ describe('ChessArea', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 0,
+              row: 0,
+              col: 0,
             },
             toRow: 0,
             toCol: 1,
@@ -168,8 +168,8 @@ describe('ChessArea', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 0,
+              row: 0,
+              col: 0,
             },
             toRow: 0,
             toCol: 1,
@@ -183,8 +183,8 @@ describe('ChessArea', () => {
               ...move,
               gamePiece: {
                 piece: testPiece,
-                rank: 0,
-                file: 0,
+                row: 0,
+                col: 0,
               },
               toRow: 0,
               toCol: 1,
@@ -197,8 +197,8 @@ describe('ChessArea', () => {
           const move: ChessMove = {
             gamePiece: {
               piece: testPiece,
-              rank: 0,
-              file: 0,
+              row: 0,
+              col: 0,
             },
             toRow: 0,
             toCol: 2,
@@ -216,8 +216,8 @@ describe('ChessArea', () => {
               ...move,
               gamePiece: {
                 piece: testPiece,
-                rank: 0,
-                file: 0,
+                row: 0,
+                col: 0,
               },
               toRow: 0,
               toCol: 2,
@@ -231,8 +231,8 @@ describe('ChessArea', () => {
             const move: ChessMove = {
               gamePiece: {
                 piece: testPiece,
-                rank: 0,
-                file: 0,
+                row: 0,
+                col: 0,
               },
               toRow: 0,
               toCol: 1,
@@ -257,8 +257,8 @@ describe('ChessArea', () => {
             const move: ChessMove = {
               gamePiece: {
                 piece: testPiece,
-                rank: 0,
-                file: 0,
+                row: 0,
+                col: 0,
               },
               toRow: 0,
               toCol: 1,
@@ -283,8 +283,8 @@ describe('ChessArea', () => {
             const move: ChessMove = {
               gamePiece: {
                 piece: testPiece,
-                rank: 0,
-                file: 0,
+                row: 0,
+                col: 0,
               },
               toRow: 0,
               toCol: 1,

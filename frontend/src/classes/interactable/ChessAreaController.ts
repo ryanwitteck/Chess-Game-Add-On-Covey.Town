@@ -159,10 +159,15 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
 
     console.log(`piece list: ${newState?.state.pieces}`);
     if (newState) {
-      const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
-      newState.state.pieces.forEach(piece => {
-        newBoard[piece.row][piece.col] = piece.piece;
+      const newBoard = this._createNewBoard();
+      newState.state.moves.forEach(move => {
+        let gp = move.gamePiece;
+        newBoard[gp.row][gp.col] = undefined;
+        gp.col = move.toCol;
+        gp.row = move.toRow;
+        newBoard[move.toRow][move.toCol] = gp.piece;
       });
+
       if (!_.isEqual(newBoard, this._board)) {
         this._board = newBoard as unknown as ChessBoardSquare[][];
         this.emit('boardChanged', this._board);
@@ -220,12 +225,12 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     newBoard[7][5] = {type: 'B', color: 'B'} as ChessPiece;
 
     // Add in Queens:
-    newBoard[0][4] = {type: 'Q', color: 'W'} as ChessPiece;
-    newBoard[7][4] = {type: 'Q', color: 'B'} as ChessPiece;
+    newBoard[0][3] = {type: 'Q', color: 'W'} as ChessPiece;
+    newBoard[7][3] = {type: 'Q', color: 'B'} as ChessPiece;
 
     // Add in Kings:
-    newBoard[0][3] = {type: 'K', color: 'W'} as ChessPiece;
-    newBoard[7][3] = {type: 'K', color: 'B'} as ChessPiece;
+    newBoard[0][4] = {type: 'K', color: 'W'} as ChessPiece;
+    newBoard[7][4] = {type: 'K', color: 'B'} as ChessPiece;
 
     return newBoard as ChessBoardSquare[][];
   }

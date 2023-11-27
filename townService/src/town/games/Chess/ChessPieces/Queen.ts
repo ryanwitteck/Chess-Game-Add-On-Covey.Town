@@ -71,7 +71,7 @@ export default class Queen implements IChessPiece {
     let currentCol = this.col + colIncrement;
 
     while (currentRow !== newRow || currentCol !== newCol) {
-      if (board[currentRow][currentCol] !== null) {
+      if (board[currentRow][currentCol] !== undefined) {
         // There is a piece in the path
         return false;
       }
