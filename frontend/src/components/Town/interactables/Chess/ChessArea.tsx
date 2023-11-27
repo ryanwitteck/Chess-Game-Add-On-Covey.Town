@@ -41,6 +41,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [joiningGame, setJoiningGame] = useState(false);
   const [white, setWhite] = useState<PlayerController | undefined>(gameAreaController.white);
   const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
+  const [drawProposed, setDrawProposed] = useState(false);
+  const [drawString, setDrawString] = useState('Draw?');
   const toast = useToast();
 
   useEffect(() => {
@@ -51,6 +53,13 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setObservers(gameAreaController.observers);
       setWhite(gameAreaController.white);
       setBlack(gameAreaController.black);
+      setDrawProposed(gameAreaController.drawState);
+
+      if (drawProposed) {
+        setDrawString('Draw Proposed')
+      } else if (! drawProposed && gameAreaController.drawState) {
+        setDrawString('Accept Draw?')
+      }
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
     const onGameEnd = () => {
