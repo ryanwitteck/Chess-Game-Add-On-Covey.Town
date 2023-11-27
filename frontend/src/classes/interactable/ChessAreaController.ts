@@ -23,6 +23,7 @@ type ChessEvents = GameEventTypes & {
  * This class is responsible for managing the state of the Chess game, and for sending commands to the server
  */
 export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
+  public drawState: boolean = false;
   protected _board: ChessBoardSquare[][] = this._createNewBoard();
 
   /**
@@ -184,6 +185,20 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       type: 'ChessMove',
       gameID: instanceID,
       move: move,
+    });
+  }
+
+  /**
+   * Makes the two players agree to a draw
+   */
+  public async makeDraw() {
+    const instanceID = this._instanceID;
+    if (!instanceID || this._model.game?.state.status !== 'IN_PROGRESS') {
+      throw new Error(NO_GAME_IN_PROGRESS_ERROR);
+    }
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'ChessDraw',
+      gameID: instanceID,
     });
   }
 

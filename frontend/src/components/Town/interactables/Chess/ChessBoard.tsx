@@ -1,23 +1,69 @@
-import { Button, chakra, SimpleGrid, useToast } from '@chakra-ui/react';
+// import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
+import { chakra, SimpleGrid, Image, Button, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { ChessBoardPosition, ChessBoardSquare, ChessColor, ChessMove, ChessPiecePosition } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
+import { pieceImages } from './pieceimages/index.js'
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
 };
 
 /**
+ * Returns the corresponding piece image given a ChessBoardSquare.
+ * If the ChessBoardSquare has no piece on it, then it returns null.
+ */
+function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
+  if (!piece) {
+    return null;
+  }
+  if (piece.color === 'W') {
+    switch (piece.type) {
+      case 'P':
+        return <Image src={pieceImages.wp} aria-label='wp' />;
+      case 'R':
+        return <Image src={pieceImages.wr} aria-label='wr' />;
+      case 'B':
+        return <Image src={pieceImages.wb} aria-label='wb' />;
+      case 'N':
+        return <Image src={pieceImages.wn} aria-label='wn' />;
+      case 'Q':
+        return <Image src={pieceImages.wq} aria-label='wq' />;
+      case 'K':
+        return <Image src={pieceImages.wk} aria-label='wk' />;
+      default:
+        throw Error('error converting chessboardsquare to image');
+    }
+  } else {
+    switch (piece.type) {
+      case 'P':
+        return <Image src={pieceImages.bp} aria-label='wp' color={'Navy'} />;
+      case 'R':
+        return <Image src={pieceImages.br} aria-label='wr' />;
+      case 'B':
+        return <Image src={pieceImages.bb} aria-label='wb' />;
+      case 'N':
+        return <Image src={pieceImages.bn} aria-label='wn' />;
+      case 'Q':
+        return <Image src={pieceImages.bq} aria-label='wq' />;
+      case 'K':
+        return <Image src={pieceImages.bk} aria-label='wk' />;
+      default:
+        throw Error('error converting chessboardsquare to image');
+    }
+  }
+}
+
+/**
  * A component that will render a single cell on a Chess board, styled.
  */
 const StyledChessSquare = chakra(Button, {
   justifyContent: 'center',
-  padding: '0px',
+  padding: '0',
   flexBasis: '12.5%',
   alignItems: 'center',
   fontSize: '150px',
-  borderRadius: '0px',
   _disabled: {
     opacity: '100%',
   },
@@ -34,9 +80,8 @@ const StyledChessBoard = chakra(SimpleGrid, {
   maxHeight: '800px',
 });
 
-
 /**
- * TODO: Documentation
+ * React Component to render the chessboard of the current Chess Game.
  *
  * @param gameAreaController the controller for the Chess game
  */
@@ -63,7 +108,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
 
   function RenderWhitePlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
-    
+
     // function to make a move with the primed piece
     const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
       await gameAreaController.makeMove({
@@ -76,29 +121,25 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     }
 
     for (let i = 7; i >= 0; i--) {
-      for (let j = 0; j <=7; j++) {
+      for (let j = 0; j <= 7; j++) {
         const isDarkSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
         const squareColor = isDarkSquare ? 'DimGrey' : 'WhiteSmoke';
+        const chessSquareImage = pieceToImage(board[i][j]);
 
+        // This is NOT an empty square
         if (board[i] && board[i][j]) {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
               disabled={!isOurTurn}
-              padding={0}
-              borderRadius={0}
-              height={70}
-              width={70}
               background={squareColor}
-              color={board[i][j]?.color === 'W' ? 'white' : 'black' ?? 'white'}
-
+              height={70}
+              borderRadius={0}
+              // icon={chessSquareImage}
+              color={board[i][j]?.color === 'W' ? 'SkyBlue' : 'Navy' ?? 'white'}
               onClick={async () => {
-                console.log(`Button ${i},${j} was clicked!`);
-                console.log('clicked on an occupied square');
-                
                 if (board[i][j]?.color === gameAreaController.gameColor) {
                   // if we click on our own piece, we will always be trying to prime it
-                  console.log('clicked on our own piece!')
                   setPrimedPiece({
                     piece: {
                       type: board[i][j]?.type ?? 'P',
@@ -107,8 +148,8 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                     col: j as ChessBoardPosition,
                     row: i as ChessBoardPosition,
                   });
-                  setPrimed(true); 
-                  return;                 
+                  setPrimed(true);
+                  return;
                 }
 
                 if (primed && primedPiece) {
@@ -116,7 +157,6 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                   try {
                     await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                   } catch (e) {
-                    console.log(e);
                     toast({
                       title: 'Error making move',
                       description: (e as Error).toString(),
@@ -124,35 +164,24 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                     });
                   }
                 }
-                console.log(`Primed Piece: ${primedPiece?.piece.type}`)
-                console.log('Primed Status: ', primed);
               }}
-            >
-              {board[i][j] ? board[i][j]?.type : '' ?? ''}
-            </StyledChessSquare>
+            >{board[i][j] ? board[i][j]?.type : '' ?? ''}</StyledChessSquare>
           );
-        
-        // Clicked on an empty square
+
+          // This is an empty square
         } else {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
               disabled={!isOurTurn}
-              padding={0}
-              borderRadius={0}
-              height={70}
-              width={70}
               background={squareColor}
-
+              height={70}
+              borderRadius={0}
               onClick={async () => {
-                console.log(`Button ${i},${j} was clicked!`);
-                console.log('clicked on an empty square');
-                
                 if (primed && primedPiece) {
                   try {
                     await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                   } catch (e) {
-                    console.log(e);
                     toast({
                       title: 'Error making move',
                       description: (e as Error).toString(),
@@ -160,8 +189,6 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                     });
                   }
                 }
-                console.log(`Primed Piece: ${primedPiece?.piece.type}`)
-                console.log('Primed Status: ', primed);
               }}
             ></StyledChessSquare>);
         }
