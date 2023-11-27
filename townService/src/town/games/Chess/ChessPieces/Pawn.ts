@@ -16,6 +16,8 @@ export default class Pawn implements IChessPiece {
 
   col: ChessBoardPosition;
 
+  promotion: 'K' | 'Q' | 'R' | 'B' | 'N';
+
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
   constructor(color: ChessColor, row: ChessBoardPosition, col: ChessBoardPosition) {
@@ -23,6 +25,14 @@ export default class Pawn implements IChessPiece {
     this.row = row;
     this.col = col;
     this.type = 'P';
+    this.promotion = 'Q'
+  }
+
+  /**
+   * Set the type this pawn will promote too
+   */
+  public set_promotion(promotion: 'K' | 'Q' | 'R' | 'B' | 'N') {
+    this.promotion = promotion;
   }
 
   validate_move(
@@ -47,7 +57,7 @@ export default class Pawn implements IChessPiece {
         if (newRow === this.row + 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
           if (newRow === 7) {
-            this.type = "Q";
+            this.type = this.promotion;
           }
           return;
         }
@@ -59,7 +69,7 @@ export default class Pawn implements IChessPiece {
         ) {
           // promotion
           if (newRow === 7) {
-            this.type = "Q";
+            this.type = this.promotion;
           }
           return;
         }
@@ -100,7 +110,7 @@ export default class Pawn implements IChessPiece {
         if (newRow === this.row - 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
           if (newRow === 0) {
-            this.type = "Q";
+            this.type = this.promotion;
           }
           return;
         }
@@ -112,7 +122,7 @@ export default class Pawn implements IChessPiece {
         ) {
           // promotion
           if (newRow === 0) {
-            this.type = "Q";
+            this.type = this.promotion;
           }
           return;
         }

@@ -126,10 +126,10 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
       setPrimedPiece(undefined);
     };
 
-    for (let i = 7; i >= 0; i--) {
+    for (let i = 0; i <= 7; i++) {
       for (let j = 0; j <= 7; j++) {
-        const isDarkSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
-        const squareColor = isDarkSquare ? 'DimGrey' : 'WhiteSmoke';
+        const isLightSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
+        const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
         const chessSquareImage = pieceToImage(board[i][j]);
 
         // This is NOT an empty square

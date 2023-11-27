@@ -104,7 +104,7 @@ export default class King implements IChessPiece {
     // if you are the black king: the rook on (7,7) <- using (x,y)
     if (this.color === 'B') {
       // path has to be clear
-      if (board[7][5] !== undefined && board[7][6] !== undefined) {
+      if (board[7][4] !== undefined || board[7][5] !== undefined || board[7][6] !== undefined) {
         throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
       moves.forEach(move => {
@@ -120,7 +120,7 @@ export default class King implements IChessPiece {
       });
     } else {
       // path has to be clear
-      if (board[0][5] !== undefined && board[0][6] !== undefined) {
+      if (board[0][4] !== undefined || board[0][5] !== undefined || board[0][6] !== undefined) {
         throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
       moves.forEach(move => {
@@ -156,7 +156,7 @@ export default class King implements IChessPiece {
     // if you are the black king: the rook on (7,0) <- using (x,y)
     if (this.color === 'B') {
       // path has to be clear
-      if (board[7][3] !== undefined && board[7][2] !== undefined && board[7][1] !== undefined) {
+      if (board[7][2] !== undefined || board[7][1] !== undefined) {
         throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
       moves.forEach(move => {
@@ -172,7 +172,7 @@ export default class King implements IChessPiece {
       });
     } else {
       // path has to be clear
-      if (board[0][3] !== undefined && board[0][2] !== undefined && board[0][1] !== undefined) {
+      if (board[0][2] !== undefined || board[0][1] !== undefined) {
         throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
       moves.forEach(move => {
