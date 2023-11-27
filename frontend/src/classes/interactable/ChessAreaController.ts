@@ -159,15 +159,10 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
 
     console.log(`piece list: ${newState?.state.pieces}`);
     if (newState) {
-      const newBoard = this._createNewBoard();
-      newState.state.moves.forEach(move => {
-        let gp = move.gamePiece;
-        newBoard[gp.row][gp.col] = undefined;
-        gp.col = move.toCol;
-        gp.row = move.toRow;
-        newBoard[move.toRow][move.toCol] = gp.piece;
+      const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
+      newState.state.pieces.forEach(piece => {
+        newBoard[piece.row][piece.col] = piece.piece;
       });
-
       if (!_.isEqual(newBoard, this._board)) {
         this._board = newBoard as unknown as ChessBoardSquare[][];
         this.emit('boardChanged', this._board);

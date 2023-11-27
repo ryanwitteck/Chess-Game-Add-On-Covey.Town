@@ -45,12 +45,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
         board[move.toRow][move.toCol] = new Pawn(move.gamePiece.piece.color,move.toRow,move.toCol);
-        // account for en passant
+        // [TODO] account for en passant
+        
       }
       if (move.gamePiece.piece.type === 'K') {
         board[move.toRow][move.toCol] = new King(move.gamePiece.piece.color,move.toRow,move.toCol);
-        // account for castle
-
+        // [TODO] account for castle
       }
       if (move.gamePiece.piece.type === 'Q') {
         board[move.toRow][move.toCol] = new Queen(move.gamePiece.piece.color,move.toRow,move.toCol);
@@ -65,6 +65,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         board[move.toRow][move.toCol] = new Knight(move.gamePiece.piece.color,move.toRow,move.toCol);
       }
     }
+    
     return board;
   }
 
@@ -101,46 +102,13 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
   private _applyMove(move: ChessMove): void {
     const board = this._board;
-    const moveLocationPiece = board[move.toRow][move.toCol];
-    // if there is a piece at the resulting space, remove it
-    if (moveLocationPiece) {
-      const index = this.state.pieces.findIndex(
-        piece =>
-          piece.piece.type === moveLocationPiece.type &&
-          piece.piece.color === moveLocationPiece.color &&
-          piece.row === moveLocationPiece.row &&
-          piece.col === moveLocationPiece.col,
-      );
-      if (index !== -1) {
-        this.state.pieces.splice(index, 1);
-      }
-    }
-
-    // find the piece we are trying to move
-    const movePiece = board[move.gamePiece.row][move.gamePiece.col];
-    if (movePiece) {
-      const index = this.state.pieces.findIndex(
-        piece =>
-          piece.piece.type === movePiece.type &&
-          piece.piece.color === movePiece.color &&
-          piece.row === movePiece.row &&
-          piece.col === movePiece.col
-      );
-      // when we find the piece we are trying to move, we change it in the list of pieces
-      if (index !== -1) {
-        this.state.pieces[index] = {
-          piece: { type: movePiece.type, color: movePiece.color },
-          col: movePiece.col,
-          row: movePiece.row,
-        };
-      }
-    }
-
     // update the state to match
     this.state = {
       ...this.state,
       moves: [...this.state.moves, move],
     };
+    // update piece list
+    this.state.pieces = ChessGame.boardToPieceList(this._board);
 
     // check to see if the game is in an end state
     console.log(`Pieces: ${this.state.pieces}`);
@@ -338,12 +306,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][5] = new Bishop('B', 7, 5);
 
     // Add in Queens:
-    newBoard[0][3] = new Queen('W', 0, 4);
-    newBoard[7][3] = new Queen('B', 7, 4);
+    newBoard[0][3] = new Queen('W', 0, 3);
+    newBoard[7][3] = new Queen('B', 7, 3);
 
     // Add in Kings:
-    newBoard[0][4] = new King('W', 0, 3);
-    newBoard[7][4] = new King('B', 7, 3);
+    newBoard[0][4] = new King('W', 0, 4);
+    newBoard[7][4] = new King('B', 7, 4);
 
     return newBoard as ChessCell[][];
   }
