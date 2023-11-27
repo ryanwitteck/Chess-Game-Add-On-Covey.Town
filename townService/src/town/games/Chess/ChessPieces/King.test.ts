@@ -87,16 +87,16 @@ describe('ChessGame', () => {
   });
   describe('test castling', () => {
     beforeEach(() => {
-      king1 = new King('W', 0, 4);
-      king2 = new King('B', 7, 4);
+      king1 = new King('W', 0, 3);
+      king2 = new King('B', 7, 3);
       moves = [];
       board = [
         [
           new Rook('W', 0, 0),
           undefined,
           undefined,
-          undefined,
           king1,
+          undefined,
           undefined,
           undefined,
           new Rook('W', 0, 7),
@@ -129,8 +129,8 @@ describe('ChessGame', () => {
           new Rook('W', 7, 0),
           undefined,
           undefined,
-          undefined,
           king2,
+          undefined,
           undefined,
           undefined,
           new Rook('W', 7, 7),
@@ -138,18 +138,30 @@ describe('ChessGame', () => {
       ];
     });
     it('white, short castle', () => {
-      expect(() => king1.validate_move(0, 6, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
     });
     it('white, long castle', () => {
-      expect(() => king1.validate_move(0, 2, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
     });
     it('white, short castle', () => {
-      expect(() => king2.validate_move(7, 6, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
     });
     it('white, long castle', () => {
-      expect(() => king2.validate_move(7, 2, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
     });
-    it('white, cannot castle long if rook (0,0) has moved', () => {
+    it('white, cannot castle if king has move', () => {
+      king1.validate_move(0,4,board,moves);
+      board[0][4] = king1;
+      board[0][3] = undefined;
+      king1.validate_move(0,3,board,moves);
+      board[0][3] = king1;
+      board[0][4] = undefined;
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+    });
+    it('white, cannot castle short if rook (0,0) has moved', () => {
       moves = [
         {
           gamePiece: {
@@ -170,10 +182,10 @@ describe('ChessGame', () => {
           toCol: 0,
         },
       ];
-      expect(() => king1.validate_move(0, 2, board, moves)).toThrowError();
-      expect(() => king1.validate_move(0, 6, board, moves)).not.toThrowError();
-      expect(() => king2.validate_move(0, 2, board, moves)).toThrowError();
-      expect(() => king2.validate_move(0, 6, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
     });
     it('white, cannot castle long if rook (0,7) has moved', () => {
       moves = [
@@ -196,12 +208,24 @@ describe('ChessGame', () => {
           toCol: 7,
         },
       ];
-      expect(() => king1.validate_move(0, 6, board, moves)).toThrowError();
-      expect(() => king1.validate_move(0, 2, board, moves)).not.toThrowError();
-      expect(() => king2.validate_move(0, 2, board, moves)).toThrowError();
-      expect(() => king2.validate_move(0, 6, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
     });
-    it('black, cannot castle long if rook (7,0) has moved', () => {
+    it('black, cannot castle if king has move', () => {
+      king2.validate_move(7,4,board,moves);
+      board[7][4] = king2;
+      board[7][3] = undefined;
+      king2.validate_move(7,3,board,moves);
+      board[7][3] = king2;
+      board[7][4] = undefined;
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle short if rook (7,0) has moved', () => {
       moves = [
         {
           gamePiece: {
@@ -222,10 +246,10 @@ describe('ChessGame', () => {
           toCol: 0,
         },
       ];
-      expect(() => king2.validate_move(7, 2, board, moves)).toThrowError();
-      expect(() => king2.validate_move(7, 6, board, moves)).not.toThrowError();
-      expect(() => king1.validate_move(7, 2, board, moves)).toThrowError();
-      expect(() => king1.validate_move(7, 6, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
     });
     it('black, cannot castle long if rook (7,7) has moved', () => {
       moves = [
@@ -248,10 +272,131 @@ describe('ChessGame', () => {
           toCol: 7,
         },
       ];
-      expect(() => king2.validate_move(7, 6, board, moves)).toThrowError();
-      expect(() => king2.validate_move(7, 2, board, moves)).not.toThrowError();
-      expect(() => king1.validate_move(7, 2, board, moves)).toThrowError();
-      expect(() => king1.validate_move(7, 6, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle long if there are peices in the way v1', () => {
+      board[7][6] = new Bishop('B',7,6);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      board[7][6] = new Bishop('W',7,6);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle long if there are peices in the way v2', () => {
+      board[7][5] = new Bishop('B',7,5);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      board[7][5] = new Bishop('W',7,5);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle long if there are peices in the way v1', () => {
+      board[7][4] = new Bishop('B',7,4);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      board[7][4] = new Bishop('W',7,4);
+      expect(() => king2.validate_move(7, 5, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 1, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle short if there are peices in the way v2', () => {
+      board[7][2] = new Bishop('B',7,2);
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      board[7][2] = new Bishop('W',7,2);
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+    it('black, cannot castle short if there are peices in the way v3', () => {
+      board[7][1] = new Bishop('B',7,1);
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+      board[7][1] = new Bishop('W',7,1);
+      expect(() => king2.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(7, 5, board, moves)).not.toThrowError();
+      expect(() => king1.validate_move(7, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(7, 5, board, moves)).toThrowError();
+    });
+
+    it('white, cannot castle long if there are peices in the way v1', () => {
+      board[0][6] = new Bishop('B',0,6);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+      board[0][6] = new Bishop('W',0,6);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+    });
+    it('white, cannot castle long if there are peices in the way v2', () => {
+      board[0][5] = new Bishop('B',0,5);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+      board[0][5] = new Bishop('W',0,5);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+    });
+    it('white, cannot castle long if there are peices in the way v1', () => {
+      board[0][4] = new Bishop('B',0,4);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+      board[0][4] = new Bishop('W',0,4);
+      expect(() => king1.validate_move(0, 5, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 1, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+    });
+    it('white, cannot castle short if there are peices in the way v2', () => {
+      board[0][2] = new Bishop('B',0,2);
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+      board[0][2] = new Bishop('W',0,2);
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+    });
+    it('white, cannot castle short if there are peices in the way v3', () => {
+      board[0][1] = new Bishop('B',0,1);
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
+      board[0][1] = new Bishop('W',0,1);
+      expect(() => king1.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king1.validate_move(0, 5, board, moves)).not.toThrowError();
+      expect(() => king2.validate_move(0, 1, board, moves)).toThrowError();
+      expect(() => king2.validate_move(0, 5, board, moves)).toThrowError();
     });
   });
 });

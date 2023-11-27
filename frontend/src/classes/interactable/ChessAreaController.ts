@@ -25,7 +25,7 @@ type ChessEvents = GameEventTypes & {
 export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
   public drawState = false;
 
-  protected _board: ChessBoardSquare[][] = this._createNewBoard();
+  protected _board: ChessBoardSquare[][] = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined)) as unknown as ChessBoardSquare[][];;
 
   /**
    * Returns the current chessboard.
@@ -205,46 +205,5 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     });
   }
 
-  /**
-   * This function will create a brand new chessboard, with all the pieces properly placed
-   * to start a new game.
-   */
-  private _createNewBoard(): ChessBoardSquare[][] {
-    // fill the board with undefined cells
-    const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
 
-    // instantiate the pawns
-    for (let col = 0; col < 8; col++) {
-      newBoard[1][col] = { type: 'P', color: 'W' } as ChessPiece;
-      newBoard[6][col] = { type: 'P', color: 'B' } as ChessPiece;
-    }
-
-    // Add in the Rooks:
-    newBoard[0][0] = { type: 'R', color: 'W' } as ChessPiece;
-    newBoard[0][7] = { type: 'R', color: 'W' } as ChessPiece;
-    newBoard[7][0] = { type: 'R', color: 'B' } as ChessPiece;
-    newBoard[7][7] = { type: 'R', color: 'B' } as ChessPiece;
-
-    // Add in the Knights:
-    newBoard[0][1] = { type: 'N', color: 'W' } as ChessPiece;
-    newBoard[0][6] = { type: 'N', color: 'W' } as ChessPiece;
-    newBoard[7][1] = { type: 'N', color: 'B' } as ChessPiece;
-    newBoard[7][6] = { type: 'N', color: 'B' } as ChessPiece;
-
-    // Add in the Bishops:
-    newBoard[0][2] = { type: 'B', color: 'W' } as ChessPiece;
-    newBoard[0][5] = { type: 'B', color: 'W' } as ChessPiece;
-    newBoard[7][2] = { type: 'B', color: 'B' } as ChessPiece;
-    newBoard[7][5] = { type: 'B', color: 'B' } as ChessPiece;
-
-    // Add in Queens:
-    newBoard[0][3] = { type: 'Q', color: 'W' } as ChessPiece;
-    newBoard[7][3] = { type: 'Q', color: 'B' } as ChessPiece;
-
-    // Add in Kings:
-    newBoard[0][4] = { type: 'K', color: 'W' } as ChessPiece;
-    newBoard[7][4] = { type: 'K', color: 'B' } as ChessPiece;
-
-    return newBoard as ChessBoardSquare[][];
-  }
 }

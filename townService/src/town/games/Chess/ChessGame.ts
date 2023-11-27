@@ -60,25 +60,25 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         );
       }
       if (move.gamePiece.piece.type === 'K') {
-        // Black long castle
-        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 4 && move.toCol === 2 && move.toRow === 7) {
-          board[7][0] = undefined;
-          board[7][3] = new Rook('B',7,3);
-        }
         // Black short castle
-        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 4 && move.toCol === 6 && move.toRow === 7) {
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 7) {
+          board[7][0] = undefined;
+          board[7][2] = new Rook('B',7,2);
+        }
+        // Black long castle
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 7) {
           board[7][7] = undefined;
-          board[7][5] = new Rook('B',7,5);
+          board[7][4] = new Rook('B',7,4);
+        }
+        // White short castle
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 0) {
+          board[0][0] = undefined;
+          board[0][2] = new Rook('W',0,2);
         }
         // White long castle
-        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 4 && move.toCol === 2 && move.toRow === 0) {
-          board[0][0] = undefined;
-          board[0][3] = new Rook('W',0,3);
-        }
-        // Black short castle
-        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 4 && move.toCol === 6 && move.toRow === 0) {
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 0) {
           board[0][7] = undefined;
-          board[0][5] = new Rook('W',0,5);
+          board[0][4] = new Rook('W',0,4);
         }
         board[move.toRow][move.toCol] = new King(
           move.gamePiece.piece.color,
@@ -161,8 +161,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
 
     // check to see if the game is in an end state
-    console.log(`Pieces: ${this.state.pieces}`);
-    console.log(`Moves: ${this.state.moves}`);
+    // console.log(`Pieces: ${this.state.pieces}`);
+    // console.log(`Moves: ${this.state.moves}`);
     this._checkForGameEnding();
   }
 
@@ -356,12 +356,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][5] = new Bishop('B', 7, 5);
 
     // Add in Queens:
-    newBoard[0][3] = new Queen('W', 0, 3);
-    newBoard[7][3] = new Queen('B', 7, 3);
+    newBoard[0][4] = new Queen('W', 0, 4);
+    newBoard[7][4] = new Queen('B', 7, 4);
 
     // Add in Kings:
-    newBoard[0][4] = new King('W', 0, 4);
-    newBoard[7][4] = new King('B', 7, 4);
+    newBoard[0][3] = new King('W', 0, 3);
+    newBoard[7][3] = new King('B', 7, 3);
 
     return newBoard as ChessCell[][];
   }

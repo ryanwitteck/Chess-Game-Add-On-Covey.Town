@@ -27,7 +27,7 @@ class TestingGame extends Game<ChessGameState, ChessMove> {
     });
   }
 
-  public applyMove(): void {}
+  public applyMove(): void { }
 
   public endGame(winner?: string) {
     this.state = {
@@ -46,7 +46,7 @@ class TestingGame extends Game<ChessGameState, ChessMove> {
     this._players.push(player);
   }
 
-  protected _leave(): void {}
+  protected _leave(): void { }
 }
 describe('ChessArea', () => {
   let gameArea: ChessGameArea;
@@ -307,6 +307,7 @@ describe('ChessArea', () => {
         });
       });
     });
+
     describe('[T3.3] when given a LeaveGame command', () => {
       describe('when there is no game in progress', () => {
         it('should throw an error', () => {
@@ -369,6 +370,38 @@ describe('ChessArea', () => {
             },
           });
           expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
+    describe('[T3.3] when given a ChessDraw command', () => {
+      it('should throw an error when there is no game in progress', () => {
+        expect(() =>
+          gameArea.handleCommand(
+            {
+              type: 'ChessDraw',
+              gameID: nanoid(),
+            },
+            player1,
+          ),
+        ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      });
+      describe('when there is a game in progress', () => {
+        let gameID: GameInstanceID;
+        beforeEach(() => {
+          gameID = gameArea.handleCommand({ type: 'JoinGame' }, player1).gameID;
+          gameArea.handleCommand({ type: 'JoinGame' }, player2);
+          interactableUpdateSpy.mockClear();
+        });
+        it('should throw an error when there if the game id does not match', () => {
+          expect(() =>
+            gameArea.handleCommand(
+              {
+                type: 'ChessDraw',
+                gameID: nanoid(),
+              },
+              player1,
+            ),
+          ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
         });
       });
     });

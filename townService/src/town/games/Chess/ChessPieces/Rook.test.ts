@@ -91,4 +91,56 @@ describe('ChessGame', () => {
       }
     });
   });
+  describe('Custom board, testing rook moves', () => {
+    beforeEach(() => {
+      rook1 = new Rook('W', 3, 3);
+      rook2 = new Rook('W', 3, 4);
+      rook3 = new Rook('B', 4, 3);
+      rook4 = new Rook('B', 4, 4);
+      board = [
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+        [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+      ];
+    });
+    it('white, can only move in valid rook directions', () => {
+      function testValidation(i: ChessBoardPosition, j: ChessBoardPosition) {
+        expect(() => rook1.validate_move(i, j, board, moves)).not.toThrowError();
+      }
+      function testInvalidation(i: ChessBoardPosition, j: ChessBoardPosition) {
+        expect(() => rook1.validate_move(i, j, board, moves)).toThrowError();
+      }
+      for (let i: ChessBoardPosition = 0; i <= 7; i++) {
+        for (let j: ChessBoardPosition = 0; j <= 7; j++) {
+          if((i === 3 && j !== 3)|| (j === 3 && i !== 3)) {
+            testValidation(i as ChessBoardPosition, j as ChessBoardPosition);
+          } else {
+            testInvalidation(i as ChessBoardPosition, j as ChessBoardPosition);
+          }
+        }
+      }
+    });
+    it('black, can only move in valid rook directions', () => {
+      function testValidation(i: ChessBoardPosition, j: ChessBoardPosition) {
+        expect(() => rook4.validate_move(i, j, board, moves)).not.toThrowError();
+      }
+      function testInvalidation(i: ChessBoardPosition, j: ChessBoardPosition) {
+        expect(() => rook4.validate_move(i, j, board, moves)).toThrowError();
+      }
+      for (let i: ChessBoardPosition = 0; i <= 7; i++) {
+        for (let j: ChessBoardPosition = 0; j <= 7; j++) {
+          if((i === 4 && j !== 4)|| (j === 4 && i !== 4)) {
+            testValidation(i as ChessBoardPosition, j as ChessBoardPosition);
+          } else {
+            testInvalidation(i as ChessBoardPosition, j as ChessBoardPosition);
+          }
+        }
+      }
+    });
+  });
 });
