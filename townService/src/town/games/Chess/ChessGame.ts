@@ -93,7 +93,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
           piece.piece.type === movePiece.type &&
           piece.piece.color === movePiece.color &&
           piece.row === movePiece.row &&
-          piece.col === movePiece.col,``
+          piece.col === movePiece.col
       );
       // when we find the piece we are trying to move, we change it in the list of pieces
       if (index !== -1) {
@@ -126,7 +126,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    * - Cannot take your own pieces
    */
   private _genericValidateMove(move: ChessMove) {
-    // A move is only valid if it is the player's turn
     // A move is only valid if it is the player's turn
     if (move.gamePiece.piece.color === 'W' && this.state.moves.length % 2 === 1) {
       throw new InvalidParametersError(MOVE_NOT_YOUR_TURN_MESSAGE);
