@@ -1,5 +1,5 @@
-// import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
-import { chakra, SimpleGrid, Image, Button, useToast } from '@chakra-ui/react';
+import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
+// import { chakra, SimpleGrid, Image, Button, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
   ChessBoardPosition,
@@ -10,7 +10,8 @@ import {
 } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
-import { pieceImages } from './pieceimages/index.js';
+import pieceImages from './pieceimages/index.js'
+import wp from './pieceimages/wp.png'
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -27,34 +28,34 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
   if (piece.color === 'W') {
     switch (piece.type) {
       case 'P':
-        return <Image src={pieceImages.wp} aria-label='wp' />;
+        return <Image src= {wp} aria-label='wp' alt='pawn' color={'skyblue'}/>;
       case 'R':
-        return <Image src={pieceImages.wr} aria-label='wr' />;
+        return <Image src={pieceImages.wr} aria-label='wr' alt='rook' color={'skyblue'} />;
       case 'B':
-        return <Image src={pieceImages.wb} aria-label='wb' />;
+        return <Image src={pieceImages.wb} aria-label='wb' alt='bishop' color={'skyblue'} />;
       case 'N':
-        return <Image src={pieceImages.wn} aria-label='wn' />;
+        return <Image src={pieceImages.wn} aria-label='wn' alt='knight' color={'skyblue'} />;
       case 'Q':
-        return <Image src={pieceImages.wq} aria-label='wq' />;
+        return <Image src={pieceImages.wq} aria-label='wq' alt='queen' color={'skyblue'} />;
       case 'K':
-        return <Image src={pieceImages.wk} aria-label='wk' />;
+        return <Image src={pieceImages.wk} aria-label='wk' alt='king' color={'skyblue'} />;
       default:
         throw Error('error converting chessboardsquare to image');
     }
   } else {
     switch (piece.type) {
       case 'P':
-        return <Image src={pieceImages.bp} aria-label='wp' color={'Navy'} />;
+        return <Image src={pieceImages.bp} aria-label='bp' alt='pawn' color={'navy'} />;
       case 'R':
-        return <Image src={pieceImages.br} aria-label='wr' />;
+        return <Image src={pieceImages.br} aria-label='br' alt='rook' color={'navy'} />;
       case 'B':
-        return <Image src={pieceImages.bb} aria-label='wb' />;
+        return <Image src={pieceImages.bb} aria-label='bb' alt='bishop' color={'navy'} />;
       case 'N':
-        return <Image src={pieceImages.bn} aria-label='wn' />;
+        return <Image src={pieceImages.bn} aria-label='bn' alt='knight' color={'navy'} />;
       case 'Q':
-        return <Image src={pieceImages.bq} aria-label='wq' />;
+        return <Image src={pieceImages.bq} aria-label='bq' alt='queen' color={'navy'}/>;
       case 'K':
-        return <Image src={pieceImages.bk} aria-label='wk' />;
+        return <Image src={pieceImages.bk} aria-label='bk' alt='king' color={'navy'}/>;
       default:
         throw Error('error converting chessboardsquare to image');
     }
@@ -64,7 +65,7 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
 /**
  * A component that will render a single cell on a Chess board, styled.
  */
-const StyledChessSquare = chakra(Button, {
+const StyledChessSquare = chakra(IconButton, {
   justifyContent: 'center',
   padding: '0',
   flexBasis: '12.5%',
@@ -141,8 +142,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
               background={squareColor}
               height={70}
               borderRadius={0}
-              // icon={chessSquareImage}
-              color={board[i][j]?.color === 'W' ? 'SkyBlue' : 'Navy' ?? 'white'}
+              icon={chessSquareImage}
               onClick={async () => {
                 if (board[i][j]?.color === gameAreaController.gameColor) {
                   // if we click on our own piece, we will always be trying to prime it
