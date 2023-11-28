@@ -386,9 +386,9 @@ describe('ChessArea', () => {
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
       });
       describe('when there is a game in progress', () => {
-        let gameID: GameInstanceID;
+        // let gameID: GameInstanceID;
         beforeEach(() => {
-          gameID = gameArea.handleCommand({ type: 'JoinGame' }, player1).gameID;
+          // gameID = gameArea.handleCommand({ type: 'JoinGame' }, player1).gameID;
           gameArea.handleCommand({ type: 'JoinGame' }, player2);
           interactableUpdateSpy.mockClear();
         });
@@ -441,23 +441,23 @@ describe('ChessArea', () => {
           gameArea.handleCommand(
             {
               type: 'Promotion',
-              gameID: game.id,
+              gameID,
               promo: 'R',
             },
             player1,
           );
-          expect(gameArea.game?.promotion).toEqual('R')
+          expect(gameArea.game?.promotion).toEqual('R');
         });
         it('should update the promotion type when given a valid command v2', () => {
           gameArea.handleCommand(
             {
               type: 'Promotion',
-              gameID: game.id,
+              gameID,
               promo: 'N',
             },
             player1,
           );
-          expect(gameArea.game?.promotion).toEqual('N')
+          expect(gameArea.game?.promotion).toEqual('N');
           gameArea.handleCommand(
             {
               type: 'Promotion',
@@ -466,7 +466,7 @@ describe('ChessArea', () => {
             },
             player1,
           );
-          expect(gameArea.game?.promotion).toEqual('Q')
+          expect(gameArea.game?.promotion).toEqual('Q');
         });
       });
     });
