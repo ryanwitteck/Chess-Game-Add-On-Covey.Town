@@ -67,13 +67,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setObservers(gameAreaController.observers);
       setWhite(gameAreaController.white);
       setBlack(gameAreaController.black);
-      setDrawProposed(gameAreaController.drawState);
 
-      if (drawProposed) {
-        setDrawString('Draw Proposed');
-      } else if (!drawProposed && gameAreaController.drawState) {
-        setDrawString('Accept Draw?');
-      }
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
         if (!bflag) {
           setBlackTimer(10 * 60 * gameAreaController.timer);

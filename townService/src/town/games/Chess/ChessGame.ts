@@ -1,6 +1,7 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
+  INVALID_MOVE_MESSAGE,
   MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
@@ -14,6 +15,7 @@ import {
   ChessBoardPosition,
   ChessPiecePosition,
   IChessPiece,
+  ChessPiece,
 } from '../../../types/CoveyTownSocket';
 
 import Game from '../Game';
@@ -38,7 +40,41 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
 
-  public promotion: 'Q' | 'R' | 'B' | 'N' = 'Q';
+  /*
+  hz's notes:
+  so the way i approached promotions is basically i just lumped them into the normal chess moves.
+  i added an extra field that each ChessMove can have, which is promotion?
+  so ChessMove now looks like this:
+
+  export interface ChessMove {
+    gamePiece: ChessPiecePosition;
+    toRow: ChessBoardPosition;
+    toCol: ChessBoardPosition;
+    promotion?: 'B' | 'R' | 'Q' | 'N';
+  }
+
+  if you take a look at ChessController, the shared CoveyTownSocket, ChessGame, and ChessGameArea,
+  you can get a better understanding of what i'm doing. 
+
+  right now, the frontend and backend seem to be interacting fine initially, but for some
+  reason after one move AFTER the promotion, the piece goes back to a pawn. 
+
+  so far, i've tried to change the state and account for the promotion tag in the board getter, but alas
+
+  i think the issue is in my backend implementation, not in the controller or frontend, so i'd focus here
+  first to try and find the issue. 
+
+  i've provided some brief comments in the code i've added as well.
+
+  some additional changes i've made to other files include commenting out the promotion sections in the 
+  pawn class. the old approach was a bit clunky to work with in terms of front-end workflow, since pausing
+  the program with that approach wasn't as easy as the approach i have now.
+
+  it might be worth ensuring that you can't move a piece until you promote your pawn, but it's 7:40am and im way
+  too tired to test that myself lol.
+  */
+
+
 
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
@@ -46,6 +82,41 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
+        
+        // account for promotion?
+        // move.promotion will hold the type that you want to promote to, or undefined.
+        if (move.promotion) {
+          switch (move.promotion) {
+            case 'B':
+              board[move.toRow][move.toCol] = new Bishop(
+                move.gamePiece.piece.color,
+                move.toRow,
+                move.toCol,
+              );
+              break;
+            case 'N':
+              board[move.toRow][move.toCol] = new Knight(
+                move.gamePiece.piece.color,
+                move.toRow,
+                move.toCol,
+              );
+              break;
+            case 'Q':
+              board[move.toRow][move.toCol] = new Queen(
+                move.gamePiece.piece.color,
+                move.toRow,
+                move.toCol,
+              );
+              break;
+            case 'R':
+              board[move.toRow][move.toCol] = new Rook(
+                move.gamePiece.piece.color,
+                move.toRow,
+                move.toCol,
+              );
+              break;
+          }
+        }
         // account for en passant
         if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
           if (move.gamePiece.piece.color === 'B') {
@@ -60,8 +131,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
           move.toRow,
           move.toCol,
         );
-      }
-      if (move.gamePiece.piece.type === 'K') {
+      } else if (move.gamePiece.piece.type === 'K') {
         // Black short castle
         if (
           move.gamePiece.piece.color === 'B' &&
@@ -107,29 +177,25 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
           move.toRow,
           move.toCol,
         );
-      }
-      if (move.gamePiece.piece.type === 'Q') {
+      } else if (move.gamePiece.piece.type === 'Q') {
         board[move.toRow][move.toCol] = new Queen(
           move.gamePiece.piece.color,
           move.toRow,
           move.toCol,
         );
-      }
-      if (move.gamePiece.piece.type === 'R') {
+      } else if (move.gamePiece.piece.type === 'R') {
         board[move.toRow][move.toCol] = new Rook(
           move.gamePiece.piece.color,
           move.toRow,
           move.toCol,
         );
-      }
-      if (move.gamePiece.piece.type === 'B') {
+      } else if (move.gamePiece.piece.type === 'B') {
         board[move.toRow][move.toCol] = new Bishop(
           move.gamePiece.piece.color,
           move.toRow,
           move.toCol,
         );
-      }
-      if (move.gamePiece.piece.type === 'N') {
+      } else if (move.gamePiece.piece.type === 'N') {
         board[move.toRow][move.toCol] = new Knight(
           move.gamePiece.piece.color,
           move.toRow,
@@ -137,10 +203,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         );
       }
     }
-
     return board;
   }
 
+  // Check if a player has lost. If so, end the game.
   private _checkForGameEnding() {
     const board = this._board;
     let wk = 0;
@@ -172,18 +238,16 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
   }
 
+  // applies the given move into the GameState, and checks for a potential ending.
   private _applyMove(move: ChessMove): void {
-    // update the state to match
     this.state = {
       ...this.state,
       moves: [...this.state.moves, move],
     };
-    // update piece list
-    this.state.pieces = ChessGame.boardToPieceList(this._board);
 
-    // check to see if the game is in an end state
-    // console.log(`Pieces: ${this.state.pieces}`);
-    // console.log(`Moves: ${this.state.moves}`);
+    // update piece list
+    this.state.pieces = ChessGame.boardToPieceList(this._board),
+
     this._checkForGameEnding();
   }
 
@@ -219,7 +283,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
 
   /*
    * TODO: Documentation
-   * note: we should change the naming convention here, it might get confusing.
    */
   public applyMove(move: GameMove<ChessMove>): void {
     const board = this._board;
@@ -234,26 +297,31 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else {
       color = 'W';
     }
+
     let piece: IChessPiece;
-    piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    if (move.move.gamePiece.piece.type === 'P') {
-      (piece as Pawn).promotion = this.promotion;
+    switch (move.move.gamePiece.piece.type) {
+      case 'P':
+        piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      case 'R':
+        piece = new Rook(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      case 'B':
+        piece = new Bishop(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      case 'N':
+        piece = new Knight(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      case 'Q':
+        piece = new Queen(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      case 'K':
+        piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
+        break;
+      default:
+        throw new Error('invalid piece type');
     }
-    if (move.move.gamePiece.piece.type === 'K') {
-      piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    }
-    if (move.move.gamePiece.piece.type === 'Q') {
-      piece = new Queen(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    }
-    if (move.move.gamePiece.piece.type === 'B') {
-      piece = new Bishop(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    }
-    if (move.move.gamePiece.piece.type === 'R') {
-      piece = new Rook(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    }
-    if (move.move.gamePiece.piece.type === 'N') {
-      piece = new Knight(color, move.move.gamePiece.row, move.move.gamePiece.col);
-    }
+
     const cleanMove: ChessMove = {
       gamePiece: {
         piece,
@@ -263,11 +331,47 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       toRow: move.move.toRow,
       toCol: move.move.toCol,
     };
+
     this._genericValidateMove(cleanMove);
     piece.validate_move(cleanMove.toRow, cleanMove.toCol, board, this.state.moves);
     this._applyMove(cleanMove);
+  }
 
-    // add in logic for moving the physical piece in the board.
+  /**
+   * Handles the promotion of a given pawn.
+   * If the piece provided is not a pawn, throw an error.
+   */
+  public promotePiece(move: GameMove<ChessMove>): void {
+    if (move.move.gamePiece.piece.type !== 'P') {
+      throw new InvalidParametersError('can\'t promote a non-pawn piece');
+    }
+
+    if (!move.move.promotion) {
+      throw new InvalidParametersError('promotion value must be set');
+    }
+
+    // apply a move first to get the pawn where it needs to be
+    this.applyMove(move);
+
+    // we can now assume that in our list of pieces, there is a pawn
+    // at the location (toRow, toCol). we find this piece, and replace it.
+    const index = this.state.pieces.findIndex(p => {
+      return p.piece.type === 'P' &&
+        p.row === move.move.toRow &&
+        p.col === move.move.toCol
+    });
+
+    if (index !== -1) {
+      this.state.pieces.splice(index, 1);
+      this.state.pieces.push({
+        piece: { type: move.move.promotion, color: move.move.gamePiece.piece.color } as ChessPiece,
+        row: move.move.toRow as ChessBoardPosition,
+        col: move.move.toCol as ChessBoardPosition,
+      } as ChessPiecePosition);
+      console.log('Current state of pieces:', this.state.pieces);
+    } else {
+      throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+    }
   }
 
   /**
@@ -400,11 +504,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       .filter(item => item !== undefined)
       .map(
         chessPiece =>
-          ({
-            piece: { type: chessPiece?.type, color: chessPiece?.color },
-            col: chessPiece?.col,
-            row: chessPiece?.row,
-          } as ChessPiecePosition),
+        ({
+          piece: { type: chessPiece?.type, color: chessPiece?.color },
+          col: chessPiece?.col,
+          row: chessPiece?.row,
+        } as ChessPiecePosition),
       );
   }
 }
