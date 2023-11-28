@@ -24,7 +24,10 @@ type ChessEvents = GameEventTypes & {
  */
 export default class ChessAreaController extends GameAreaController<ChessGameState, ChessEvents> {
   public drawState = false;
+
   public board: ChessBoardSquare[][] = this._createNewBoard();
+
+  public timer = 12;
 
   /**
    * This function will create a brand new chessboard, with all the pieces properly placed
@@ -244,6 +247,4 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       gameID: instanceID,
     });
   }
-
-
 }
