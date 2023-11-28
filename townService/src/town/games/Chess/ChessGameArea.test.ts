@@ -27,7 +27,7 @@ class TestingGame extends Game<ChessGameState, ChessMove> {
     });
   }
 
-  public applyMove(): void { }
+  public applyMove(): void {}
 
   public endGame(winner?: string) {
     this.state = {
@@ -46,7 +46,7 @@ class TestingGame extends Game<ChessGameState, ChessMove> {
     this._players.push(player);
   }
 
-  protected _leave(): void { }
+  protected _leave(): void {}
 }
 describe('ChessArea', () => {
   let gameArea: ChessGameArea;
