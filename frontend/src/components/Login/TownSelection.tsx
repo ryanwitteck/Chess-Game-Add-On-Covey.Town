@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { doesUserExist, createUser, updateUsername } from './FirebaseService';
 import assert from 'assert';
 import {
   Box,
@@ -27,6 +28,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 
 export default function TownSelection(): JSX.Element {
   const [userName, setUserName] = useState<string>('');
+  const [email, setEmail] = useState('');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -56,6 +58,17 @@ export default function TownSelection(): JSX.Element {
       let connectWatchdog: NodeJS.Timeout | undefined = undefined;
       let loadingToast: ToastId | undefined = undefined;
       try {
+        // validate email
+        // TODO: email validation regex
+        if (!email || email.length === 0) {
+          toast({
+            title: 'Unable to join town',
+            description: 'Invalid email',
+            status: 'error',
+          });
+          return;
+        }
+        // validate username
         if (!userName || userName.length === 0) {
           toast({
             title: 'Unable to join town',
@@ -64,6 +77,7 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
+        // validate room id
         if (!coveyRoomID || coveyRoomID.length === 0) {
           toast({
             title: 'Unable to join town',
@@ -72,6 +86,19 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
+
+        console.log(email);
+
+        // check if the user already exists in database
+        const userExists = await doesUserExist(email);
+        if (userExists) {
+          console.log('User already exists.');
+          const updateUsernameSuccess = await updateUsername(email, userName);
+        } else {
+          // if user does not already exist in databse, create new user
+          const createNewUser = await createUser(email, userName);
+        }
+
         const isHighLatencyTownService =
           process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL?.includes('onrender.com');
         connectWatchdog = setTimeout(() => {
@@ -137,6 +164,15 @@ export default function TownSelection(): JSX.Element {
   );
 
   const handleCreate = async () => {
+    if (!email || email.length === 0) {
+      toast({
+        title: 'Unable to create town',
+        description: 'Please input your email before creating a town',
+        status: 'error',
+      });
+      return;
+    }
+
     if (!userName || userName.length === 0) {
       toast({
         title: 'Unable to create town',
@@ -240,6 +276,22 @@ export default function TownSelection(): JSX.Element {
         <Stack>
           <Box p='4' borderWidth='1px' borderRadius='lg'>
             <Heading as='h2' size='lg'>
+              Input email
+            </Heading>
+
+            <FormControl>
+              <FormLabel htmlFor='email'>Email</FormLabel>
+              <Input
+                autoFocus
+                name='email'
+                placeholder='Your email'
+                value={email}
+                onChange={event => setEmail(event.target.value)}
+              />
+            </FormControl>
+          </Box>
+          <Box p='4' borderWidth='1px' borderRadius='lg'>
+            <Heading as='h2' size='lg'>
               Select a username
             </Heading>
 
@@ -297,7 +349,6 @@ export default function TownSelection(): JSX.Element {
           <Heading p='4' as='h2' size='lg'>
             -or-
           </Heading>
-
           <Box borderWidth='1px' borderRadius='lg'>
             <Heading p='4' as='h2' size='lg'>
               Join an Existing Town
