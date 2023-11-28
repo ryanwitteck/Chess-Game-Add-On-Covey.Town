@@ -50,7 +50,9 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [joiningGame, setJoiningGame] = useState(false);
   const [white, setWhite] = useState<PlayerController | undefined>(gameAreaController.white);
   const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [drawProposed, setDrawProposed] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [drawString, setDrawString] = useState('Draw?');
   const [blackTimer, setBlackTimer] = useState(10 * 60 * gameAreaController.timer);
   const [whiteTimer, setWhiteTimer] = useState(10 * 60 * gameAreaController.timer);
