@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const pieceImages = {
   wp: require('./wp.png').default,
   wn: require('./wn.png').default,
@@ -10,7 +11,7 @@ const pieceImages = {
   bb: require('./bb.png').default,
   br: require('./br.png').default,
   bq: require('./bq.png').default,
-  bk: require('./bk.png').default
-}
+  bk: require('./bk.png').default,
+};
 
 export default pieceImages;
