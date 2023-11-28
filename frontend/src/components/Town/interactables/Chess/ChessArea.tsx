@@ -26,6 +26,7 @@ import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
 import ChessLocalLeaderboard from '../Leaderboard';
+import AllTimeLeaderboard from '../AllTimeLeaderboard';
 import ChessBoard from './ChessBoard';
 import { updateTies, updateWins, updateLosses } from '../../../Login/FirebaseService';
 
@@ -153,7 +154,6 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       } else {
         await updateWins(whiteUsername);
         await updateLosses(blackUsername);
-
       }
 
       bflag = false;
@@ -267,6 +267,19 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   return (
     <Container maxW={'592px'} alignContent='center'>
       <Accordion allowToggle>
+        <AccordionItem>
+          <Heading as='h3'>
+            <AccordionButton>
+              <Box as='span' flex='1' textAlign='left'>
+                All-Time Leaderboard
+                <AccordionIcon />
+              </Box>
+            </AccordionButton>
+          </Heading>
+          <AccordionPanel>
+            <AllTimeLeaderboard topN={5} />
+          </AccordionPanel>
+        </AccordionItem>
         <AccordionItem>
           <Heading as='h3'>
             <AccordionButton>

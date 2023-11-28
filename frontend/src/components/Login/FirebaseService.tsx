@@ -35,7 +35,7 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-interface UserData {
+export interface UserData {
   username: string;
   wins: number;
   losses: number;
@@ -121,3 +121,18 @@ export async function createUser(username: string): Promise<void> {
     console.log(`User with username ${username} already exists.`);
   }
 }
+
+export async function getTopUsersByWins(topN: number): Promise<UserData[]> {
+  const usersCollection = collection(db, 'users');
+
+  // Create a query to get the top N users with the most wins
+  const orderedAndLimitedQuery = query(usersCollection, orderBy('wins', 'desc'), limit(topN));
+
+  // Execute the query
+  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(orderedAndLimitedQuery);
+
+  // Extract user data from the query snapshot and cast to the correct type
+  const topUsers: UserData[] = querySnapshot.docs.map(doc => doc.data() as UserData);
+
+  return topUsers;
+};
