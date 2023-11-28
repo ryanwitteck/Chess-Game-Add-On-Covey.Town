@@ -35,7 +35,7 @@ export default class Queen implements IChessPiece {
     const colDiff = Math.abs(newCol - this.col);
 
     if (rowDiff === 0 && colDiff === 0) {
-      throw new InvalidParametersError('Cannot move to same place');
+      throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
     }
     // Check if the move is vertical, horizontal, or diagonal
     if (
@@ -45,12 +45,12 @@ export default class Queen implements IChessPiece {
     ) {
       // Check if there are any pieces in the path
       if (!this._isPathClear(newRow, newCol, board)) {
-        throw new InvalidParametersError('Failed path check in Queen');
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
       // Check if the destination square is empty or has an opponent's piece
       const destinationPiece = board[newRow][newCol];
       if (!(destinationPiece === null || destinationPiece?.color !== this.color)) {
-        throw new InvalidParametersError('Failed dest check in Queen');
+        throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
       }
     } else {
       throw new InvalidParametersError(INVALID_MOVE_MESSAGE);

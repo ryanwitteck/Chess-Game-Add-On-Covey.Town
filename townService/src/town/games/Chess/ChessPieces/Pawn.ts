@@ -25,7 +25,7 @@ export default class Pawn implements IChessPiece {
     this.row = row;
     this.col = col;
     this.type = 'P';
-    this.promotion = 'Q'
+    this.promotion = 'Q';
   }
 
   /**
@@ -146,8 +146,6 @@ export default class Pawn implements IChessPiece {
             return;
           }
         }
-        
-        
       }
     }
     throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
