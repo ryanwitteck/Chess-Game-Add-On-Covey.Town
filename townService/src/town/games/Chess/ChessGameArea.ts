@@ -110,8 +110,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       if (this._game?.id !== command.gameID) {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
-      game.promotePiece(command.promo);
-      this._stateUpdated(game.toModel());
+      game.promotion = command.promo;
       return undefined as InteractableCommandReturnType<CommandType>;
     }
     if (command.type === 'JoinGame') {
