@@ -210,6 +210,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     if (wasOurTurn != isOurTurn) this.emit('turnChanged', isOurTurn);
   }
 
+  
   /**
    * TODO: documentation
    */
