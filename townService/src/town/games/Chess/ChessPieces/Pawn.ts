@@ -50,7 +50,7 @@ export default class Pawn implements IChessPiece {
         if (newRow === this.row + 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
           // if (newRow === 7) {
-          //  this.type = this.promotion;
+          //   this.type = this.promotion;
           // }
           return;
         }
@@ -62,7 +62,7 @@ export default class Pawn implements IChessPiece {
         ) {
           // promotion
           // if (newRow === 7) {
-          //  this.type = this.promotion;
+          //   this.type = this.promotion;
           // }
           return;
         }
@@ -86,8 +86,8 @@ export default class Pawn implements IChessPiece {
             return;
           }
         }
+        // promotion
       }
-
       if (this.color === 'B') {
         // first move can move two up directionly up if there isn't a piece there
         if (
@@ -103,7 +103,7 @@ export default class Pawn implements IChessPiece {
         if (newRow === this.row - 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
           // if (newRow === 0) {
-          //  this.type = this.promotion;
+          //   this.type = this.promotion;
           // }
           return;
         }
@@ -115,7 +115,7 @@ export default class Pawn implements IChessPiece {
         ) {
           // promotion
           // if (newRow === 0) {
-          //  this.type = this.promotion;
+          //   this.type = this.promotion;
           // }
           return;
         }

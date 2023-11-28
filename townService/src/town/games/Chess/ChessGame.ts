@@ -74,16 +74,18 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   too tired to test that myself lol.
   */
 
+
+
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
+
         // account for promotion?
         // move.promotion will hold the type that you want to promote to, or undefined.
         if (move.promotion) {
-          // eslint-disable-next-line default-case
           switch (move.promotion) {
             case 'B':
               board[move.toRow][move.toCol] = new Bishop(
@@ -114,21 +116,23 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
               );
               break;
           }
-        }
-        // account for en passant
-        if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
-          if (move.gamePiece.piece.color === 'B') {
-            board[move.toRow + 1][move.toCol] = undefined;
+        } else {
+          // account for en passant
+          if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
+            if (move.gamePiece.piece.color === 'B') {
+              board[move.toRow + 1][move.toCol] = undefined;
+            }
+            if (move.gamePiece.piece.color === 'W') {
+              board[move.toRow - 1][move.toCol] = undefined;
+            }
           }
-          if (move.gamePiece.piece.color === 'W') {
-            board[move.toRow - 1][move.toCol] = undefined;
-          }
+          board[move.toRow][move.toCol] = new Pawn(
+            move.gamePiece.piece.color,
+            move.toRow,
+            move.toCol,
+          );
         }
-        board[move.toRow][move.toCol] = new Pawn(
-          move.gamePiece.piece.color,
-          move.toRow,
-          move.toCol,
-        );
+
       } else if (move.gamePiece.piece.type === 'K') {
         // Black short castle
         if (
@@ -244,8 +248,9 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     };
 
     // update piece list
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-sequences
-    (this.state.pieces = ChessGame.boardToPieceList(this._board)), this._checkForGameEnding();
+    this.state.pieces = ChessGame.boardToPieceList(this._board),
+
+      this._checkForGameEnding();
   }
 
   /**
@@ -340,34 +345,56 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    */
   public promotePiece(move: GameMove<ChessMove>): void {
     if (move.move.gamePiece.piece.type !== 'P') {
-      throw new InvalidParametersError("can't promote a non-pawn piece");
+      throw new InvalidParametersError('can\'t promote a non-pawn piece');
     }
 
     if (!move.move.promotion) {
       throw new InvalidParametersError('promotion value must be set');
     }
 
-    // apply a move first to get the pawn where it needs to be
-    this.applyMove(move);
+    let color: 'W' | 'B';
+    if (move.playerID === this.state.black) {
+      color = 'B';
+    } else {
+      color = 'W';
+    }
+    // promoted pieces must be a pawn
+    let piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
+    const cleanMove: ChessMove = {
+      gamePiece: {
+        piece,
+        row: move.move.gamePiece.row,
+        col: move.move.gamePiece.col,
+      },
+      promotion: move.move.promotion, // add promotion type to move
+      toRow: move.move.toRow,
+      toCol: move.move.toCol,
+    };
+    // apply move reguarly
+    this._genericValidateMove(cleanMove);
+    piece.validate_move(cleanMove.toRow, cleanMove.toCol, this._board, this.state.moves);
+    this._applyMove(cleanMove);
+
 
     // we can now assume that in our list of pieces, there is a pawn
     // at the location (toRow, toCol). we find this piece, and replace it.
-    const index = this.state.pieces.findIndex(
-      p => p.piece.type === 'P' && p.row === move.move.toRow && p.col === move.move.toCol,
-    );
+    // const index = this.state.pieces.findIndex(p => {
+    //   return p.piece.type === 'P' &&
+    //     p.row === move.move.toRow &&
+    //     p.col === move.move.toCol
+    // });
 
-    if (index !== -1) {
-      this.state.pieces.splice(index, 1);
-      this.state.pieces.push({
-        piece: { type: move.move.promotion, color: move.move.gamePiece.piece.color } as ChessPiece,
-        row: move.move.toRow as ChessBoardPosition,
-        col: move.move.toCol as ChessBoardPosition,
-      } as ChessPiecePosition);
-      // eslint-disable-next-line no-console
-      console.log('Current state of pieces:', this.state.pieces);
-    } else {
-      throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
-    }
+    // if (index !== -1) {
+    //   this.state.pieces.splice(index, 1);
+    //   this.state.pieces.push({
+    //     piece: { type: move.move.promotion, color: move.move.gamePiece.piece.color } as ChessPiece,
+    //     row: move.move.toRow as ChessBoardPosition,
+    //     col: move.move.toCol as ChessBoardPosition,
+    //   } as ChessPiecePosition);
+    //   console.log('Current state of pieces:', this.state.pieces);
+    // } else {
+    //   throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
+    // }
   }
 
   /**
@@ -500,11 +527,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       .filter(item => item !== undefined)
       .map(
         chessPiece =>
-          ({
-            piece: { type: chessPiece?.type, color: chessPiece?.color },
-            col: chessPiece?.col,
-            row: chessPiece?.row,
-          } as ChessPiecePosition),
+        ({
+          piece: { type: chessPiece?.type, color: chessPiece?.color },
+          col: chessPiece?.col,
+          row: chessPiece?.row,
+        } as ChessPiecePosition),
       );
   }
 }
