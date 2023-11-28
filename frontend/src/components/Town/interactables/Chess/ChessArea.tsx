@@ -34,8 +34,7 @@ function formatTime(time: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-let TIME: number;
-let wflag = false;
+let wflag = false; // Flags for inital setting the value
 let bflag = false;
 /**
  * Chess Area Component.
@@ -53,8 +52,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
   const [drawProposed, setDrawProposed] = useState(false);
   const [drawString, setDrawString] = useState('Draw?');
-  const [blackTimer, setBlackTimer] = useState(0); // Initial time for black player (10 minutes)
-  const [whiteTimer, setWhiteTimer] = useState(0); // Initial time for white player (10 minutes)
+  const [blackTimer, setBlackTimer] = useState(10 * 60 * gameAreaController.timer);
+  const [whiteTimer, setWhiteTimer] = useState(10 * 60 * gameAreaController.timer);
   const blackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const whiteTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -71,9 +70,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
 
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
         if (!bflag) {
-          //blackTimerRef.current = setInterval(() => {
-          setBlackTimer(10 * 60 * TIME);
-          //}, 1000);
+          setBlackTimer(10 * 60 * gameAreaController.timer);
           bflag = true;
         }
         blackTimerRef.current = setInterval(() => {
@@ -81,6 +78,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
             const newTime = Math.max(0, prevTime - 1000); // Decrease by 1 second
             if (newTime === 0) {
               if (townController.ourPlayer === black) {
+                bflag = false;
+                wflag = false;
                 gameAreaController.leaveGame();
               }
             }
@@ -94,9 +93,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       // Start white player's timer
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === white) {
         if (!wflag) {
-          // whiteTimerRef.current = setInterval(() => {
-          setWhiteTimer(10 * 60 * TIME);
-          //}, 1000);
+          setWhiteTimer(10 * 60 * gameAreaController.timer);
           wflag = true;
         }
         whiteTimerRef.current = setInterval(() => {
@@ -104,6 +101,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
             const newTime = Math.max(0, prevTime - 1000); // Decrease by 1 second
             if (newTime === 0) {
               if (townController.ourPlayer === white) {
+                bflag = false;
+                wflag = false;
                 gameAreaController.leaveGame();
               }
             }
@@ -138,20 +137,17 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       }
       bflag = false;
       wflag = false;
+      setWhiteTimer(gameAreaController.timer);
+      setBlackTimer(gameAreaController.timer);
     };
 
     gameAreaController.addListener('gameEnd', onGameEnd);
     return () => {
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
-      if (blackTimerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        clearInterval(blackTimerRef.current);
-      }
-      if (whiteTimerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        clearInterval(whiteTimerRef.current);
-      }
+      // gameAreaController.timer = 1000;
+      bflag = false;
+      wflag = false;
     };
   }, [townController, gameAreaController, toast, drawProposed, gameStatus, black, white]);
 
@@ -168,6 +164,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
     );
   } else {
     let joinGameButton = <></>;
+    let joinFastGameButton = <></>;
+    let joinLightningGameButton = <></>;
     if (
       (gameAreaController.status === 'WAITING_TO_START' && !gameAreaController.isPlayer) ||
       gameAreaController.status === 'OVER'
@@ -175,7 +173,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       joinGameButton = (
         <Button
           onClick={async () => {
-            TIME = 1000;
+            gameAreaController.timer = 1000;
             setJoiningGame(true);
             try {
               await gameAreaController.joinGame();
@@ -193,10 +191,54 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           Join New Game
         </Button>
       );
+      joinFastGameButton = (
+        <Button
+          onClick={async () => {
+            gameAreaController.timer = 500;
+            setJoiningGame(true);
+            try {
+              await gameAreaController.joinGame();
+            } catch (err) {
+              toast({
+                title: 'Error joining game',
+                description: (err as Error).toString(),
+                status: 'error',
+              });
+            }
+            setJoiningGame(false);
+          }}
+          isLoading={joiningGame}
+          disabled={joiningGame}>
+          Join Fast Game
+        </Button>
+      );
+      joinLightningGameButton = (
+        <Button
+          onClick={async () => {
+            gameAreaController.timer = 100;
+            setJoiningGame(true);
+            try {
+              await gameAreaController.joinGame();
+            } catch (err) {
+              toast({
+                title: 'Error joining game',
+                description: (err as Error).toString(),
+                status: 'error',
+              });
+            }
+            setJoiningGame(false);
+          }}
+          isLoading={joiningGame}
+          disabled={joiningGame}>
+          Join Lightning Game
+        </Button>
+      );
     }
+
     gameStatusText = (
       <b>
         Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
+        {joinFastGameButton} {joinLightningGameButton}
       </b>
     );
   }

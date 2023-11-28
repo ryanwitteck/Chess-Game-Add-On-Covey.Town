@@ -255,6 +255,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                       return; // return statements cut the function off before makeMove is run
                     }
                   }
+                  // else, if we're the white player
                 } else if (gameAreaController.white === townController.ourPlayer) {
                   if (primedPiece.row === 6) {
                     if (i === 7) {
@@ -298,113 +299,97 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     }
   }
 
-// Function that renders the black player's POV
-function RenderBlackPlayerPOV(): JSX.Element {
-  const renderBoard: JSX.Element[] = [];
+  // Function that renders the black player's POV
+  function RenderBlackPlayerPOV(): JSX.Element {
+    const renderBoard: JSX.Element[] = [];
 
-  for (let i = 0; i <= 7; i++) {
-    for (let j = 0; j <= 7; j++) {
-      FillRenderBoard(renderBoard, i as ChessBoardPosition, j as ChessBoardPosition);
+    for (let i = 0; i <= 7; i++) {
+      for (let j = 0; j <= 7; j++) {
+        FillRenderBoard(renderBoard, i as ChessBoardPosition, j as ChessBoardPosition);
+      }
     }
+    return (
+      <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
+        {renderBoard}
+      </StyledChessBoard>
+    );
   }
+
+  // Function that renders the white player's POV.
+  function RenderWhitePlayerPOV(): JSX.Element {
+    const renderBoard: JSX.Element[] = [];
+
+    for (let i = 7; i >= 0; i--) {
+      for (let j = 7; j >= 0; j--) {
+        FillRenderBoard(renderBoard, i as ChessBoardPosition, j as ChessBoardPosition);
+      }
+    }
+    return (
+      <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
+        {renderBoard}
+      </StyledChessBoard>
+    );
+  }
+
+  // this should return a vertical stack of components: the promotion buttons & chessboard
+  // the promotion buttons are displayed conditionally, dependent on the canPromote state.
+  // if the promotion buttons are clicked, then it will call the PromotePiece function.
   return (
-    <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
-      {renderBoard}
-    </StyledChessBoard>
+    <VStack display={'flex'}>
+      {canPromote ?
+        <HStack>
+          <IconButton
+            aria-label='promote-queen'
+            icon={<Image
+              src={gameAreaController.white === townController.ourPlayer ?
+                "https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn" :
+                "https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"}
+              aria-label='promote-q'
+              height={'75%'}
+              alt='promote to queen'></Image>}
+            onClick={async () => {
+              PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'Q');
+            }}
+          ></IconButton>
+          <IconButton
+            aria-label='promote-knight'
+            icon={<Image
+              src={gameAreaController.white === townController.ourPlayer ?
+                "https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL" :
+                "https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"}
+              aria-label='promote-n'
+              height={'75%'}
+              alt='promote to knight'></Image>}
+            onClick={async () => {
+              PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'N');
+            }}></IconButton>
+          <IconButton
+            aria-label='promote-bishop'
+            icon={<Image
+              src={gameAreaController.white === townController.ourPlayer ?
+                "https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8" :
+                "https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"}
+              aria-label='promote-b'
+              height={'75%'}
+              alt='promote to bishop'></Image>}
+            onClick={async () => {
+              PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'B');
+            }}></IconButton>
+          <IconButton
+            aria-label='promote-rook'
+            icon={<Image
+              src={gameAreaController.white === townController.ourPlayer ?
+                "https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv" :
+                "https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"}
+              aria-label='promote-r'
+              height={'75%'}
+              alt='promote to rook'></Image>}
+            onClick={async () => {
+              PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'R');
+            }}></IconButton>
+        </HStack> : <></>}
+      {gameAreaController.black === townController.ourPlayer ? RenderBlackPlayerPOV() : RenderWhitePlayerPOV()}
+    </VStack>
   );
 }
 
-// Function that renders the white player's POV.
-function RenderWhitePlayerPOV(): JSX.Element {
-  const renderBoard: JSX.Element[] = [];
-
-  for (let i = 7; i >= 0; i--) {
-    for (let j = 7; j >= 0; j--) {
-      FillRenderBoard(renderBoard, i as ChessBoardPosition, j as ChessBoardPosition);
-    }
-  }
-  return (
-    <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
-      {renderBoard}
-    </StyledChessBoard>
-  );
-}
-
-// this should return a vertical stack of components: the promotion buttons & chessboard
-// the promotion buttons are displayed conditionally, dependent on the canPromote state.
-// if the promotion buttons are clicked, then it will call the PromotePiece function.
-return (
-  <VStack display={'flex'}>
-    {canPromote ?
-      <HStack>
-        <IconButton
-          aria-label='promote-queen'
-          icon={<Image
-            src={gameAreaController.white === townController.ourPlayer ?
-              "https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn" :
-              "https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"}
-            aria-label='promote-q'
-            height={'75%'}
-            alt='promote to queen'></Image>}
-          onClick={async () => {
-            PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'Q');
-          }}
-        ></IconButton>
-        <IconButton
-          aria-label='promote-knight'
-          icon={<Image
-            src={gameAreaController.white === townController.ourPlayer ?
-              "https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL" :
-              "https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"}
-            aria-label='promote-n'
-            height={'75%'}
-            alt='promote to knight'></Image>}
-          onClick={async () => {
-            PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'N');
-          }}></IconButton>
-        <IconButton
-          aria-label='promote-bishop'
-          icon={<Image
-            src={gameAreaController.white === townController.ourPlayer ?
-              "https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8" :
-              "https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"}
-            aria-label='promote-b'
-            height={'75%'}
-            alt='promote to bishop'></Image>}
-          onClick={async () => {
-            PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'B');
-          }}></IconButton>
-        <IconButton
-          aria-label='promote-rook'
-          icon={<Image
-            src={gameAreaController.white === townController.ourPlayer ?
-              "https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv" :
-              "https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"}
-            aria-label='promote-r'
-            height={'75%'}
-            alt='promote to rook'></Image>}
-          onClick={async () => {
-            PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'R');
-          }}></IconButton>
-      </HStack> : <></>}
-    {gameAreaController.black === townController.ourPlayer ? RenderBlackPlayerPOV() : RenderWhitePlayerPOV()}
-  </VStack>
-);
-  }
-
-/*
-if ((primedPiece.piece.type === 'P' &&
-                    primedPiece.piece.color === 'W' &&
-                    primedPiece.row === 6 &&
-                    clickedRow === 7) || 
-                    (primedPiece.piece.type === 'P' &&
-                    primedPiece.piece.color === 'B' &&
-                    primedPiece.row === 1 &&
-                    clickedRow === 0)) {
-                    console.log('we made it to the end');
-                    console.log('we DONT want to go to the next turn');
-                    setCanPromote(true);
-                    return;
-                  }
-
-*/
