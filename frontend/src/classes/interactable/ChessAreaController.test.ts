@@ -44,39 +44,39 @@ describe('[T1] ChessAreaController', () => {
   function _createNewBoard(): ChessBoardSquare[][] {
     // fill the board with undefined cells
     const newBoard = Array.from({ length: 8 }).map(() => Array.from({ length: 8 }).fill(undefined));
-  
+
     // instantiate the pawns
     for (let col = 0; col < 8; col++) {
       newBoard[1][col] = { type: 'P', color: 'W' } as ChessPiece;
       newBoard[6][col] = { type: 'P', color: 'B' } as ChessPiece;
     }
-  
+
     // Add in the Rooks:
     newBoard[0][0] = { type: 'R', color: 'W' } as ChessPiece;
     newBoard[0][7] = { type: 'R', color: 'W' } as ChessPiece;
     newBoard[7][0] = { type: 'R', color: 'B' } as ChessPiece;
     newBoard[7][7] = { type: 'R', color: 'B' } as ChessPiece;
-  
+
     // Add in the Knights:
     newBoard[0][1] = { type: 'N', color: 'W' } as ChessPiece;
     newBoard[0][6] = { type: 'N', color: 'W' } as ChessPiece;
     newBoard[7][1] = { type: 'N', color: 'B' } as ChessPiece;
     newBoard[7][6] = { type: 'N', color: 'B' } as ChessPiece;
-  
+
     // Add in the Bishops:
     newBoard[0][2] = { type: 'B', color: 'W' } as ChessPiece;
     newBoard[0][5] = { type: 'B', color: 'W' } as ChessPiece;
     newBoard[7][2] = { type: 'B', color: 'B' } as ChessPiece;
     newBoard[7][5] = { type: 'B', color: 'B' } as ChessPiece;
-  
+
     // Add in Queens:
     newBoard[0][4] = { type: 'Q', color: 'W' } as ChessPiece;
     newBoard[7][4] = { type: 'Q', color: 'B' } as ChessPiece;
-  
+
     // Add in Kings:
     newBoard[0][3] = { type: 'K', color: 'W' } as ChessPiece;
     newBoard[7][3] = { type: 'K', color: 'B' } as ChessPiece;
-  
+
     return newBoard as ChessBoardSquare[][];
   }
   function chessAreaControllerWithProp({
@@ -114,17 +114,17 @@ describe('[T1] ChessAreaController', () => {
         game: undefinedGame
           ? undefined
           : {
-            id,
-            players: players,
-            state: {
-              status: status || 'IN_PROGRESS',
-              white: white,
-              black: black,
-              moves: moves || [],
-              pieces: pieces || [],
-              winner: winner,
+              id,
+              players: players,
+              state: {
+                status: status || 'IN_PROGRESS',
+                white: white,
+                black: black,
+                moves: moves || [],
+                pieces: pieces || [],
+                winner: winner,
+              },
             },
-          },
       },
       mockTownController,
     );
@@ -321,17 +321,17 @@ describe('[T1] ChessAreaController', () => {
     describe('makeMove', () => {
       it('should throw an error if the game is not in progress', async () => {
         const controller = chessAreaControllerWithProp({});
-        await expect(async () => controller.makeMove({
-          gamePiece: {
-            piece: { type: 'P', color: 'W' } as ChessPiece,
-            row: 1,
-            col: 0,
-          },
-          toRow: 2,
-          toCol: 0,
-        })).rejects.toEqual(
-          new Error(NO_GAME_IN_PROGRESS_ERROR),
-        );
+        await expect(async () =>
+          controller.makeMove({
+            gamePiece: {
+              piece: { type: 'P', color: 'W' } as ChessPiece,
+              row: 1,
+              col: 0,
+            },
+            toRow: 2,
+            toCol: 0,
+          }),
+        ).rejects.toEqual(new Error(NO_GAME_IN_PROGRESS_ERROR));
       });
       it('Should call townController.sendInteractableCommand', async () => {
         const controller = chessAreaControllerWithProp({
@@ -382,8 +382,8 @@ describe('[T1] ChessAreaController', () => {
         });
         for (let i: ChessBoardPosition = 0; i <= 7; i++) {
           for (let j: ChessBoardPosition = 0; j <= 7; j++) {
+            // eslint-disable-next-line no-empty
             if (controller.board[i][j] !== undefined) {
-              
             }
           }
         }
@@ -410,7 +410,7 @@ describe('[T1] ChessAreaController', () => {
             toCol: 0,
           },
         ];
-        
+
         assert(model.game);
         const newModel: GameArea<ChessGameState> = {
           ...model,
@@ -427,16 +427,88 @@ describe('[T1] ChessAreaController', () => {
         const boardChangedCall = emitSpy.mock.calls.find(call => call[0] === 'boardChanged');
         expect(boardChangedCall).toBeDefined();
         if (boardChangedCall)
-        expect(controller.board).toEqual([
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-        ]);
+          expect(controller.board).toEqual([
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+            [
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+            ],
+          ]);
       });
       it('should emit a turnChanged event with true if it is our turn', () => {
         const model = controller.toInteractableAreaModel();
@@ -635,14 +707,14 @@ describe('[T1] ChessAreaController', () => {
         };
         controller.updateFrom(newModel, otherPlayers.concat(ourPlayer));
         expect(controller.board).toEqual([
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
-          [undefined, undefined, undefined,undefined,undefined,undefined,undefined,undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+          [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
         ]);
       });
     });
@@ -657,6 +729,3 @@ describe('[T1] ChessAreaController', () => {
     });
   });
 });
-
-
-

@@ -213,7 +213,6 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     if (wasOurTurn != isOurTurn) this.emit('turnChanged', isOurTurn);
   }
 
-  
   /**
    * TODO: documentation
    */
@@ -226,7 +225,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       type: 'ChessMove',
       gameID: instanceID,
       move: move,
-      promotion: move.promotion, 
+      promotion: move.promotion,
       // ^^ if the move given specifies a promotion, this will be defined.
       // default should be undefined.
     });
