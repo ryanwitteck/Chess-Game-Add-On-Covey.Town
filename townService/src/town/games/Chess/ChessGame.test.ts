@@ -399,7 +399,7 @@ describe('ChessGame', () => {
         expect(game.state.moves[0]).toEqual(move);
         expect(game.state.moves[1]).toEqual(move1);
       });
-      it('should not end the game and declare a white win if the black king is not on the board', () => {
+      it('should end the game and declare a white win if the black king is not on the board', () => {
         const testPiece = new Pawn('W', 1, 3);
         const move: ChessMove = {
           gamePiece: {
@@ -460,6 +460,79 @@ describe('ChessGame', () => {
         game.applyMove({gameID: game.id, playerID: player1.id, move: move4});
         expect(game.state.status).toEqual('OVER');
         expect(game.state.winner).toEqual(player1.id);
+      });
+      it('should end the game and declare a black win if the white king is not on the board', () => {
+        const testPiece = new Pawn('W', 1, 4);
+        const move: ChessMove = {
+          gamePiece: {
+            piece: testPiece,
+            row: 1,
+            col: 4,
+          },
+          toRow: 2,
+          toCol: 4,
+        };
+        game.applyMove({gameID: game.id, playerID: player1.id, move});
+        const testPiece1 = new Pawn('B', 6, 3);
+        const move1: ChessMove = {
+          gamePiece: {
+            piece: testPiece1,
+            row: 6,
+            col: 3,
+          },
+          toRow: 5,
+          toCol: 3,
+        };
+        game.applyMove({gameID: game.id, playerID: player2.id, move: move1});
+        const testPiece2 = new Pawn('W', 1, 0);
+        const move2: ChessMove = {
+          gamePiece: {
+            piece: testPiece2,
+            row: 1,
+            col: 0,
+          },
+          toRow: 2,
+          toCol: 0,
+        };
+        game.applyMove({gameID: game.id, playerID: player1.id, move: move2});
+
+        const testPiece3 = new Bishop('B', 7, 2);
+        const move3: ChessMove = {
+          gamePiece: {
+            piece: testPiece3,
+            row: 7,
+            col: 2,
+          },
+          toRow: 3,
+          toCol: 6,
+        };
+        game.applyMove({gameID: game.id, playerID: player2.id, move: move3});
+
+        const testPiece4 = new Pawn('W', 2, 0);
+        const move4: ChessMove = {
+          gamePiece: {
+            piece: testPiece4,
+            row: 2,
+            col: 0,
+          },
+          toRow: 3,
+          toCol: 0,
+        };
+        game.applyMove({gameID: game.id, playerID: player1.id, move: move4});
+
+        const testPiece5 = new Bishop('W', 3, 6);
+        const move5: ChessMove = {
+          gamePiece: {
+            piece: testPiece5,
+            row: 3,
+            col: 6,
+          },
+          toRow: 0,
+          toCol: 3,
+        };
+        game.applyMove({gameID: game.id, playerID: player2.id, move: move5});
+        expect(game.state.status).toEqual('OVER');
+        expect(game.state.winner).toEqual(player2.id);
       });
     });
   });

@@ -226,7 +226,7 @@ describe('ChessArea', () => {
           expect(interactableUpdateSpy).not.toHaveBeenCalled();
         });
         describe('when the game is over, it records a new row in the history and calls _emitAreaChanged', () => {
-          test('when X wins', () => {
+          test('when White wins', () => {
             const testPiece = new King('B', 0, 0);
             const move: ChessMove = {
               gamePiece: {
@@ -252,7 +252,7 @@ describe('ChessArea', () => {
             });
             expect(interactableUpdateSpy).toHaveBeenCalledTimes(1);
           });
-          test('when O wins', () => {
+          test('when Black wins', () => {
             const testPiece = new King('B', 0, 0);
             const move: ChessMove = {
               gamePiece: {
@@ -373,7 +373,7 @@ describe('ChessArea', () => {
         });
       });
     });
-    describe('[T3.3] when given a ChessDraw command', () => {
+    describe('[T3.4] when given a ChessDraw command', () => {
       it('should throw an error when there is no game in progress', () => {
         expect(() =>
           gameArea.handleCommand(
@@ -402,6 +402,71 @@ describe('ChessArea', () => {
               player1,
             ),
           ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+        });
+      });
+    });
+    describe('[T3.4] when given a Promotion command', () => {
+      it('should throw an error when there is no game in progress', () => {
+        expect(() =>
+          gameArea.handleCommand(
+            {
+              type: 'Promotion',
+              gameID: nanoid(),
+              promo: 'Q',
+            },
+            player1,
+          ),
+        ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      });
+      describe('when there is a game in progress', () => {
+        let gameID: GameInstanceID;
+        beforeEach(() => {
+          gameID = gameArea.handleCommand({ type: 'JoinGame' }, player1).gameID;
+          gameArea.handleCommand({ type: 'JoinGame' }, player2);
+          interactableUpdateSpy.mockClear();
+        });
+        it('should throw an error when there if the game id does not match', () => {
+          expect(() =>
+            gameArea.handleCommand(
+              {
+                type: 'Promotion',
+                gameID: nanoid(),
+                promo: 'Q',
+              },
+              player1,
+            ),
+          ).toThrowError(GAME_ID_MISSMATCH_MESSAGE);
+        });
+        it('should update the promotion type when given a valid command', () => {
+          gameArea.handleCommand(
+            {
+              type: 'Promotion',
+              gameID: game.id,
+              promo: 'R',
+            },
+            player1,
+          );
+          expect(gameArea.game?.promotion).toEqual('R')
+        });
+        it('should update the promotion type when given a valid command v2', () => {
+          gameArea.handleCommand(
+            {
+              type: 'Promotion',
+              gameID: game.id,
+              promo: 'N',
+            },
+            player1,
+          );
+          expect(gameArea.game?.promotion).toEqual('N')
+          gameArea.handleCommand(
+            {
+              type: 'Promotion',
+              gameID: game.id,
+              promo: 'Q',
+            },
+            player1,
+          );
+          expect(gameArea.game?.promotion).toEqual('Q')
         });
       });
     });
