@@ -1,11 +1,10 @@
-import { chakra, SimpleGrid, Image, IconButton, useToast, HStack, VStack, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react';
+import { chakra, SimpleGrid, Image, IconButton, useToast, HStack, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
   ChessBoardPosition,
   ChessBoardSquare,
   ChessColor,
   ChessMove,
-  ChessPiece,
   ChessPiecePosition,
 } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
@@ -26,94 +25,118 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
   if (piece.color === 'W') {
     switch (piece.type) {
       case 'P':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=11wAxmXy9nkPIhDXXN3z936dwhIp_EUYE"
-          aria-label='wp'
-          alt='pawn'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=11wAxmXy9nkPIhDXXN3z936dwhIp_EUYE'
+            aria-label='wp'
+            alt='pawn'
+            color={'skyblue'}
+          />
+        );
       case 'R':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv"
-          aria-label='wr'
-          alt='rook'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv'
+            aria-label='wr'
+            alt='rook'
+            color={'skyblue'}
+          />
+        );
       case 'B':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8"
-          aria-label='wb'
-          alt='bishop'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8'
+            aria-label='wb'
+            alt='bishop'
+            color={'skyblue'}
+          />
+        );
       case 'N':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL"
-          aria-label='wn'
-          alt='knight'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL'
+            aria-label='wn'
+            alt='knight'
+            color={'skyblue'}
+          />
+        );
       case 'Q':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn"
-          aria-label='wq'
-          alt='queen'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn'
+            aria-label='wq'
+            alt='queen'
+            color={'skyblue'}
+          />
+        );
       case 'K':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1c1wAv965tW-46v_QAkRJJX3w_teSoAHR"
-          aria-label='wk'
-          alt='king'
-          color={'skyblue'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1c1wAv965tW-46v_QAkRJJX3w_teSoAHR'
+            aria-label='wk'
+            alt='king'
+            color={'skyblue'}
+          />
+        );
       default:
         throw Error('error converting chessboardsquare to image');
     }
   } else {
     switch (piece.type) {
       case 'P':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1IM-V6_xCpF6g1r1H-AlQXX1BpijGi0-E"
-          aria-label='bp'
-          alt='pawn'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1IM-V6_xCpF6g1r1H-AlQXX1BpijGi0-E'
+            aria-label='bp'
+            alt='pawn'
+            color={'navy'}
+          />
+        );
       case 'R':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"
-          aria-label='br'
-          alt='rook'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i'
+            aria-label='br'
+            alt='rook'
+            color={'navy'}
+          />
+        );
       case 'B':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"
-          aria-label='bb'
-          alt='bishop'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8'
+            aria-label='bb'
+            alt='bishop'
+            color={'navy'}
+          />
+        );
       case 'N':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"
-          aria-label='bn'
-          alt='knight'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp'
+            aria-label='bn'
+            alt='knight'
+            color={'navy'}
+          />
+        );
       case 'Q':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"
-          aria-label='bq'
-          alt='queen'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt'
+            aria-label='bq'
+            alt='queen'
+            color={'navy'}
+          />
+        );
       case 'K':
-        return <Image
-          src="https://drive.google.com/uc?export=download&id=1mDzRr9Dv5oaUeKB89QQTkx9EVhVUgZ16"
-          aria-label='bk'
-          alt='king'
-          color={'navy'}
-        />;
+        return (
+          <Image
+            src='https://drive.google.com/uc?export=download&id=1mDzRr9Dv5oaUeKB89QQTkx9EVhVUgZ16'
+            aria-label='bk'
+            alt='king'
+            color={'navy'}
+          />
+        );
       default:
         throw Error('error converting chessboardsquare to image');
     }
@@ -153,6 +176,7 @@ const StyledChessBoard = chakra(SimpleGrid, {
 export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.Element {
   const townController = useTownController();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const gameState = gameAreaController.status;
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
@@ -178,7 +202,11 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   // Function that takes in a ChessType, and then sends a promote command.
   // One issue: when the next move happens, the promoted piece goes back to a pawn lol.
   // I implemented promotion incorrectly in the backend oops.
-  async function PromotePiece(toRow: ChessBoardPosition, toCol: ChessBoardPosition, type: 'B' | 'R' | 'N' | 'Q') {
+  async function PromotePiece(
+    toRow: ChessBoardPosition,
+    toCol: ChessBoardPosition,
+    type: 'B' | 'R' | 'N' | 'Q',
+  ) {
     setCanPromote(false);
     await gameAreaController.makeMove({
       gamePiece: primedPiece as ChessPiecePosition,
@@ -190,9 +218,13 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     setPrimedPiece(undefined);
   }
 
-  // helper function to fill out the ChessBoard. 
+  // helper function to fill out the ChessBoard.
   // acts as an abstraction for RenderWhitePlayerPOV and RenderBlackPlayerPOV.
-  function FillRenderBoard(renderBoard: JSX.Element[], i: ChessBoardPosition, j: ChessBoardPosition) {
+  function FillRenderBoard(
+    renderBoard: JSX.Element[],
+    i: ChessBoardPosition,
+    j: ChessBoardPosition,
+  ) {
     const isLightSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
     const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
     const chessSquareImage = pieceToImage(board[i][j]);
@@ -267,8 +299,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
               }
               makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
             }
-          }}>
-        </StyledChessSquare>,
+          }}></StyledChessSquare>,
       );
       // This is an empty square
     } else {
@@ -293,8 +324,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
               }
               makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
             }
-          }}>
-        </StyledChessSquare>,
+          }}></StyledChessSquare>,
       );
     }
   }
@@ -336,60 +366,79 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   // if the promotion buttons are clicked, then it will call the PromotePiece function.
   return (
     <VStack display={'flex'}>
-      {canPromote ?
+      {canPromote ? (
         <HStack>
           <IconButton
             aria-label='promote-queen'
-            icon={<Image
-              src={gameAreaController.white === townController.ourPlayer ?
-                "https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn" :
-                "https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"}
-              aria-label='promote-q'
-              height={'75%'}
-              alt='promote to queen'></Image>}
+            icon={
+              <Image
+                src={
+                  gameAreaController.white === townController.ourPlayer
+                    ? 'https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn'
+                    : 'https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt'
+                }
+                aria-label='promote-q'
+                height={'75%'}
+                alt='promote to queen'></Image>
+            }
             onClick={async () => {
               PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'Q');
-            }}
-          ></IconButton>
+            }}></IconButton>
           <IconButton
             aria-label='promote-knight'
-            icon={<Image
-              src={gameAreaController.white === townController.ourPlayer ?
-                "https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL" :
-                "https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"}
-              aria-label='promote-n'
-              height={'75%'}
-              alt='promote to knight'></Image>}
+            icon={
+              <Image
+                src={
+                  gameAreaController.white === townController.ourPlayer
+                    ? 'https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL'
+                    : 'https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp'
+                }
+                aria-label='promote-n'
+                height={'75%'}
+                alt='promote to knight'></Image>
+            }
             onClick={async () => {
               PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'N');
             }}></IconButton>
           <IconButton
             aria-label='promote-bishop'
-            icon={<Image
-              src={gameAreaController.white === townController.ourPlayer ?
-                "https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8" :
-                "https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"}
-              aria-label='promote-b'
-              height={'75%'}
-              alt='promote to bishop'></Image>}
+            icon={
+              <Image
+                src={
+                  gameAreaController.white === townController.ourPlayer
+                    ? 'https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8'
+                    : 'https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8'
+                }
+                aria-label='promote-b'
+                height={'75%'}
+                alt='promote to bishop'></Image>
+            }
             onClick={async () => {
               PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'B');
             }}></IconButton>
           <IconButton
             aria-label='promote-rook'
-            icon={<Image
-              src={gameAreaController.white === townController.ourPlayer ?
-                "https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv" :
-                "https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"}
-              aria-label='promote-r'
-              height={'75%'}
-              alt='promote to rook'></Image>}
+            icon={
+              <Image
+                src={
+                  gameAreaController.white === townController.ourPlayer
+                    ? 'https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv'
+                    : 'https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i'
+                }
+                aria-label='promote-r'
+                height={'75%'}
+                alt='promote to rook'></Image>
+            }
             onClick={async () => {
               PromotePiece(clickedRow as ChessBoardPosition, clickedCol as ChessBoardPosition, 'R');
             }}></IconButton>
-        </HStack> : <></>}
-      {gameAreaController.black === townController.ourPlayer ? RenderBlackPlayerPOV() : RenderWhitePlayerPOV()}
+        </HStack>
+      ) : (
+        <></>
+      )}
+      {gameAreaController.black === townController.ourPlayer
+        ? RenderBlackPlayerPOV()
+        : RenderWhitePlayerPOV()}
     </VStack>
   );
 }
-

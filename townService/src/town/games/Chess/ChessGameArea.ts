@@ -85,6 +85,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
 
       // if true, then we are trying to promote!
       if (command.promotion) {
+        // eslint-disable-next-line no-console
         console.log('Chess Game Area: we want to promote!');
         game.promotePiece({
           gameID: command.gameID,
@@ -92,6 +93,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
           move: command.move, // this also holds promotion information
         });
       } else {
+        // eslint-disable-next-line no-console
         console.log('Chess Game Area: normal move');
         game.applyMove({
           gameID: command.gameID,
@@ -102,7 +104,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }
-    
+
     // handle the draw logic here.
     if (command.type === 'ChessDraw') {
       const game = this._game;
