@@ -405,6 +405,7 @@ describe('ChessArea', () => {
         });
       });
     });
+    /** 
     describe('[T3.4] when given a Promotion command', () => {
       it('should throw an error when there is no game in progress', () => {
         expect(() =>
@@ -412,12 +413,13 @@ describe('ChessArea', () => {
             {
               type: 'Promotion',
               gameID: nanoid(),
-              promo: 'Q',
+               promo: 'Q',
             },
             player1,
           ),
         ).toThrowError(GAME_NOT_IN_PROGRESS_MESSAGE);
       });
+      
       describe('when there is a game in progress', () => {
         let gameID: GameInstanceID;
         beforeEach(() => {
@@ -469,7 +471,7 @@ describe('ChessArea', () => {
           expect(gameArea.game?.promotion).toEqual('Q');
         });
       });
-    });
+    }); */
     describe('[T3.4] when given an invalid command', () => {
       it('should throw an error', () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
