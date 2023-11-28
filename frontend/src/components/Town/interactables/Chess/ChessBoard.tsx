@@ -113,7 +113,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     };
   }, [gameAreaController, townController, board, isOurTurn, primed, primedPiece]);
 
-  function RenderWhitePlayerPOV(): JSX.Element {
+  function RenderBlackPlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
 
     // function to make a move with the primed piece
@@ -208,5 +208,105 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
       </StyledChessBoard>
     );
   }
-  return RenderWhitePlayerPOV();
+
+  function RenderWhitePlayerPOV(): JSX.Element {
+    const renderBoard: JSX.Element[] = [];
+
+    // function to make a move with the primed piece
+    const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
+      await gameAreaController.makeMove({
+        gamePiece: primedPiece as ChessPiecePosition,
+        toRow: toRow,
+        toCol: toCol,
+      } as ChessMove);
+      setPrimed(false);
+      setPrimedPiece(undefined);
+    };
+
+    for (let i = 7; i >= 0; i--) {
+      for (let j = 7; j >=0; j--) {
+        const isLightSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
+        const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
+        const chessSquareImage = pieceToImage(board[i][j]);
+
+        // This is NOT an empty square
+        if (board[i] && board[i][j]) {
+          renderBoard.push(
+            <StyledChessSquare
+              key={`${i}.${j}`}
+              disabled={!isOurTurn}
+              background={squareColor}
+              height={70}
+              borderRadius={0}
+              icon={chessSquareImage}
+              onClick={async () => {
+                if (board[i][j]?.color === gameAreaController.gameColor) {
+                  // if we click on our own piece, we will always be trying to prime it
+                  setPrimedPiece({
+                    piece: {
+                      type: board[i][j]?.type ?? 'P',
+                      color: board[i][j]?.color as ChessColor,
+                    },
+                    col: j as ChessBoardPosition,
+                    row: i as ChessBoardPosition,
+                  });
+                  setPrimed(true);
+                  return;
+                }
+
+                if (primed && primedPiece) {
+                  // now, we know we are primed and we didn't click on our own piece.
+                  try {
+                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
+                  } catch (e) {
+                    toast({
+                      title: 'Error making move',
+                      description: (e as Error).toString(),
+                      status: 'error',
+                    });
+                  }
+                }
+              }}>
+              {board[i][j] ? board[i][j]?.type : '' ?? ''}
+            </StyledChessSquare>,
+          );
+
+          // This is an empty square
+        } else {
+          renderBoard.push(
+            <StyledChessSquare
+              key={`${i}.${j}`}
+              disabled={!isOurTurn}
+              background={squareColor}
+              height={70}
+              borderRadius={0}
+              onClick={async () => {
+                if (primed && primedPiece) {
+                  try {
+                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
+                  } catch (e) {
+                    toast({
+                      title: 'Error making move',
+                      description: (e as Error).toString(),
+                      status: 'error',
+                    });
+                  }
+                }
+              }}></StyledChessSquare>,
+          );
+        }
+      }
+    }
+
+    return (
+      <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
+        {renderBoard}
+      </StyledChessBoard>
+    );
+  }
+  if (gameAreaController.black === townController.ourPlayer) {
+    return RenderBlackPlayerPOV();
+  } else {
+    return RenderWhitePlayerPOV();
+  }
 }

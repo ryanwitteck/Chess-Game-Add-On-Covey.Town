@@ -6,7 +6,6 @@ import {
   ChessMove,
   ChessBoardSquare,
   ChessColor,
-  ChessPiece,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
