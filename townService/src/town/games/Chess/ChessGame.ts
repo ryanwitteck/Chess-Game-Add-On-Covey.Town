@@ -40,13 +40,51 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
 
+  /*
+  hz's notes:
+  so the way i approached promotions is basically i just lumped them into the normal chess moves.
+  i added an extra field that each ChessMove can have, which is promotion?
+  so ChessMove now looks like this:
+
+  export interface ChessMove {
+    gamePiece: ChessPiecePosition;
+    toRow: ChessBoardPosition;
+    toCol: ChessBoardPosition;
+    promotion?: 'B' | 'R' | 'Q' | 'N';
+  }
+
+  if you take a look at ChessController, the shared CoveyTownSocket, ChessGame, and ChessGameArea,
+  you can get a better understanding of what i'm doing. 
+
+  right now, the frontend and backend seem to be interacting fine initially, but for some
+  reason after one move AFTER the promotion, the piece goes back to a pawn. 
+
+  so far, i've tried to change the state and account for the promotion tag in the board getter, but alas
+
+  i think the issue is in my backend implementation, not in the controller or frontend, so i'd focus here
+  first to try and find the issue. 
+
+  i've provided some brief comments in the code i've added as well.
+
+  some additional changes i've made to other files include commenting out the promotion sections in the 
+  pawn class. the old approach was a bit clunky to work with in terms of front-end workflow, since pausing
+  the program with that approach wasn't as easy as the approach i have now.
+
+  it might be worth ensuring that you can't move a piece until you promote your pawn, but it's 7:40am and im way
+  too tired to test that myself lol.
+  */
+
+
+
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
-        // account of promotion
+        
+        // account for promotion?
+        // move.promotion will hold the type that you want to promote to, or undefined.
         if (move.promotion) {
           switch (move.promotion) {
             case 'B':
