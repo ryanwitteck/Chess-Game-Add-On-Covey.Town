@@ -16,7 +16,7 @@ export default class Pawn implements IChessPiece {
 
   col: ChessBoardPosition;
 
-  promotion: 'K' | 'Q' | 'R' | 'B' | 'N';
+  promotion: 'Q' | 'R' | 'B' | 'N';
 
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
@@ -26,13 +26,6 @@ export default class Pawn implements IChessPiece {
     this.col = col;
     this.type = 'P';
     this.promotion = 'Q';
-  }
-
-  /**
-   * Set the type this pawn will promote too
-   */
-  public set_promotion(promotion: 'K' | 'Q' | 'R' | 'B' | 'N') {
-    this.promotion = promotion;
   }
 
   validate_move(

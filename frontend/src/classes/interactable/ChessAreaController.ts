@@ -219,6 +219,11 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       throw new Error(NO_GAME_IN_PROGRESS_ERROR);
     }
     await this._townController.sendInteractableCommand(this.id, {
+      type: 'Promotion',
+      gameID: instanceID,
+      promo: 'R',
+    });
+    await this._townController.sendInteractableCommand(this.id, {
       type: 'ChessMove',
       gameID: instanceID,
       move: move,
