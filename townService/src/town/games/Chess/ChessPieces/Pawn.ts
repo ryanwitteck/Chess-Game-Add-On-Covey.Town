@@ -16,6 +16,8 @@ export default class Pawn implements IChessPiece {
 
   col: ChessBoardPosition;
 
+  promotion: 'K' | 'Q' | 'R' | 'B' | 'N';
+
   type: 'K' | 'Q' | 'R' | 'B' | 'N' | 'P';
 
   constructor(color: ChessColor, row: ChessBoardPosition, col: ChessBoardPosition) {
@@ -23,6 +25,14 @@ export default class Pawn implements IChessPiece {
     this.row = row;
     this.col = col;
     this.type = 'P';
+    this.promotion = 'Q'
+  }
+
+  /**
+   * Set the type this pawn will promote too
+   */
+  public set_promotion(promotion: 'K' | 'Q' | 'R' | 'B' | 'N') {
+    this.promotion = promotion;
   }
 
   validate_move(
@@ -45,6 +55,10 @@ export default class Pawn implements IChessPiece {
         }
         // otherwise we can online move upward once
         if (newRow === this.row + 1 && this.col === newCol && board[newRow][newCol] === undefined) {
+          // promotion
+          if (newRow === 7) {
+            this.type = this.promotion;
+          }
           return;
         }
         // diagonal capture
@@ -53,6 +67,10 @@ export default class Pawn implements IChessPiece {
           (newCol === this.col - 1 || newCol === this.col + 1) &&
           board[newRow][newCol]?.color === 'B'
         ) {
+          // promotion
+          if (newRow === 7) {
+            this.type = this.promotion;
+          }
           return;
         }
         //  en passaunt
@@ -90,6 +108,10 @@ export default class Pawn implements IChessPiece {
         }
         // otherwise we can online move upward once
         if (newRow === this.row - 1 && this.col === newCol && board[newRow][newCol] === undefined) {
+          // promotion
+          if (newRow === 0) {
+            this.type = this.promotion;
+          }
           return;
         }
         // diagonal capture
@@ -98,6 +120,10 @@ export default class Pawn implements IChessPiece {
           (newCol === this.col - 1 || newCol === this.col + 1) &&
           board[newRow][newCol]?.color === 'W'
         ) {
+          // promotion
+          if (newRow === 0) {
+            this.type = this.promotion;
+          }
           return;
         }
         //  en passaunt
@@ -120,7 +146,8 @@ export default class Pawn implements IChessPiece {
             return;
           }
         }
-        // promotion
+        
+        
       }
     }
     throw new InvalidParametersError(INVALID_MOVE_MESSAGE);

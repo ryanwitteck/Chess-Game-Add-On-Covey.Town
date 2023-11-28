@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
   Accordion,
   AccordionButton,
@@ -17,7 +18,7 @@ import {
   ModalOverlay,
   useToast,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import PlayerController from '../../../../classes/PlayerController';
 import { useInteractable, useInteractableAreaController } from '../../../../classes/TownController';
@@ -27,6 +28,15 @@ import GameAreaInteractable from '../GameArea';
 import TicTacToeLeaderboard from '../Leaderboard';
 import ChessBoard from './ChessBoard';
 
+function formatTime(time: number): string {
+  const minutes = Math.floor(time / (60 * 1000));
+  const seconds = Math.floor((time % (60 * 1000)) / 1000);
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
+let TIME: number;
+let wflag = false;
+let bflag = false;
 /**
  * Chess Area Component.
  */
@@ -43,6 +53,11 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
   const [drawProposed, setDrawProposed] = useState(false);
   const [drawString, setDrawString] = useState('Draw?');
+  const [blackTimer, setBlackTimer] = useState(0); // Initial time for black player (10 minutes)
+  const [whiteTimer, setWhiteTimer] = useState(0); // Initial time for white player (10 minutes)
+  const blackTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const whiteTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const toast = useToast();
 
   useEffect(() => {
@@ -56,9 +71,53 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setDrawProposed(gameAreaController.drawState);
 
       if (drawProposed) {
-        setDrawString('Draw Proposed')
-      } else if (! drawProposed && gameAreaController.drawState) {
-        setDrawString('Accept Draw?')
+        setDrawString('Draw Proposed');
+      } else if (!drawProposed && gameAreaController.drawState) {
+        setDrawString('Accept Draw?');
+      }
+      if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
+        if (!bflag) {
+          //blackTimerRef.current = setInterval(() => {
+          setBlackTimer(10 * 60 * TIME);
+          //}, 1000);
+          bflag = true;
+        }
+        blackTimerRef.current = setInterval(() => {
+          setBlackTimer(prevTime => {
+            const newTime = Math.max(0, prevTime - 1000); // Decrease by 1 second
+            if (newTime === 0) {
+              if (townController.ourPlayer === black) {
+                gameAreaController.leaveGame();
+              }
+            }
+            return newTime;
+          });
+        }, 1000);
+      } else {
+        clearInterval(blackTimerRef.current as NodeJS.Timeout);
+      }
+
+      // Start white player's timer
+      if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === white) {
+        if (!wflag) {
+          // whiteTimerRef.current = setInterval(() => {
+          setWhiteTimer(10 * 60 * TIME);
+          //}, 1000);
+          wflag = true;
+        }
+        whiteTimerRef.current = setInterval(() => {
+          setWhiteTimer(prevTime => {
+            const newTime = Math.max(0, prevTime - 1000); // Decrease by 1 second
+            if (newTime === 0) {
+              if (townController.ourPlayer === white) {
+                gameAreaController.leaveGame();
+              }
+            }
+            return newTime;
+          });
+        }, 1000);
+      } else {
+        clearInterval(whiteTimerRef.current as NodeJS.Timeout);
       }
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
@@ -84,12 +143,21 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
         });
       }
     };
+
     gameAreaController.addListener('gameEnd', onGameEnd);
     return () => {
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
+      if (blackTimerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        clearInterval(blackTimerRef.current);
+      }
+      if (whiteTimerRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        clearInterval(whiteTimerRef.current);
+      }
     };
-  }, [townController, gameAreaController, toast]);
+  }, [townController, gameAreaController, toast, drawProposed, gameStatus, black, white]);
 
   let gameStatusText = <></>;
   if (gameStatus === 'IN_PROGRESS') {
@@ -111,6 +179,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       joinGameButton = (
         <Button
           onClick={async () => {
+            TIME = 1000;
             setJoiningGame(true);
             try {
               await gameAreaController.joinGame();
@@ -164,7 +233,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           <AccordionPanel>
             <List aria-label='list of observers in the game'>
               {observers.map(player => {
-                return <ListItem key={player.id}>{player.userName}</ListItem>
+                return <ListItem key={player.id}>{player.userName}</ListItem>;
               })}
             </List>
           </AccordionPanel>
@@ -172,10 +241,14 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       </Accordion>
       {gameStatusText}
       <List aria-label='list of players in the game'>
-        <ListItem>White: {white?.userName || '(No player yet!)'}</ListItem>
-        <ListItem>Black: {black?.userName || '(No player yet!)'}</ListItem>
+        <ListItem>
+          White: {white?.userName || '(No player yet!)'} - White Timer: {formatTime(whiteTimer)}
+        </ListItem>
+        <ListItem>
+          Black: {black?.userName || '(No player yet!)'} - Black Timer: {formatTime(blackTimer)}
+        </ListItem>
       </List>
-      <ChessBoard gameAreaController={gameAreaController}/>
+      <ChessBoard gameAreaController={gameAreaController} />
     </Container>
   );
 }
@@ -205,7 +278,7 @@ export default function ChessAreaWrapper(): JSX.Element {
         <ModalContent>
           <ModalHeader>{gameArea.name}</ModalHeader>
           <ModalCloseButton />
-          <ChessArea interactableID={gameArea.name}/>
+          <ChessArea interactableID={gameArea.name} />
         </ModalContent>
       </Modal>
     );

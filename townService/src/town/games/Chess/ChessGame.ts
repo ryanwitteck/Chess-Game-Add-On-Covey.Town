@@ -29,7 +29,6 @@ import Knight from './ChessPieces/Knight';
  * @see https://en.wikipedia.org/wiki/Rules_of_chess
  */
 export default class ChessGame extends Game<ChessGameState, ChessMove> {
-
   public constructor() {
     super({
       pieces: [],
@@ -38,34 +37,85 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     });
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
+
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
-        board[move.toRow][move.toCol] = new Pawn(move.gamePiece.piece.color,move.toRow,move.toCol);
-        // [TODO] account for en passant
-        
+        // account for en passant
+        if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
+          if (move.gamePiece.piece.color === 'B') {
+            board[move.toRow+1][move.toCol] = undefined;
+          }
+          if (move.gamePiece.piece.color === 'W') {
+            board[move.toRow-1][move.toCol] = undefined;
+          }
+        }
+        board[move.toRow][move.toCol] = new Pawn(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'K') {
-        board[move.toRow][move.toCol] = new King(move.gamePiece.piece.color,move.toRow,move.toCol);
-        // [TODO] account for castle
+        // Black short castle
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 7) {
+          board[7][0] = undefined;
+          board[7][2] = new Rook('B',7,2);
+        }
+        // Black long castle
+        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 7) {
+          board[7][7] = undefined;
+          board[7][4] = new Rook('B',7,4);
+        }
+        // White short castle
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 0) {
+          board[0][0] = undefined;
+          board[0][2] = new Rook('W',0,2);
+        }
+        // White long castle
+        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 0) {
+          board[0][7] = undefined;
+          board[0][4] = new Rook('W',0,4);
+        }
+        board[move.toRow][move.toCol] = new King(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'Q') {
-        board[move.toRow][move.toCol] = new Queen(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Queen(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'R') {
-        board[move.toRow][move.toCol] = new Rook(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Rook(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'B') {
-        board[move.toRow][move.toCol] = new Bishop(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Bishop(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
       if (move.gamePiece.piece.type === 'N') {
-        board[move.toRow][move.toCol] = new Knight(move.gamePiece.piece.color,move.toRow,move.toCol);
+        board[move.toRow][move.toCol] = new Knight(
+          move.gamePiece.piece.color,
+          move.toRow,
+          move.toCol,
+        );
       }
     }
-    
+
     return board;
   }
 
@@ -111,8 +161,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
 
     // check to see if the game is in an end state
-    console.log(`Pieces: ${this.state.pieces}`);
-    console.log(`Moves: ${this.state.moves}`)
+    // console.log(`Pieces: ${this.state.pieces}`);
+    // console.log(`Moves: ${this.state.moves}`);
     this._checkForGameEnding();
   }
 
@@ -192,7 +242,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._genericValidateMove(cleanMove);
     piece.validate_move(cleanMove.toRow, cleanMove.toCol, board, this.state.moves);
     this._applyMove(cleanMove);
-    
+
     // add in logic for moving the physical piece in the board.
   }
 
@@ -306,12 +356,12 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     newBoard[7][5] = new Bishop('B', 7, 5);
 
     // Add in Queens:
-    newBoard[0][3] = new Queen('W', 0, 3);
-    newBoard[7][3] = new Queen('B', 7, 3);
+    newBoard[0][4] = new Queen('W', 0, 4);
+    newBoard[7][4] = new Queen('B', 7, 4);
 
     // Add in Kings:
-    newBoard[0][4] = new King('W', 0, 4);
-    newBoard[7][4] = new King('B', 7, 4);
+    newBoard[0][3] = new King('W', 0, 3);
+    newBoard[7][3] = new King('B', 7, 3);
 
     return newBoard as ChessCell[][];
   }
