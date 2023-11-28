@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { doesUserExist, createUser } from './FirebaseService';
 import assert from 'assert';
 import {
   Box,
@@ -35,7 +36,6 @@ export default function TownSelection(): JSX.Element {
   const loginController = useLoginController();
   const { setTownController, townsService } = loginController;
   const { connect: videoConnect } = useVideoContext();
-
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
@@ -56,6 +56,7 @@ export default function TownSelection(): JSX.Element {
       let connectWatchdog: NodeJS.Timeout | undefined = undefined;
       let loadingToast: ToastId | undefined = undefined;
       try {
+        // validate username
         if (!userName || userName.length === 0) {
           toast({
             title: 'Unable to join town',
@@ -64,6 +65,7 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
+        // validate room id
         if (!coveyRoomID || coveyRoomID.length === 0) {
           toast({
             title: 'Unable to join town',
@@ -72,6 +74,16 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
+
+        // check if the user already exists in database
+        const userExists = await doesUserExist(userName);
+        if (userExists) {
+          console.log('User already exists.');
+        } else {
+          // if user does not already exist in databse, create new user
+          await createUser(userName);
+        }
+
         const isHighLatencyTownService =
           process.env.NEXT_PUBLIC_TOWNS_SERVICE_URL?.includes('onrender.com');
         connectWatchdog = setTimeout(() => {
@@ -297,7 +309,6 @@ export default function TownSelection(): JSX.Element {
           <Heading p='4' as='h2' size='lg'>
             -or-
           </Heading>
-
           <Box borderWidth='1px' borderRadius='lg'>
             <Heading p='4' as='h2' size='lg'>
               Join an Existing Town

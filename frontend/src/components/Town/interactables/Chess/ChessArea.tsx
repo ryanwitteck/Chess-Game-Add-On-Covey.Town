@@ -25,8 +25,10 @@ import { useInteractable, useInteractableAreaController } from '../../../../clas
 import useTownController from '../../../../hooks/useTownController';
 import { GameResult, GameStatus, InteractableID } from '../../../../types/CoveyTownSocket';
 import GameAreaInteractable from '../GameArea';
-import TicTacToeLeaderboard from '../Leaderboard';
+import ChessLocalLeaderboard from '../Leaderboard';
+import AllTimeLeaderboard from '../AllTimeLeaderboard';
 import ChessBoard from './ChessBoard';
+import { updateTies, updateWins, updateLosses } from '../../../Login/FirebaseService';
 
 function formatTime(time: number): string {
   const minutes = Math.floor(time / (60 * 1000));
@@ -116,14 +118,21 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       }
     };
     gameAreaController.addListener('gameUpdated', updateGameState);
-    const onGameEnd = () => {
+    const onGameEnd = async () => {
       const winner = gameAreaController.winner;
+      const whiteUsername = white?.userName;
+      const blackUsername = black?.userName;
+
       if (!winner) {
         toast({
           title: 'Game over',
           description: 'Game ended in a tie',
           status: 'info',
         });
+
+        // update tie results in database
+        await updateTies(blackUsername);
+        await updateTies(whiteUsername);
       } else if (winner === townController.ourPlayer) {
         toast({
           title: 'Game over',
@@ -137,6 +146,16 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           status: 'error',
         });
       }
+
+      // update win/loss results in database
+      if (winner?.userName === blackUsername) {
+        await updateWins(blackUsername);
+        await updateLosses(whiteUsername);
+      } else {
+        await updateWins(whiteUsername);
+        await updateLosses(blackUsername);
+      }
+
       bflag = false;
       wflag = false;
       setWhiteTimer(gameAreaController.timer);
@@ -252,13 +271,26 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           <Heading as='h3'>
             <AccordionButton>
               <Box as='span' flex='1' textAlign='left'>
+                All-Time Leaderboard
+                <AccordionIcon />
+              </Box>
+            </AccordionButton>
+          </Heading>
+          <AccordionPanel>
+            <AllTimeLeaderboard topN={5} />
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <Heading as='h3'>
+            <AccordionButton>
+              <Box as='span' flex='1' textAlign='left'>
                 Leaderboard
                 <AccordionIcon />
               </Box>
             </AccordionButton>
           </Heading>
           <AccordionPanel>
-            <TicTacToeLeaderboard results={history} />
+            <ChessLocalLeaderboard results={history} />
           </AccordionPanel>
         </AccordionItem>
         <AccordionItem>
