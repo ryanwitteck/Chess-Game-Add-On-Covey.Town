@@ -232,7 +232,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand | PromotionCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -254,6 +254,12 @@ export interface ChessMoveCommand {
   type: 'ChessMove';
   gameID: GameInstanceID;
   move: ChessMove;
+}
+
+export interface PromotionCommand {
+  type: 'Promotion';
+  gameID: GameInstanceID;
+  promo: 'R' | 'Q' | 'N' | 'B';
 }
 
 export interface ChessDrawCommand {

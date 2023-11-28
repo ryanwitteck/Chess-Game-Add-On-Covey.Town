@@ -38,6 +38,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
 
+  private promotion: 'Q' | 'R' | 'B' | 'N' = 'Q'; 
+
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
@@ -216,6 +218,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
   }
 
+  public promotePiece(type: 'Q' | 'R' | 'B' | 'N'): void {
+    this.promotion = type;
+  }  
+
   /*
    * TODO: Documentation
    * note: we should change the naming convention here, it might get confusing.
@@ -235,6 +241,9 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
     let piece: IChessPiece;
     piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
+    if (move.move.gamePiece.piece.type === 'P') {
+      (piece as Pawn).promotion = this.promotion;
+    }  
     if (move.move.gamePiece.piece.type === 'K') {
       piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
     }
