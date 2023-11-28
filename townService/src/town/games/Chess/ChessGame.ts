@@ -47,10 +47,10 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
         // account for en passant
         if (move.gamePiece.col !== move.toCol && board[move.toRow][move.toCol] === undefined) {
           if (move.gamePiece.piece.color === 'B') {
-            board[move.toRow+1][move.toCol] = undefined;
+            board[move.toRow + 1][move.toCol] = undefined;
           }
           if (move.gamePiece.piece.color === 'W') {
-            board[move.toRow-1][move.toCol] = undefined;
+            board[move.toRow - 1][move.toCol] = undefined;
           }
         }
         board[move.toRow][move.toCol] = new Pawn(
@@ -61,24 +61,44 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       }
       if (move.gamePiece.piece.type === 'K') {
         // Black short castle
-        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 7) {
+        if (
+          move.gamePiece.piece.color === 'B' &&
+          move.gamePiece.col === 3 &&
+          move.toCol === 1 &&
+          move.toRow === 7
+        ) {
           board[7][0] = undefined;
-          board[7][2] = new Rook('B',7,2);
+          board[7][2] = new Rook('B', 7, 2);
         }
         // Black long castle
-        if (move.gamePiece.piece.color === 'B' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 7) {
+        if (
+          move.gamePiece.piece.color === 'B' &&
+          move.gamePiece.col === 3 &&
+          move.toCol === 5 &&
+          move.toRow === 7
+        ) {
           board[7][7] = undefined;
-          board[7][4] = new Rook('B',7,4);
+          board[7][4] = new Rook('B', 7, 4);
         }
         // White short castle
-        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 1 && move.toRow === 0) {
+        if (
+          move.gamePiece.piece.color === 'W' &&
+          move.gamePiece.col === 3 &&
+          move.toCol === 1 &&
+          move.toRow === 0
+        ) {
           board[0][0] = undefined;
-          board[0][2] = new Rook('W',0,2);
+          board[0][2] = new Rook('W', 0, 2);
         }
         // White long castle
-        if (move.gamePiece.piece.color === 'W' && move.gamePiece.col === 3 && move.toCol === 5 && move.toRow === 0) {
+        if (
+          move.gamePiece.piece.color === 'W' &&
+          move.gamePiece.col === 3 &&
+          move.toCol === 5 &&
+          move.toRow === 0
+        ) {
           board[0][7] = undefined;
-          board[0][4] = new Rook('W',0,4);
+          board[0][4] = new Rook('W', 0, 4);
         }
         board[move.toRow][move.toCol] = new King(
           move.gamePiece.piece.color,
@@ -213,7 +233,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     } else {
       color = 'W';
     }
-    let piece : IChessPiece;
+    let piece: IChessPiece;
     piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     if (move.move.gamePiece.piece.type === 'K') {
       piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
