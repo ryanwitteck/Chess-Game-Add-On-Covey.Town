@@ -125,6 +125,46 @@ describe('ChessGame', () => {
         }
       }
     });
+    it('white, cannot move through piece of same color', () => {
+      board[2][3] = new Queen('W', 2, 3);
+      board[3][1] = new King('W', 3, 1);
+      board[3][6] = new Rook('W', 3, 6);
+      board[5][3] = new Pawn('W', 5, 3);
+      expect(() => rook1.validate_move(0, 3, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 0, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(7, 3, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 7, board, moves)).toThrowError();
+    });
+    it('white, cannot move through piece of opposite color', () => {
+      board[2][3] = new Queen('B', 2, 3);
+      board[3][1] = new King('B', 3, 1);
+      board[3][6] = new Rook('B', 3, 6);
+      board[5][3] = new Pawn('B', 5, 3);
+      expect(() => rook1.validate_move(0, 3, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 0, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(7, 3, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 7, board, moves)).toThrowError();
+    });
+    it('white, cannot capture pieices of opposite color', () => {
+      board[2][3] = new Queen('W', 2, 3);
+      board[3][1] = new King('W', 3, 1);
+      board[3][6] = new Rook('W', 3, 6);
+      board[5][3] = new Pawn('W', 5, 3);
+      expect(() => rook1.validate_move(2, 3, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 1, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(3, 6, board, moves)).toThrowError();
+      expect(() => rook1.validate_move(5, 3, board, moves)).toThrowError();
+    });
+    it('white, can capture pieices of opposite color', () => {
+      board[2][3] = new Queen('B', 2, 3);
+      board[3][1] = new King('B', 3, 1);
+      board[3][6] = new Rook('B', 3, 6);
+      board[5][3] = new Pawn('B', 5, 3);
+      expect(() => rook1.validate_move(2, 3, board, moves)).not.toThrowError();
+      expect(() => rook1.validate_move(3, 1, board, moves)).not.toThrowError();
+      expect(() => rook1.validate_move(3, 6, board, moves)).not.toThrowError();
+      expect(() => rook1.validate_move(5, 3, board, moves)).not.toThrowError();
+    });
     it('black, can only move in valid rook directions', () => {
       function testValidation(i: ChessBoardPosition, j: ChessBoardPosition) {
         expect(() => rook4.validate_move(i, j, board, moves)).not.toThrowError();
@@ -141,6 +181,46 @@ describe('ChessGame', () => {
           }
         }
       }
+    });
+    it('black, cannot move through piece of same color', () => {
+      board[2][4] = new Queen('B', 2, 4);
+      board[4][1] = new King('B', 4, 1);
+      board[4][6] = new Rook('B', 4, 6);
+      board[5][4] = new Pawn('B', 5, 4);
+      expect(() => rook4.validate_move(0, 4, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 0, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(7, 4, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 7, board, moves)).toThrowError();
+    });
+    it('black, cannot move through piece of opposite color', () => {
+      board[2][4] = new Queen('W', 2, 4);
+      board[4][1] = new King('W', 4, 1);
+      board[4][6] = new Rook('W', 4, 6);
+      board[5][4] = new Pawn('W', 5, 4);
+      expect(() => rook4.validate_move(0, 4, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 0, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(7, 4, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 7, board, moves)).toThrowError();
+    });
+    it('black, cannot capture piece of same color', () => {
+      board[2][4] = new Queen('B', 2, 4);
+      board[4][1] = new King('B', 4, 1);
+      board[4][6] = new Rook('B', 4, 6);
+      board[5][4] = new Pawn('B', 5, 4);
+      expect(() => rook4.validate_move(2, 4, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 1, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(4, 6, board, moves)).toThrowError();
+      expect(() => rook4.validate_move(5, 4, board, moves)).toThrowError();
+    });
+    it('black, can capture piece of same color', () => {
+      board[2][4] = new Queen('W', 2, 4);
+      board[4][1] = new King('W', 4, 1);
+      board[4][6] = new Rook('W', 4, 6);
+      board[5][4] = new Pawn('W', 5, 4);
+      expect(() => rook4.validate_move(2, 4, board, moves)).not.toThrowError();
+      expect(() => rook4.validate_move(4, 1, board, moves)).not.toThrowError();
+      expect(() => rook4.validate_move(4, 6, board, moves)).not.toThrowError();
+      expect(() => rook4.validate_move(5, 4, board, moves)).not.toThrowError();
     });
   });
 });

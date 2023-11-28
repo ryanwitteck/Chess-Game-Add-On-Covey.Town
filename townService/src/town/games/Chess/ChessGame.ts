@@ -38,7 +38,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
 
-  public promotion: 'Q' | 'R' | 'B' | 'N' = 'Q'; 
+  public promotion: 'Q' | 'R' | 'B' | 'N' = 'Q';
 
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
@@ -173,7 +173,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   private _applyMove(move: ChessMove): void {
-    const board = this._board;
     // update the state to match
     this.state = {
       ...this.state,
@@ -239,7 +238,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     if (move.move.gamePiece.piece.type === 'P') {
       (piece as Pawn).promotion = this.promotion;
-    }  
+    }
     if (move.move.gamePiece.piece.type === 'K') {
       piece = new King(color, move.move.gamePiece.row, move.move.gamePiece.col);
     }
