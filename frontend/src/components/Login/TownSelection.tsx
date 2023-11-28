@@ -36,7 +36,6 @@ export default function TownSelection(): JSX.Element {
   const loginController = useLoginController();
   const { setTownController, townsService } = loginController;
   const { connect: videoConnect } = useVideoContext();
-
   const toast = useToast();
 
   const updateTownListings = useCallback(() => {
@@ -75,7 +74,6 @@ export default function TownSelection(): JSX.Element {
           });
           return;
         }
-
 
         // check if the user already exists in database
         const userExists = await doesUserExist(userName);

@@ -1,6 +1,5 @@
 import { Table, Tbody, Td, Thead, Tr } from '@chakra-ui/react';
 import React from 'react';
-import { GameResult } from '../../../types/CoveyTownSocket';
 import { getTopUsersByWins, UserData } from '../../Login/FirebaseService';
 import { useState, useEffect } from 'react';
 

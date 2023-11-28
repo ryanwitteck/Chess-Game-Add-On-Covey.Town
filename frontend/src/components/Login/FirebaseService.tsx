@@ -1,4 +1,3 @@
-import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 import {
   getFirestore,
@@ -132,7 +131,7 @@ export async function getTopUsersByWins(topN: number): Promise<UserData[]> {
   const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(orderedAndLimitedQuery);
 
   // Extract user data from the query snapshot and cast to the correct type
-  const topUsers: UserData[] = querySnapshot.docs.map(doc => doc.data() as UserData);
+  const topUsers: UserData[] = querySnapshot.docs.map(d => d.data() as UserData);
 
   return topUsers;
-};
+}
