@@ -1,5 +1,3 @@
-const wp = require('./wp.png').default;
-
 const pieceImages = {
   wp: require('./wp.png').default,
   wn: require('./wn.png').default,

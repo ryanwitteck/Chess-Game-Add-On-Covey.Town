@@ -1,5 +1,4 @@
 import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
-// import { chakra, SimpleGrid, Image, Button, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
   ChessBoardPosition,
@@ -11,7 +10,6 @@ import {
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
 import pieceImages from './pieceimages/index.js';
-import wp from './pieceimages/wp.png';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -28,34 +26,94 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
   if (piece.color === 'W') {
     switch (piece.type) {
       case 'P':
-        return <Image src={wp} aria-label='wp' alt='pawn' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=11wAxmXy9nkPIhDXXN3z936dwhIp_EUYE"
+          aria-label='wp'
+          alt='pawn'
+          color={'skyblue'}
+        />;
       case 'R':
-        return <Image src={pieceImages.wr} aria-label='wr' alt='rook' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv"
+          aria-label='wr'
+          alt='rook'
+          color={'skyblue'}
+        />;
       case 'B':
-        return <Image src={pieceImages.wb} aria-label='wb' alt='bishop' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8"
+          aria-label='wb'
+          alt='bishop'
+          color={'skyblue'}
+        />;
       case 'N':
-        return <Image src={pieceImages.wn} aria-label='wn' alt='knight' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL"
+          aria-label='wn'
+          alt='knight'
+          color={'skyblue'}
+        />;
       case 'Q':
-        return <Image src={pieceImages.wq} aria-label='wq' alt='queen' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn"
+          aria-label='wq'
+          alt='queen'
+          color={'skyblue'}
+        />;
       case 'K':
-        return <Image src={pieceImages.wk} aria-label='wk' alt='king' color={'skyblue'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1c1wAv965tW-46v_QAkRJJX3w_teSoAHR"
+          aria-label='wk'
+          alt='king'
+          color={'skyblue'}
+        />;
       default:
         throw Error('error converting chessboardsquare to image');
     }
   } else {
     switch (piece.type) {
       case 'P':
-        return <Image src={pieceImages.bp} aria-label='bp' alt='pawn' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1IM-V6_xCpF6g1r1H-AlQXX1BpijGi0-E"
+          aria-label='bp'
+          alt='pawn'
+          color={'navy'}
+        />;
       case 'R':
-        return <Image src={pieceImages.br} aria-label='br' alt='rook' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"
+          aria-label='br'
+          alt='rook'
+          color={'navy'}
+        />;
       case 'B':
-        return <Image src={pieceImages.bb} aria-label='bb' alt='bishop' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"
+          aria-label='bb'
+          alt='bishop'
+          color={'navy'}
+        />;
       case 'N':
-        return <Image src={pieceImages.bn} aria-label='bn' alt='knight' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"
+          aria-label='bn'
+          alt='knight'
+          color={'navy'}
+        />;
       case 'Q':
-        return <Image src={pieceImages.bq} aria-label='bq' alt='queen' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"
+          aria-label='bq'
+          alt='queen'
+          color={'navy'}
+        />;
       case 'K':
-        return <Image src={pieceImages.bk} aria-label='bk' alt='king' color={'navy'} />;
+        return <Image
+          src="https://drive.google.com/uc?export=download&id=1mDzRr9Dv5oaUeKB89QQTkx9EVhVUgZ16"
+          aria-label='bk'
+          alt='king'
+          color={'navy'}
+        />;
       default:
         throw Error('error converting chessboardsquare to image');
     }
@@ -171,7 +229,6 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                   }
                 }
               }}>
-              {board[i][j] ? board[i][j]?.type : '' ?? ''}
             </StyledChessSquare>,
           );
 
@@ -267,7 +324,6 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
                   }
                 }
               }}>
-              {board[i][j] ? board[i][j]?.type : '' ?? ''}
             </StyledChessSquare>,
           );
 
