@@ -7,14 +7,14 @@ import InvalidParametersError, {
   PLAYER_NOT_IN_GAME_MESSAGE,
 } from '../../../lib/InvalidParametersError';
 import Player from '../../../lib/Player';
-import { ChessMove } from '../../../types/CoveyTownSocket';
+import { ChessMove, ChessPiece, ChessBoardPosition } from '../../../types/CoveyTownSocket';
 import ChessGame from './ChessGame';
 import Pawn from './ChessPieces/Pawn';
 import King from './ChessPieces/King';
-// import Queen from './ChessPieces/Queen';
+import Queen from './ChessPieces/Queen';
 import Rook from './ChessPieces/Rook';
 import Bishop from './ChessPieces/Bishop';
-// import Knight from './ChessPieces/Knight';
+import Knight from './ChessPieces/Knight';
 
 describe('ChessGame', () => {
   let game: ChessGame;
@@ -274,7 +274,7 @@ describe('ChessGame', () => {
           expect(() =>
             game.applyMove({
               gameID: game.id,
-              playerID: player2.id,
+              playerID: player1.id,
               move,
             }),
           ).toThrowError(InvalidParametersError);
@@ -293,7 +293,26 @@ describe('ChessGame', () => {
           expect(() =>
             game.applyMove({
               gameID: game.id,
-              playerID: player2.id,
+              playerID: player1.id,
+              move,
+            }),
+          ).toThrowError(InvalidParametersError);
+        });
+        it('should throw an error if move is invalid', () => {
+          const testPiece = new King('W', 0, 4);
+          const move: ChessMove = {
+            gamePiece: {
+              piece: testPiece,
+              row: 0,
+              col: 4,
+            },
+            toRow: 0,
+            toCol: 1,
+          };
+          expect(() =>
+            game.applyMove({
+              gameID: game.id,
+              playerID: player1.id,
               move,
             }),
           ).toThrowError(InvalidParametersError);
@@ -346,22 +365,375 @@ describe('ChessGame', () => {
         game.join(player2);
         expect(game.state.status).toEqual('IN_PROGRESS');
       });
+      function containsPiece(piece: ChessPiece, row: ChessBoardPosition, col: ChessBoardPosition) {
+        for (let i = 0; i < game.state.pieces.length; i++) {
+          const p = game.state.pieces[i];
+          if (
+            p.col === col &&
+            p.row === row &&
+            p.piece.color === piece.color &&
+            p.piece.type === piece.type
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
       it('Valid move should update state', () => {
-        const testPiece = new Pawn('W', 1, 4);
+        const testPiece = new Pawn('W', 1, 0);
         const move: ChessMove = {
           gamePiece: {
             piece: testPiece,
             row: 1,
+            col: 0,
+          },
+          toRow: 3,
+          toCol: 0,
+        };
+        expect(game.state.pieces.length).toEqual(32);
+        expect(game.state.moves.length).toEqual(0);
+        expect(containsPiece({ color: 'W', type: 'P' }, 1, 0)).toEqual(true);
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        expect(game.state.pieces.length).toEqual(32);
+        expect(game.state.moves.length).toEqual(1);
+        expect(game.state.moves[0]).toEqual(move);
+        expect(containsPiece({ color: 'W', type: 'P' }, 1, 0)).toEqual(false);
+        expect(containsPiece({ color: 'W', type: 'P' }, 3, 0)).toEqual(true);
+      });
+      it('capture piece should remove a piece', () => {
+        expect(game.state.pieces.length).toEqual(32);
+        let move: ChessMove = {
+          gamePiece: {
+            piece: new Pawn('W', 1, 0),
+            row: 1,
+            col: 0,
+          },
+          toRow: 3,
+          toCol: 0,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 6, 1),
+            row: 6,
+            col: 1,
+          },
+          toRow: 4,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        expect(containsPiece({ color: 'B', type: 'P' }, 4, 1)).toEqual(true);
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 3, 0),
+            row: 3,
+            col: 0,
+          },
+          toRow: 4,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        expect(containsPiece({ color: 'B', type: 'P' }, 4, 1)).toEqual(false);
+        expect(containsPiece({ color: 'W', type: 'P' }, 4, 1)).toEqual(true);
+        expect(game.state.pieces.length).toEqual(31);
+      });
+      it('Casteling short should correctly update board', () => {
+        expect(game.state.pieces.length).toEqual(32);
+        let move: ChessMove = {
+          gamePiece: {
+            piece: new Knight('W', 0, 1),
+            row: 0,
+            col: 1,
+          },
+          toRow: 2,
+          toCol: 2,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Knight('B', 7, 1),
+            row: 7,
+            col: 1,
+          },
+          toRow: 5,
+          toCol: 2,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 1, 3),
+            row: 1,
+            col: 3,
+          },
+          toRow: 2,
+          toCol: 3,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 6, 3),
+            row: 6,
+            col: 3,
+          },
+          toRow: 5,
+          toCol: 3,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Bishop('W', 0, 2),
+            row: 0,
+            col: 2,
+          },
+          toRow: 1,
+          toCol: 3,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Bishop('B', 7, 2),
+            row: 7,
+            col: 2,
+          },
+          toRow: 6,
+          toCol: 3,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new King('W', 0, 3),
+            row: 0,
+            col: 3,
+          },
+          toRow: 0,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new King('B', 7, 3),
+            row: 7,
+            col: 3,
+          },
+          toRow: 7,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        expect(containsPiece({ color: 'W', type: 'K' }, 0, 1)).toEqual(true);
+        expect(containsPiece({ color: 'W', type: 'R' }, 0, 2)).toEqual(true);
+        expect(containsPiece({ color: 'W', type: 'R' }, 0, 0)).toEqual(false);
+        expect(containsPiece({ color: 'B', type: 'K' }, 7, 1)).toEqual(true);
+        expect(containsPiece({ color: 'B', type: 'R' }, 7, 2)).toEqual(true);
+        expect(containsPiece({ color: 'B', type: 'R' }, 7, 0)).toEqual(false);
+      });
+      it('Casteling long should correctly update board', () => {
+        expect(game.state.pieces.length).toEqual(32);
+        let move: ChessMove = {
+          gamePiece: {
+            piece: new Knight('W', 0, 6),
+            row: 0,
+            col: 6,
+          },
+          toRow: 2,
+          toCol: 7,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Knight('B', 7, 6),
+            row: 7,
+            col: 6,
+          },
+          toRow: 5,
+          toCol: 7,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 1, 4),
+            row: 1,
+            col: 4,
+          },
+          toRow: 3,
+          toCol: 4,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 6, 4),
+            row: 6,
+            col: 4,
+          },
+          toRow: 4,
+          toCol: 4,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Queen('W', 0, 4),
+            row: 0,
             col: 4,
           },
           toRow: 2,
           toCol: 4,
         };
-
-        expect(game.state.moves.length).toEqual(0);
         game.applyMove({ gameID: game.id, playerID: player1.id, move });
-        expect(game.state.moves.length).toEqual(1);
-        expect(game.state.moves[0]).toEqual(move);
+        move = {
+          gamePiece: {
+            piece: new Queen('W', 7, 4),
+            row: 7,
+            col: 4,
+          },
+          toRow: 5,
+          toCol: 4,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Bishop('W', 0, 5),
+            row: 0,
+            col: 5,
+          },
+          toRow: 1,
+          toCol: 4,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Bishop('B', 7, 5),
+            row: 7,
+            col: 5,
+          },
+          toRow: 6,
+          toCol: 4,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new King('W', 0, 3),
+            row: 0,
+            col: 3,
+          },
+          toRow: 0,
+          toCol: 5,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new King('B', 7, 3),
+            row: 7,
+            col: 3,
+          },
+          toRow: 7,
+          toCol: 5,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        expect(containsPiece({ color: 'W', type: 'K' }, 0, 5)).toEqual(true);
+        expect(containsPiece({ color: 'W', type: 'R' }, 0, 4)).toEqual(true);
+        expect(containsPiece({ color: 'W', type: 'R' }, 0, 7)).toEqual(false);
+        expect(containsPiece({ color: 'B', type: 'K' }, 7, 5)).toEqual(true);
+        expect(containsPiece({ color: 'B', type: 'R' }, 7, 4)).toEqual(true);
+        expect(containsPiece({ color: 'B', type: 'R' }, 7, 7)).toEqual(false);
+      });
+      it('promoting a pawn changes the peice', () => {
+        expect(game.state.pieces.length).toEqual(32);
+        let move: ChessMove = {
+          gamePiece: {
+            piece: new Pawn('W', 1, 0),
+            row: 1,
+            col: 0,
+          },
+          toRow: 3,
+          toCol: 0,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 6, 1),
+            row: 6,
+            col: 1,
+          },
+          toRow: 4,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 3, 0),
+            row: 3,
+            col: 0,
+          },
+          toRow: 4,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('B', 6, 0),
+            row: 6,
+            col: 0,
+          },
+          toRow: 4,
+          toCol: 0,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        expect(game.state.pieces.length).toEqual(31);
+        // en passant
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 4, 1),
+            row: 4,
+            col: 1,
+          },
+          toRow: 5,
+          toCol: 0,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        expect(game.state.pieces.length).toEqual(30);
+        move = {
+          gamePiece: {
+            piece: new Bishop('W', 7, 2),
+            row: 7,
+            col: 2,
+          },
+          toRow: 6,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 5, 0),
+            row: 5,
+            col: 0,
+          },
+          toRow: 6,
+          toCol: 1,
+        };
+        game.applyMove({ gameID: game.id, playerID: player1.id, move });
+        move = {
+          gamePiece: {
+            piece: new Knight('B', 7, 1),
+            row: 7,
+            col: 1,
+          },
+          toRow: 5,
+          toCol: 2,
+        };
+        game.applyMove({ gameID: game.id, playerID: player2.id, move });
+        // Promotion
+        move = {
+          gamePiece: {
+            piece: new Pawn('W', 6, 1),
+            row: 6,
+            col: 1,
+          },
+          promotion: 'B',
+          toRow: 7,
+          toCol: 0,
+        };
+        game.promotePiece({ gameID: game.id, playerID: player1.id, move });
+        expect(containsPiece({ color: 'W', type: 'K' }, 7, 0)).toEqual(false);
+        expect(containsPiece({ color: 'W', type: 'B' }, 7, 0)).toEqual(true);
       });
       it('should not end the game if the move does not end the game', () => {
         const testPiece = new Pawn('W', 1, 4);
