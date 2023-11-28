@@ -38,7 +38,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
 
-  private promotion: 'Q' | 'R' | 'B' | 'N' = 'Q'; 
+  public promotion: 'Q' | 'R' | 'B' | 'N' = 'Q'; 
 
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
@@ -217,10 +217,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       );
     }
   }
-
-  public promotePiece(type: 'Q' | 'R' | 'B' | 'N'): void {
-    this.promotion = type;
-  }  
 
   /*
    * TODO: Documentation
