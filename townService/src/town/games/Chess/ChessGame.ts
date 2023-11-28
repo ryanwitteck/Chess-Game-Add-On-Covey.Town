@@ -1,7 +1,6 @@
 import InvalidParametersError, {
   GAME_FULL_MESSAGE,
   GAME_NOT_IN_PROGRESS_MESSAGE,
-  INVALID_MOVE_MESSAGE,
   MOVE_NOT_YOUR_TURN_MESSAGE,
   PLAYER_ALREADY_IN_GAME_MESSAGE,
   PLAYER_NOT_IN_GAME_MESSAGE,
@@ -15,7 +14,6 @@ import {
   ChessBoardPosition,
   ChessPiecePosition,
   IChessPiece,
-  ChessPiece,
 } from '../../../types/CoveyTownSocket';
 
 import Game from '../Game';
@@ -74,18 +72,16 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   too tired to test that myself lol.
   */
 
-
-
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
     const board = ChessGame.createNewBoard();
     for (const move of moves) {
       board[move.gamePiece.row][move.gamePiece.col] = undefined;
       if (move.gamePiece.piece.type === 'P') {
-
         // account for promotion?
         // move.promotion will hold the type that you want to promote to, or undefined.
         if (move.promotion) {
+          // eslint-disable-next-line default-case
           switch (move.promotion) {
             case 'B':
               board[move.toRow][move.toCol] = new Bishop(
@@ -132,7 +128,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
             move.toCol,
           );
         }
-
       } else if (move.gamePiece.piece.type === 'K') {
         // Black short castle
         if (
@@ -248,9 +243,8 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     };
 
     // update piece list
-    this.state.pieces = ChessGame.boardToPieceList(this._board),
-
-      this._checkForGameEnding();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions, no-sequences
+    (this.state.pieces = ChessGame.boardToPieceList(this._board)), this._checkForGameEnding();
   }
 
   /**
@@ -345,7 +339,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
    */
   public promotePiece(move: GameMove<ChessMove>): void {
     if (move.move.gamePiece.piece.type !== 'P') {
-      throw new InvalidParametersError('can\'t promote a non-pawn piece');
+      throw new InvalidParametersError("can't promote a non-pawn piece");
     }
 
     if (!move.move.promotion) {
@@ -359,7 +353,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       color = 'W';
     }
     // promoted pieces must be a pawn
-    let piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
+    const piece = new Pawn(color, move.move.gamePiece.row, move.move.gamePiece.col);
     const cleanMove: ChessMove = {
       gamePiece: {
         piece,
@@ -374,7 +368,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._genericValidateMove(cleanMove);
     piece.validate_move(cleanMove.toRow, cleanMove.toCol, this._board, this.state.moves);
     this._applyMove(cleanMove);
-
 
     // we can now assume that in our list of pieces, there is a pawn
     // at the location (toRow, toCol). we find this piece, and replace it.
@@ -527,11 +520,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       .filter(item => item !== undefined)
       .map(
         chessPiece =>
-        ({
-          piece: { type: chessPiece?.type, color: chessPiece?.color },
-          col: chessPiece?.col,
-          row: chessPiece?.row,
-        } as ChessPiecePosition),
+          ({
+            piece: { type: chessPiece?.type, color: chessPiece?.color },
+            col: chessPiece?.col,
+            row: chessPiece?.row,
+          } as ChessPiecePosition),
       );
   }
 }
