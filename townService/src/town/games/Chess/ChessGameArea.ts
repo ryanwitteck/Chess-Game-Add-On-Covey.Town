@@ -82,14 +82,27 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       if (this._game?.id !== command.gameID) {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
-      game.applyMove({
-        gameID: command.gameID,
-        playerID: player.id,
-        move: command.move,
-      });
+
+      // if true, then we are trying to promote!
+      if (command.promotion) {
+        console.log('Chess Game Area: we want to promote!');
+        game.promotePiece({
+          gameID: command.gameID,
+          playerID: player.id,
+          move: command.move, // this also holds promotion information
+        });
+      } else {
+        console.log('Chess Game Area: normal move');
+        game.applyMove({
+          gameID: command.gameID,
+          playerID: player.id,
+          move: command.move,
+        });
+      }
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }
+    
     // handle the draw logic here.
     if (command.type === 'ChessDraw') {
       const game = this._game;
@@ -99,18 +112,6 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       if (this._game?.id !== command.gameID) {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
-      this._stateUpdated(game.toModel());
-      return undefined as InteractableCommandReturnType<CommandType>;
-    }
-    if (command.type === 'Promotion') {
-      const game = this._game;
-      if (!game) {
-        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
-      }
-      if (this._game?.id !== command.gameID) {
-        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-      }
-      game.promotePiece(command.promo);
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }

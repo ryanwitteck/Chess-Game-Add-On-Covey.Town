@@ -205,6 +205,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
         this.board = newBoard as unknown as ChessBoardSquare[][];
         this.emit('boardChanged', this.board);
       }
+      console.log('controller - new pieces:', newState.state.pieces);
     }
     const isOurTurn = this.whoseTurn?.id === this._townController.ourPlayer.id;
     if (wasOurTurn != isOurTurn) this.emit('turnChanged', isOurTurn);
@@ -218,15 +219,12 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     if (!instanceID || this._model.game?.state.status !== 'IN_PROGRESS') {
       throw new Error(NO_GAME_IN_PROGRESS_ERROR);
     }
-    await this._townController.sendInteractableCommand(this.id, {
-      type: 'Promotion',
-      gameID: instanceID,
-      promo: 'R',
-    });
+    console.log('promotion status:', move.promotion);
     await this._townController.sendInteractableCommand(this.id, {
       type: 'ChessMove',
       gameID: instanceID,
       move: move,
+      promotion: move.promotion,
     });
   }
 
@@ -243,6 +241,4 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       gameID: instanceID,
     });
   }
-
-
 }

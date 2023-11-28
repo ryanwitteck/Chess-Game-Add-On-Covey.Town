@@ -131,8 +131,8 @@ export interface ChessMove {
   gamePiece: ChessPiecePosition;
   toRow: ChessBoardPosition;
   toCol: ChessBoardPosition;
+  promotion?: 'B' | 'R' | 'Q' | 'N';
 }
-
 
 /**
  * Type for the state of a Chess game
@@ -232,7 +232,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand | PromotionCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -254,12 +254,7 @@ export interface ChessMoveCommand {
   type: 'ChessMove';
   gameID: GameInstanceID;
   move: ChessMove;
-}
-
-export interface PromotionCommand {
-  type: 'Promotion';
-  gameID: GameInstanceID;
-  promo: 'R' | 'Q' | 'N' | 'B';
+  promotion?: 'B' | 'R' | 'Q' | 'N';
 }
 
 export interface ChessDrawCommand {

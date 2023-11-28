@@ -1,15 +1,15 @@
-import { chakra, SimpleGrid, Image, IconButton, useToast } from '@chakra-ui/react';
+import { chakra, SimpleGrid, Image, IconButton, useToast, HStack, VStack } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import {
   ChessBoardPosition,
   ChessBoardSquare,
   ChessColor,
   ChessMove,
+  ChessPiece,
   ChessPiecePosition,
 } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
-import pieceImages from './pieceimages/index.js';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -154,36 +154,44 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
   const townController = useTownController();
 
   const gameState = gameAreaController.status;
-  const [primed, setPrimed] = useState(false);
-  const [primedPiece, setPrimedPiece] = useState<ChessPiecePosition | undefined>(undefined);
   const [board, setBoard] = useState<ChessBoardSquare[][]>(gameAreaController.board);
   const [isOurTurn, setIsOurTurn] = useState(gameAreaController.isOurTurn);
+
+  const [promoteRow, setPromoteRow] = useState(-1);
+  const [promoteCol, setPromoteCol] = useState(-1);
+
+  const [canPromote, setCanPromote] = useState(false);
+  const [primed, setPrimed] = useState(false);
+  const [primedPiece, setPrimedPiece] = useState<ChessPiecePosition | undefined>(undefined);
 
   const toast = useToast();
 
   useEffect(() => {
-    console.log(board);
     gameAreaController.addListener('turnChanged', setIsOurTurn);
     gameAreaController.addListener('boardChanged', setBoard);
     return () => {
       gameAreaController.removeListener('boardChanged', setBoard);
       gameAreaController.removeListener('turnChanged', setIsOurTurn);
     };
-  }, [gameAreaController, townController, board, isOurTurn, primed, primedPiece]);
+  }, [gameAreaController, townController, board, isOurTurn]);
 
+  // Function that takes in a ChessType, and then sends a promote command
+  async function PromotePiece(toRow: ChessBoardPosition, toCol: ChessBoardPosition, type: 'B' | 'R' | 'N' | 'Q') {
+    setCanPromote(false);
+    await gameAreaController.makeMove({
+      gamePiece: primedPiece as ChessPiecePosition,
+      toRow: toRow,
+      toCol: toCol,
+      promotion: type as 'B' | 'R' | 'N' | 'Q',
+    });
+    setPrimed(false);
+    setPrimedPiece(undefined);
+  }
+
+
+  // Function that renders the black player's POV
   function RenderBlackPlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
-
-    // function to make a move with the primed piece
-    const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
-      await gameAreaController.makeMove({
-        gamePiece: primedPiece as ChessPiecePosition,
-        toRow: toRow,
-        toCol: toCol,
-      } as ChessMove);
-      setPrimed(false);
-      setPrimedPiece(undefined);
-    };
 
     for (let i = 0; i <= 7; i++) {
       for (let j = 0; j <= 7; j++) {
@@ -191,12 +199,30 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
         const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
         const chessSquareImage = pieceToImage(board[i][j]);
 
+        const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
+          try {
+            await gameAreaController.makeMove({
+              gamePiece: primedPiece as ChessPiecePosition,
+              toRow: toRow,
+              toCol: toCol,
+            } as ChessMove);
+            setPrimed(false);
+            setPrimedPiece(undefined);
+          } catch (e) {
+            toast({
+              title: 'Error making move',
+              description: (e as Error).toString(),
+              status: 'error',
+            });
+          }
+        };
+
         // This is NOT an empty square
         if (board[i] && board[i][j]) {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
-              disabled={!isOurTurn}
+              disabled={!isOurTurn && !canPromote}
               background={squareColor}
               height={70}
               borderRadius={0}
@@ -218,15 +244,22 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
 
                 if (primed && primedPiece) {
                   // now, we know we are primed and we didn't click on our own piece.
-                  try {
-                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
-                  } catch (e) {
-                    toast({
-                      title: 'Error making move',
-                      description: (e as Error).toString(),
-                      status: 'error',
-                    });
+
+                  // if we primed a pawn and it reached the back rank
+                  // if we want to promote, we DON'T make a move right away. Instead, just set the
+                  // canPromote state to true, and then force the user to select a promotion type
+                  // we also need to check the "legality" of the move lol
+                  if (primedPiece?.piece.type === 'P' &&
+                    primedPiece.col === j &&
+                    (primedPiece.row === 1 || primedPiece.row === 6) &&
+                    (i === 7 || i === 0)) {
+                    console.log('we can promote!');
+                    setCanPromote(true);
+                    setPromoteRow(i);
+                    setPromoteCol(j);
+                    return;
                   }
+                  makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                 }
               }}>
             </StyledChessSquare>,
@@ -237,23 +270,16 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
-              disabled={!isOurTurn}
+              disabled={!isOurTurn && !canPromote}
               background={squareColor}
               height={70}
               borderRadius={0}
               onClick={async () => {
                 if (primed && primedPiece) {
-                  try {
-                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
-                  } catch (e) {
-                    toast({
-                      title: 'Error making move',
-                      description: (e as Error).toString(),
-                      status: 'error',
-                    });
-                  }
+                  makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                 }
-              }}></StyledChessSquare>,
+              }}>
+            </StyledChessSquare>,
           );
         }
       }
@@ -266,19 +292,9 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     );
   }
 
+  // Function that renders the white player's POV.
   function RenderWhitePlayerPOV(): JSX.Element {
     const renderBoard: JSX.Element[] = [];
-
-    // function to make a move with the primed piece
-    const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
-      await gameAreaController.makeMove({
-        gamePiece: primedPiece as ChessPiecePosition,
-        toRow: toRow,
-        toCol: toCol,
-      } as ChessMove);
-      setPrimed(false);
-      setPrimedPiece(undefined);
-    };
 
     for (let i = 7; i >= 0; i--) {
       for (let j = 7; j >= 0; j--) {
@@ -286,12 +302,30 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
         const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
         const chessSquareImage = pieceToImage(board[i][j]);
 
+        const makeMove = async (toRow: ChessBoardPosition, toCol: ChessBoardPosition) => {
+          try {
+            await gameAreaController.makeMove({
+              gamePiece: primedPiece as ChessPiecePosition,
+              toRow: toRow,
+              toCol: toCol,
+            } as ChessMove);
+            setPrimed(false);
+            setPrimedPiece(undefined);
+          } catch (e) {
+            toast({
+              title: 'Error making move',
+              description: (e as Error).toString(),
+              status: 'error',
+            });
+          }
+        };
+
         // This is NOT an empty square
         if (board[i] && board[i][j]) {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
-              disabled={!isOurTurn}
+              disabled={!isOurTurn && !canPromote}
               background={squareColor}
               height={70}
               borderRadius={0}
@@ -313,53 +347,109 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
 
                 if (primed && primedPiece) {
                   // now, we know we are primed and we didn't click on our own piece.
-                  try {
-                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
-                  } catch (e) {
-                    toast({
-                      title: 'Error making move',
-                      description: (e as Error).toString(),
-                      status: 'error',
-                    });
+
+                  // if we primed a pawn and it reached the back rank
+                  // if we want to promote, we DON'T make a move right away. Instead, just set the
+                  // canPromote state to true, and then force the user to select a promotion type
+                  // we also need to check the "legality" of the move lol
+                  if (primedPiece?.piece.type === 'P' &&
+                    primedPiece.col === j &&
+                    (primedPiece.row === 1 || primedPiece.row === 6) &&
+                    (i === 7 || i === 0)) {
+                    console.log('we can promote!');
+                    setCanPromote(true);
+                    setPromoteRow(i);
+                    setPromoteCol(j);
+                    return;
                   }
+                  makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                 }
               }}>
             </StyledChessSquare>,
           );
-
           // This is an empty square
         } else {
           renderBoard.push(
             <StyledChessSquare
               key={`${i}.${j}`}
-              disabled={!isOurTurn}
+              disabled={!isOurTurn && !canPromote}
               background={squareColor}
               height={70}
               borderRadius={0}
               onClick={async () => {
                 if (primed && primedPiece) {
-                  try {
-                    await makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
-                  } catch (e) {
-                    toast({
-                      title: 'Error making move',
-                      description: (e as Error).toString(),
-                      status: 'error',
-                    });
-                  }
+                  makeMove(i as ChessBoardPosition, j as ChessBoardPosition);
                 }
-              }}></StyledChessSquare>,
+              }}>
+            </StyledChessSquare>,
           );
         }
       }
     }
 
     return (
-      <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
-        {renderBoard}
-      </StyledChessBoard>
+      <VStack display={'flex'}>
+        {canPromote ?
+          <HStack>
+            <IconButton
+              aria-label='promote-queen'
+              icon={<Image
+                src={gameAreaController.white === townController.ourPlayer ?
+                  "https://drive.google.com/uc?export=download&id=1-xoxUMUfg1E8sHXvh8k-WXi5Rq1GNnYn" :
+                  "https://drive.google.com/uc?export=download&id=1BJvoF5b_LLLezTGuIFC-bpGo559DISEt"}
+                aria-label='promote-q'
+                height={'75%'}
+                alt='promote to queen'></Image>}
+              onClick={async () => {
+                PromotePiece(promoteRow as ChessBoardPosition, promoteCol as ChessBoardPosition, 'Q');
+              }}
+            ></IconButton>
+            <IconButton
+              aria-label='promote-knight'
+              icon={<Image
+                src={gameAreaController.white === townController.ourPlayer ?
+                  "https://drive.google.com/uc?export=download&id=1gP8_lGCtIJBgP0NqYTg3eYSQuaQVi-cL" :
+                  "https://drive.google.com/uc?export=download&id=1kUG7UzXrQm-lpPcd1mJw9LtlyeTfmeNp"}
+                aria-label='promote-n'
+                height={'75%'}
+                alt='promote to knight'></Image>}
+              onClick={async () => {
+                PromotePiece(promoteRow as ChessBoardPosition, promoteCol as ChessBoardPosition, 'N');
+              }}></IconButton>
+            <IconButton
+              aria-label='promote-bishop'
+              icon={<Image
+                src={gameAreaController.white === townController.ourPlayer ?
+                  "https://drive.google.com/uc?export=download&id=1HjcXsR-7IWl40GTNW-WkwedHkEYQ57s8" :
+                  "https://drive.google.com/uc?export=download&id=1RC4HDuRfOIR7gGtVEZALrN5sxhbJWhl8"}
+                aria-label='promote-b'
+                height={'75%'}
+                alt='promote to bishop'></Image>}
+              onClick={async () => {
+                PromotePiece(promoteRow as ChessBoardPosition, promoteCol as ChessBoardPosition, 'B');
+              }}></IconButton>
+            <IconButton
+              aria-label='promote-rook'
+              icon={<Image
+                src={gameAreaController.white === townController.ourPlayer ?
+                  "https://drive.google.com/uc?export=download&id=1q-naBJasxOQlhYvMIm2LPAIoSRUw7tNv" :
+                  "https://drive.google.com/uc?export=download&id=13OjSarthIm69Mx6nXtbLhiv9_3Sz2D-i"}
+                aria-label='promote-r'
+                height={'75%'}
+                alt='promote to rook'></Image>}
+              onClick={async () => {
+                PromotePiece(promoteRow as ChessBoardPosition, promoteCol as ChessBoardPosition, 'R');
+              }}></IconButton>
+          </HStack> : <></>}
+        <StyledChessBoard columns={[8, null, 8]} spacing={0} spacingX='0px' spacingY='0px'>
+          {renderBoard}
+        </StyledChessBoard>
+      </VStack>
+
     );
   }
+
+  // black player currently has no promotion logic!
   if (gameAreaController.black === townController.ourPlayer) {
     return RenderBlackPlayerPOV();
   } else {
