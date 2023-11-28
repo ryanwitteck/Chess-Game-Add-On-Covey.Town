@@ -39,8 +39,8 @@
   "include": [
     "src",
     "generated",
-    "pages"
-  ],
+    "pages", 
+    "src/components/Town/interactables/Chess/pieceimages"  ],
   "references": [
     {
       "path": "../shared/"
