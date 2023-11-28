@@ -117,7 +117,7 @@ describe('ChessGame', () => {
       }
       for (let i: ChessBoardPosition = 0; i <= 7; i++) {
         for (let j: ChessBoardPosition = 0; j <= 7; j++) {
-          if((i === 3 && j !== 3)|| (j === 3 && i !== 3)) {
+          if ((i === 3 && j !== 3) || (j === 3 && i !== 3)) {
             testValidation(i as ChessBoardPosition, j as ChessBoardPosition);
           } else {
             testInvalidation(i as ChessBoardPosition, j as ChessBoardPosition);
@@ -134,7 +134,7 @@ describe('ChessGame', () => {
       }
       for (let i: ChessBoardPosition = 0; i <= 7; i++) {
         for (let j: ChessBoardPosition = 0; j <= 7; j++) {
-          if((i === 4 && j !== 4)|| (j === 4 && i !== 4)) {
+          if ((i === 4 && j !== 4) || (j === 4 && i !== 4)) {
             testValidation(i as ChessBoardPosition, j as ChessBoardPosition);
           } else {
             testInvalidation(i as ChessBoardPosition, j as ChessBoardPosition);
