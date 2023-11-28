@@ -10,8 +10,8 @@ import {
 } from '../../../../../../shared/types/CoveyTownSocket';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
 import useTownController from '../../../../hooks/useTownController';
-import pieceImages from './pieceimages/index.js'
-import wp from './pieceimages/wp.png'
+import pieceImages from './pieceimages/index.js';
+import wp from './pieceimages/wp.png';
 
 export type ChessGameProps = {
   gameAreaController: ChessAreaController;
@@ -28,7 +28,7 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
   if (piece.color === 'W') {
     switch (piece.type) {
       case 'P':
-        return <Image src= {wp} aria-label='wp' alt='pawn' color={'skyblue'}/>;
+        return <Image src={wp} aria-label='wp' alt='pawn' color={'skyblue'} />;
       case 'R':
         return <Image src={pieceImages.wr} aria-label='wr' alt='rook' color={'skyblue'} />;
       case 'B':
@@ -53,9 +53,9 @@ function pieceToImage(piece: ChessBoardSquare): JSX.Element | null {
       case 'N':
         return <Image src={pieceImages.bn} aria-label='bn' alt='knight' color={'navy'} />;
       case 'Q':
-        return <Image src={pieceImages.bq} aria-label='bq' alt='queen' color={'navy'}/>;
+        return <Image src={pieceImages.bq} aria-label='bq' alt='queen' color={'navy'} />;
       case 'K':
-        return <Image src={pieceImages.bk} aria-label='bk' alt='king' color={'navy'}/>;
+        return <Image src={pieceImages.bk} aria-label='bk' alt='king' color={'navy'} />;
       default:
         throw Error('error converting chessboardsquare to image');
     }
@@ -224,7 +224,7 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
     };
 
     for (let i = 7; i >= 0; i--) {
-      for (let j = 7; j >=0; j--) {
+      for (let j = 7; j >= 0; j--) {
         const isLightSquare = (i % 2 === 0 && j % 2 === 0) || (i % 2 !== 0 && j % 2 !== 0);
         const squareColor = isLightSquare ? 'WhiteSmoke' : 'DimGrey';
         const chessSquareImage = pieceToImage(board[i][j]);

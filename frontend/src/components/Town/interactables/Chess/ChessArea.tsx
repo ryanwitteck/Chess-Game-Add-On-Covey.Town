@@ -142,6 +142,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           status: 'error',
         });
       }
+      bflag = false;
+      wflag = false;
     };
 
     gameAreaController.addListener('gameEnd', onGameEnd);
