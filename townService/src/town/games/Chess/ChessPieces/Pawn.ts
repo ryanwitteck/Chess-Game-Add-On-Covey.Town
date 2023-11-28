@@ -49,9 +49,9 @@ export default class Pawn implements IChessPiece {
         // otherwise we can online move upward once
         if (newRow === this.row + 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
-          if (newRow === 7) {
-            this.type = this.promotion;
-          }
+          //if (newRow === 7) {
+          //  this.type = this.promotion;
+          //}
           return;
         }
         // diagonal capture
@@ -61,9 +61,9 @@ export default class Pawn implements IChessPiece {
           board[newRow][newCol]?.color === 'B'
         ) {
           // promotion
-          if (newRow === 7) {
-            this.type = this.promotion;
-          }
+          //if (newRow === 7) {
+          //  this.type = this.promotion;
+          //}
           return;
         }
         //  en passaunt
@@ -86,8 +86,8 @@ export default class Pawn implements IChessPiece {
             return;
           }
         }
-        // promotion
       }
+
       if (this.color === 'B') {
         // first move can move two up directionly up if there isn't a piece there
         if (
@@ -102,9 +102,9 @@ export default class Pawn implements IChessPiece {
         // otherwise we can online move upward once
         if (newRow === this.row - 1 && this.col === newCol && board[newRow][newCol] === undefined) {
           // promotion
-          if (newRow === 0) {
-            this.type = this.promotion;
-          }
+          //if (newRow === 0) {
+          //  this.type = this.promotion;
+          //}
           return;
         }
         // diagonal capture
@@ -114,9 +114,9 @@ export default class Pawn implements IChessPiece {
           board[newRow][newCol]?.color === 'W'
         ) {
           // promotion
-          if (newRow === 0) {
-            this.type = this.promotion;
-          }
+          //if (newRow === 0) {
+          //  this.type = this.promotion;
+          //}
           return;
         }
         //  en passaunt

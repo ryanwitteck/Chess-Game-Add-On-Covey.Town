@@ -52,8 +52,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const [black, setBlack] = useState<PlayerController | undefined>(gameAreaController.black);
   const [drawProposed, setDrawProposed] = useState(false);
   const [drawString, setDrawString] = useState('Draw?');
-  const [blackTimer, setBlackTimer] = useState(0);
-  const [whiteTimer, setWhiteTimer] = useState(0);
+  const [blackTimer, setBlackTimer] = useState(10 * 60 * gameAreaController.timer);
+  const [whiteTimer, setWhiteTimer] = useState(10 * 60 * gameAreaController.timer);
   const blackTimerRef = useRef<NodeJS.Timeout | null>(null);
   const whiteTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -67,13 +67,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setObservers(gameAreaController.observers);
       setWhite(gameAreaController.white);
       setBlack(gameAreaController.black);
-      setDrawProposed(gameAreaController.drawState);
 
-      if (drawProposed) {
-        setDrawString('Draw Proposed');
-      } else if (!drawProposed && gameAreaController.drawState) {
-        setDrawString('Accept Draw?');
-      }
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
         if (!bflag) {
           setBlackTimer(10 * 60 * gameAreaController.timer);
@@ -151,14 +145,9 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
     return () => {
       gameAreaController.removeListener('gameEnd', onGameEnd);
       gameAreaController.removeListener('gameUpdated', updateGameState);
-      if (blackTimerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        clearInterval(blackTimerRef.current);
-      }
-      if (whiteTimerRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        clearInterval(whiteTimerRef.current);
-      }
+      // gameAreaController.timer = 1000;
+      bflag = false;
+      wflag = false;
     };
   }, [townController, gameAreaController, toast, drawProposed, gameStatus, black, white]);
 
@@ -245,45 +234,13 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
         </Button>
       );
     }
-    if (gameAreaController.players.length === 1) {
-      if (gameAreaController.timer === 1000) {
-        gameStatusText = (
-          <b>
-            Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
-          </b>
-        );
-      } else if (gameAreaController.timer === 500) {
-        gameStatusText = (
-          <b>
-            Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}.{' '}
-            {joinFastGameButton}
-          </b>
-        );
-      } else if (gameAreaController.timer === 100) {
-        gameStatusText = (
-          <b>
-            Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}.{' '}
-            {joinLightningGameButton}
-          </b>
-        );
-      } else {
-        // ALWAYS GETS TO THIS CASE
-        gameStatusText = (
-          <b>
-            Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
-            {'ioioi '}
-            {joinFastGameButton} {joinLightningGameButton}
-          </b>
-        );
-      }
-    } else {
-      gameStatusText = (
-        <b>
-          Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
-          {joinFastGameButton} {joinLightningGameButton}
-        </b>
-      );
-    }
+
+    gameStatusText = (
+      <b>
+        Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
+        {joinFastGameButton} {joinLightningGameButton}
+      </b>
+    );
   }
 
   return (
