@@ -198,7 +198,6 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 1000;
             setJoiningGame(true);
-            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -222,7 +221,6 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 500;
             setJoiningGame(true);
-            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -246,7 +244,6 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 100;
             setJoiningGame(true);
-            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
