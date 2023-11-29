@@ -431,12 +431,14 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       this.state = {
         ...this.state,
         status: 'OVER',
+        timerType: undefined,
         winner: this.state.black,
       };
     } else {
       this.state = {
         ...this.state,
         status: 'OVER',
+        timerType: undefined,
         winner: this.state.white,
       };
     }
