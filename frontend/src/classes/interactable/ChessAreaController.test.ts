@@ -122,6 +122,7 @@ describe('[T1] ChessAreaController', () => {
                 black: black,
                 moves: moves || [],
                 pieces: pieces || [],
+                timerType: undefined,
                 winner: winner,
               },
             },

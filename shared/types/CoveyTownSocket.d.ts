@@ -134,6 +134,7 @@ export interface ChessMove {
   promotion?: 'B' | 'R' | 'Q' | 'N';
 }
 
+export type TimerType = 'Rapid' | 'Blitz' | 'Bullet' | undefined;
 /**
  * Type for the state of a Chess game
  * The state of the game is represented as a list of ChessPiecePositions,
@@ -143,6 +144,7 @@ export interface ChessMove {
 export interface ChessGameState extends WinnableGameState {
   pieces: ChessPiecePosition[];
   moves: ReadonlyArray<ChessMove>;
+  timerType: TimerType;
   white?: PlayerID;
   black?: PlayerID;
 }
@@ -232,7 +234,7 @@ interface InteractableCommandBase {
   type: string;
 }
 
-export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand;
+export type InteractableCommand =  ViewingAreaUpdateCommand | JoinGameCommand | GameMoveCommand<TicTacToeMove> | GameMoveCommand<ChessMove> | LeaveGameCommand | ChessMoveCommand | ChessDrawCommand | TimerCommand;
 export interface ViewingAreaUpdateCommand  {
   type: 'ViewingAreaUpdate';
   update: ViewingArea;
@@ -248,6 +250,11 @@ export interface GameMoveCommand<MoveType> {
   type: 'GameMove';
   gameID: GameInstanceID;
   move: MoveType;
+}
+export interface TimerCommand  {
+  type: 'UpdateTimerType';
+  gameID: GameInstanceID;
+  timerType: timerType;
 }
 
 export interface ChessMoveCommand {
