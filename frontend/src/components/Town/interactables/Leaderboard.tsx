@@ -70,7 +70,7 @@ export default function Leaderboard({ results }: { results: GameResult[] }): JSX
   const rows = Object.keys(winsLossesTiesByPlayer).map(player => winsLossesTiesByPlayer[player]);
   rows.sort((a, b) => b.wins - a.wins);
   return (
-    <Table width={100} style={{ overflowX: 'auto'}} >
+    <Table width={100} style={{ overflowX: 'auto' }}>
       <Thead>
         <Tr>
           <th>Player</th>

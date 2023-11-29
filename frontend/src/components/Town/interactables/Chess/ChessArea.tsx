@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
-  Spacer,
   Badge,
   Text,
   Flex,
@@ -306,7 +305,9 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
                 </AccordionButton>
               </Heading>
               <AccordionPanel>
-                <AllTimeLeaderboard topN={5} />
+                <div style={{ overflowX: 'auto' }}>
+                  <AllTimeLeaderboard topN={5} />
+                </div>
               </AccordionPanel>
             </AccordionItem>
             <AccordionItem>
@@ -319,7 +320,9 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
                 </AccordionButton>
               </Heading>
               <AccordionPanel>
-                <ChessLocalLeaderboard results={history} />
+                <div style={{ overflowX: 'auto' }}>
+                  <ChessLocalLeaderboard results={history} />
+                </div>
               </AccordionPanel>
             </AccordionItem>
             <AccordionItem>
@@ -343,9 +346,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           {gameStatusText}
         </Container>
 
-        <Box style={{ marginLeft: '40px'}}>
+        <Box style={{ marginLeft: '40px' }}>
           <List
-          
             aria-label='list of players in the game'
             spacing={4}
             style={{ marginBottom: '20px', width: '500px' }}>
