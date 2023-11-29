@@ -198,8 +198,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 1000;
             setJoiningGame(true);
-            setTimerType('Rapid');
-            gameAreaController.setTimerType('Rapid');
+            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -210,6 +209,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
               });
             }
             setJoiningGame(false);
+            setTimerType('Rapid');
+            gameAreaController.setTimerType('Rapid');
           }}
           isLoading={joiningGame}
           disabled={timerType !== 'Rapid' && timerType !== undefined ? true : false}>
@@ -221,8 +222,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 500;
             setJoiningGame(true);
-            setTimerType('Blitz');
-            gameAreaController.setTimerType('Blitz');
+            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -233,6 +233,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
               });
             }
             setJoiningGame(false);
+            setTimerType('Blitz');
+            gameAreaController.setTimerType('Blitz');
           }}
           isLoading={joiningGame}
           disabled={timerType !== 'Blitz' && timerType !== undefined ? true : false}>
@@ -244,8 +246,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 100;
             setJoiningGame(true);
-            setTimerType('Bullet');
-            gameAreaController.setTimerType('Bullet');
+            
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -256,6 +257,8 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
               });
             }
             setJoiningGame(false);
+            setTimerType('Bullet');
+            gameAreaController.setTimerType('Bullet');
           }}
           isLoading={joiningGame}
           disabled={timerType !== 'Bullet' && timerType !== undefined ? true : false}>

@@ -111,9 +111,6 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       if (!game) {
         throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
       }
-      if (this._game?.id !== command.gameID) {
-        throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
-      }
       game.setTimerType(command.timerType);
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
@@ -151,6 +148,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
       game.leave(player);
+      game.setTimerType(undefined);
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }

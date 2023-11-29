@@ -262,13 +262,8 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
    * Sets the timer type.
    */
   public async setTimerType(type: TimerType) {
-    const instanceID = this._instanceID;
-    if (!instanceID) {
-      throw new Error(NO_GAME_IN_PROGRESS_ERROR);
-    }
     await this._townController.sendInteractableCommand(this.id, {
       type: 'UpdateTimerType',
-      gameID: instanceID,
       timerType: type,
     });
   }

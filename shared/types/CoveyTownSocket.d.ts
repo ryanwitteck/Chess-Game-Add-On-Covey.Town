@@ -253,7 +253,6 @@ export interface GameMoveCommand<MoveType> {
 }
 export interface TimerCommand  {
   type: 'UpdateTimerType';
-  gameID: GameInstanceID;
   timerType: timerType;
 }
 
