@@ -37,7 +37,7 @@ export default function AllTimeLeaderboard({ topN }: LeaderboardProps): JSX.Elem
   }, [topN]);
 
   return (
-    <Table>
+    <Table width={100} style={{ overflowX: 'auto'}}>
       <Thead>
         <Tr>
           <th>Player</th>
