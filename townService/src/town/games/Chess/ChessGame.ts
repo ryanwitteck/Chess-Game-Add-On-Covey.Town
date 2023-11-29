@@ -14,6 +14,7 @@ import {
   ChessBoardPosition,
   ChessPiecePosition,
   IChessPiece,
+  TimerType,
 } from '../../../types/CoveyTownSocket';
 
 import Game from '../Game';
@@ -33,44 +34,11 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     super({
       pieces: [],
       moves: [],
+      timerType: undefined,
       status: 'WAITING_TO_START',
     });
     this.state.pieces = ChessGame.boardToPieceList(this._board);
   }
-
-  /*
-  hz's notes:
-  so the way i approached promotions is basically i just lumped them into the normal chess moves.
-  i added an extra field that each ChessMove can have, which is promotion?
-  so ChessMove now looks like this:
-
-  export interface ChessMove {
-    gamePiece: ChessPiecePosition;
-    toRow: ChessBoardPosition;
-    toCol: ChessBoardPosition;
-    promotion?: 'B' | 'R' | 'Q' | 'N';
-  }
-
-  if you take a look at ChessController, the shared CoveyTownSocket, ChessGame, and ChessGameArea,
-  you can get a better understanding of what i'm doing. 
-
-  right now, the frontend and backend seem to be interacting fine initially, but for some
-  reason after one move AFTER the promotion, the piece goes back to a pawn. 
-
-  so far, i've tried to change the state and account for the promotion tag in the board getter, but alas
-
-  i think the issue is in my backend implementation, not in the controller or frontend, so i'd focus here
-  first to try and find the issue. 
-
-  i've provided some brief comments in the code i've added as well.
-
-  some additional changes i've made to other files include commenting out the promotion sections in the 
-  pawn class. the old approach was a bit clunky to work with in terms of front-end workflow, since pausing
-  the program with that approach wasn't as easy as the approach i have now.
-
-  it might be worth ensuring that you can't move a piece until you promote your pawn, but it's 7:40am and im way
-  too tired to test that myself lol.
-  */
 
   private get _board(): ChessCell[][] {
     const { moves } = this.state;
@@ -277,8 +245,36 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     }
   }
 
+  // sets the game's time controls
+  public putTimerType(type: TimerType): void {
+    if (this._players.length === 0) {
+      return;
+    }
+    this.state = {
+      ...this.state,
+      timerType: type,
+    };
+  }
+
   /*
-   * TODO: Documentation
+   * Applies a player's move to the game.
+   * Uses the player's ID to determine which game piece they are using (ignores move.gamePiece)
+   * Validates the move before applying it. If the move is invalid, throws an InvalidParametersError with
+   * the error message specified below.
+   * A move is invalid if:
+   *    - The move is not a legal move(INVALID_MOVE_MESSAGE)
+   *    - The move is not the player's turn (MOVE_NOT_YOUR_TURN_MESSAGE)
+   *    - The game is not in progress (GAME_NOT_IN_PROGRESS_MESSAGE)
+   *
+   * If the move is valid, applies the move to the game and updates the game state.
+   *
+   * If the move ends the game, updates the game's state.
+   * If the move results in a tie, updates the game's state to set the status to OVER and sets winner to undefined.
+   * If the move results in a win, updates the game's state to set the status to OVER and sets the winner to the player who made the move.
+   * A player wins if they have captured the other players king.
+   *
+   * @param move The move to apply to the game
+   * @throws InvalidParametersError if the move is invalid
    */
   public applyMove(move: GameMove<ChessMove>): void {
     const board = this._board;
@@ -368,26 +364,6 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
     this._genericValidateMove(cleanMove);
     piece.validate_move(cleanMove.toRow, cleanMove.toCol, this._board, this.state.moves);
     this._applyMove(cleanMove);
-
-    // we can now assume that in our list of pieces, there is a pawn
-    // at the location (toRow, toCol). we find this piece, and replace it.
-    // const index = this.state.pieces.findIndex(p => {
-    //   return p.piece.type === 'P' &&
-    //     p.row === move.move.toRow &&
-    //     p.col === move.move.toCol
-    // });
-
-    // if (index !== -1) {
-    //   this.state.pieces.splice(index, 1);
-    //   this.state.pieces.push({
-    //     piece: { type: move.move.promotion, color: move.move.gamePiece.piece.color } as ChessPiece,
-    //     row: move.move.toRow as ChessBoardPosition,
-    //     col: move.move.toCol as ChessBoardPosition,
-    //   } as ChessPiecePosition);
-    //   console.log('Current state of pieces:', this.state.pieces);
-    // } else {
-    //   throw new InvalidParametersError(INVALID_MOVE_MESSAGE);
-    // }
   }
 
   /**
@@ -444,6 +420,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
       this.state = {
         moves: [],
         pieces: [],
+        timerType: undefined,
         status: 'WAITING_TO_START',
       };
       return;

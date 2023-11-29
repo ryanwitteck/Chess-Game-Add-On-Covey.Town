@@ -7,6 +7,7 @@ import {
   ChessBoardSquare,
   ChessColor,
   ChessPiece,
+  TimerType,
 } from '../../types/CoveyTownSocket';
 import PlayerController from '../PlayerController';
 import GameAreaController, { GameEventTypes } from './GameAreaController';
@@ -134,7 +135,7 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   }
 
   /**
-   * Docs
+   * Returns true if its our player's turn.
    */
   get isOurTurn(): boolean {
     return this.whoseTurn?.id === this._townController.ourPlayer.id;
@@ -159,6 +160,14 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
       return 'B';
     }
     throw new Error(PLAYER_NOT_IN_GAME_ERROR);
+  }
+
+  /**
+   * Returns the timer type.
+   */
+  get timeType(): TimerType {
+    const timer = this._model.game?.state.timerType;
+    return timer;
   }
 
   /**
@@ -214,7 +223,11 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
   }
 
   /**
-   * TODO: documentation
+   * Sends a request to the server to make a move in the game
+   *
+   * If the game is not in progress, throws an error NO_GAME_IN_PROGRESS_ERROR
+   *
+   * @param move the move to be made / tried
    */
   public async makeMove(move: ChessMove) {
     const instanceID = this._instanceID;
@@ -242,6 +255,16 @@ export default class ChessAreaController extends GameAreaController<ChessGameSta
     await this._townController.sendInteractableCommand(this.id, {
       type: 'ChessDraw',
       gameID: instanceID,
+    });
+  }
+
+  /**
+   * Sets the timer type.
+   */
+  public async setTimerType(type: TimerType) {
+    await this._townController.sendInteractableCommand(this.id, {
+      type: 'UpdateTimerType',
+      timerType: type,
     });
   }
 }

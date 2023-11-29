@@ -52,8 +52,10 @@ export default class ChessGameArea extends GameArea<ChessGame> {
    * Handle a command from a player in this game area.
    * Supported commands:
    * - JoinGame (joins the game `this._game`, or creates a new one if none is in progress)
-   * - GameMove (applies a move to the game)
+   * - ChessMove (applies a move to the game)
    * - LeaveGame (leaves the game)
+   * - ChessDraw (sets the game to draw)
+   * - UpdateTimerType (sets game's time controls)
    *
    * If the command ended the game, records the outcome in this._history
    * If the command is successful (does not throw an error), calls this._emitAreaChanged (necessary
@@ -104,6 +106,15 @@ export default class ChessGameArea extends GameArea<ChessGame> {
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }
+    if (command.type === 'UpdateTimerType') {
+      const game = this._game;
+      if (!game) {
+        throw new InvalidParametersError(GAME_NOT_IN_PROGRESS_MESSAGE);
+      }
+      game.putTimerType(command.timerType);
+      this._stateUpdated(game.toModel());
+      return undefined as InteractableCommandReturnType<CommandType>;
+    }
 
     // handle the draw logic here.
     if (command.type === 'ChessDraw') {
@@ -137,6 +148,7 @@ export default class ChessGameArea extends GameArea<ChessGame> {
         throw new InvalidParametersError(GAME_ID_MISSMATCH_MESSAGE);
       }
       game.leave(player);
+      // game.putTimerType(undefined);
       this._stateUpdated(game.toModel());
       return undefined as InteractableCommandReturnType<CommandType>;
     }

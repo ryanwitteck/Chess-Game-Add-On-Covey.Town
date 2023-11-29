@@ -52,6 +52,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
   const townController = useTownController();
 
   const [history, setHistory] = useState<GameResult[]>(gameAreaController.history);
+  const [timerType, setTimerType] = useState(gameAreaController.timeType);
   const [gameStatus, setGameStatus] = useState<GameStatus>(gameAreaController.status);
   const [moveCount, setMoveCount] = useState<number>(gameAreaController.moveCount);
   const [observers, setObservers] = useState<PlayerController[]>(gameAreaController.observers);
@@ -77,7 +78,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setObservers(gameAreaController.observers);
       setWhite(gameAreaController.white);
       setBlack(gameAreaController.black);
-      console.log(joiningGame);
+      setTimerType(gameAreaController.timeType);
 
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
         if (!bflag) {
@@ -214,9 +215,11 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
               });
             }
             setJoiningGame(false);
+            setTimerType('Rapid');
+            gameAreaController.setTimerType('Rapid');
           }}
           isLoading={joiningGame}
-          disabled={joiningGame}>
+          disabled={timerType !== 'Rapid' && timerType !== undefined ? true : false}>
           Join New Game
         </Button>
       );
@@ -237,9 +240,11 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
             }
 
             setJoiningGame(false);
+            setTimerType('Blitz');
+            gameAreaController.setTimerType('Blitz');
           }}
           isLoading={joiningGame}
-          disabled={joiningGame}>
+          disabled={timerType !== 'Blitz' && timerType !== undefined ? true : false}>
           Join Fast Game
         </Button>
       );
@@ -259,9 +264,11 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
               });
             }
             setJoiningGame(false);
+            setTimerType('Bullet');
+            gameAreaController.setTimerType('Bullet');
           }}
           isLoading={joiningGame}
-          disabled={joiningGame || (white != undefined && whiteTimer !== 10 * 60 * 500)}>
+          disabled={timerType !== 'Bullet' && timerType !== undefined ? true : false}>
           Join Lightning Game
         </Button>
       );
