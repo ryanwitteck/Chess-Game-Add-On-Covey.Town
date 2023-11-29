@@ -23,11 +23,14 @@ class TestingGame extends Game<ChessGameState, ChessMove> {
     super({
       pieces: [],
       moves: [],
+      timerType: undefined,
       status: 'WAITING_TO_START',
     });
   }
 
   public applyMove(): void {}
+
+  public putTimerType(): void {}
 
   public endGame(winner?: string) {
     this.state = {

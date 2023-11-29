@@ -246,7 +246,7 @@ export default class ChessGame extends Game<ChessGameState, ChessMove> {
   }
 
   // sets the game's time controls
-  public setTimerType(type: TimerType): void {
+  public putTimerType(type: TimerType): void {
     if (this._players.length === 0) {
       return;
     }
