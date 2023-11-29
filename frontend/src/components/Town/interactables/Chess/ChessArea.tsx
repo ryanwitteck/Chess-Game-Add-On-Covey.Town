@@ -17,6 +17,12 @@ import {
   ModalHeader,
   ModalOverlay,
   useToast,
+  Spacer,
+  Badge,
+  Text,
+  Flex,
+  Avatar,
+  VStack,
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ChessAreaController from '../../../../classes/interactable/ChessAreaController';
@@ -71,6 +77,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
       setObservers(gameAreaController.observers);
       setWhite(gameAreaController.white);
       setBlack(gameAreaController.black);
+      console.log(joiningGame);
 
       if (gameStatus === 'IN_PROGRESS' && gameAreaController.whoseTurn === black) {
         if (!bflag) {
@@ -196,6 +203,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 1000;
             setJoiningGame(true);
+
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -217,6 +225,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 500;
             setJoiningGame(true);
+
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -226,6 +235,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
                 status: 'error',
               });
             }
+
             setJoiningGame(false);
           }}
           isLoading={joiningGame}
@@ -238,6 +248,7 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
           onClick={async () => {
             gameAreaController.timer = 100;
             setJoiningGame(true);
+
             try {
               await gameAreaController.joinGame();
             } catch (err) {
@@ -250,77 +261,120 @@ function ChessArea({ interactableID }: { interactableID: InteractableID }): JSX.
             setJoiningGame(false);
           }}
           isLoading={joiningGame}
-          disabled={joiningGame}>
+          disabled={joiningGame || (white != undefined && whiteTimer !== 10 * 60 * 500)}>
           Join Lightning Game
         </Button>
       );
     }
 
     gameStatusText = (
-      <b>
-        Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. {joinGameButton}
-        {joinFastGameButton} {joinLightningGameButton}
-      </b>
+      <>
+        <Flex align='center' justify='center' h='40vh'>
+          <VStack spacing={4}>
+            <b>Game {gameStatus === 'WAITING_TO_START' ? 'not yet started' : 'over'}. </b>;
+            {joinGameButton}
+            {joinFastGameButton}
+            {joinLightningGameButton}
+          </VStack>
+        </Flex>
+      </>
     );
   }
 
   return (
-    <Container maxW={'592px'} alignContent='center'>
-      <Accordion allowToggle>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                All-Time Leaderboard
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            <AllTimeLeaderboard topN={5} />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Leaderboard
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            <ChessLocalLeaderboard results={history} />
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <Heading as='h3'>
-            <AccordionButton>
-              <Box as='span' flex='1' textAlign='left'>
-                Current Observers
-                <AccordionIcon />
-              </Box>
-            </AccordionButton>
-          </Heading>
-          <AccordionPanel>
-            <List aria-label='list of observers in the game'>
-              {observers.map(player => {
-                return <ListItem key={player.id}>{player.userName}</ListItem>;
-              })}
-            </List>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-      {gameStatusText}
-      <List aria-label='list of players in the game'>
-        <ListItem>
-          White: {white?.userName || '(No player yet!)'} - White Timer: {formatTime(whiteTimer)}
-        </ListItem>
-        <ListItem>
-          Black: {black?.userName || '(No player yet!)'} - Black Timer: {formatTime(blackTimer)}
-        </ListItem>
-      </List>
-      <ChessBoard gameAreaController={gameAreaController} />
+    <Container
+      maxW={'800px'}
+      alignContent='center'
+      style={{ marginBottom: '100px', marginLeft: '30px' }}>
+      <Flex>
+        <Container>
+          <Accordion allowToggle style={{ marginBottom: '20px', width: '300px' }}>
+            <AccordionItem>
+              <Heading as='h3'>
+                <AccordionButton>
+                  <Box as='span' flex='1' textAlign='left'>
+                    All-Time Leaderboard
+                    <AccordionIcon />
+                  </Box>
+                </AccordionButton>
+              </Heading>
+              <AccordionPanel>
+                <AllTimeLeaderboard topN={5} />
+              </AccordionPanel>
+            </AccordionItem>
+            <AccordionItem>
+              <Heading as='h3'>
+                <AccordionButton>
+                  <Box as='span' flex='1' textAlign='left' maxWidth={300}>
+                    Local Leaderboard
+                    <AccordionIcon />
+                  </Box>
+                </AccordionButton>
+              </Heading>
+              <AccordionPanel>
+                <ChessLocalLeaderboard results={history} />
+              </AccordionPanel>
+            </AccordionItem>
+            <AccordionItem>
+              <Heading as='h3'>
+                <AccordionButton>
+                  <Box as='span' flex='1' textAlign='left'>
+                    Current Observers
+                    <AccordionIcon />
+                  </Box>
+                </AccordionButton>
+              </Heading>
+              <AccordionPanel>
+                <List aria-label='list of observers in the game'>
+                  {observers.map(player => {
+                    return <ListItem key={player.id}>{player.userName}</ListItem>;
+                  })}
+                </List>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
+          {gameStatusText}
+        </Container>
+
+        <Box style={{ marginLeft: '40px'}}>
+          <List
+          
+            aria-label='list of players in the game'
+            spacing={4}
+            style={{ marginBottom: '20px', width: '500px' }}>
+            <ListItem style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'm' }}>
+              <Flex>
+                <Avatar src='https://drive.google.com/uc?export=download&id=11wAxmXy9nkPIhDXXN3z936dwhIp_EUYE' />
+                <Box ml='3'>
+                  <Text fontWeight='bold'>{white?.userName || '(No player yet!)'}</Text>
+                  <Text fontSize='sm'>White</Text>
+                </Box>
+              </Flex>
+              <div>
+                <Badge colorScheme='green' variant='subtle' fontSize='med'>
+                  White Timer: {formatTime(whiteTimer)}
+                </Badge>
+              </div>
+            </ListItem>
+            <ListItem style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Flex>
+                <Avatar src='https://drive.google.com/uc?export=download&id=1IM-V6_xCpF6g1r1H-AlQXX1BpijGi0-E' />
+                <Box ml='3'>
+                  <Text fontWeight='bold'>{black?.userName || '(No player yet!)'}</Text>
+                  <Text fontSize='sm'>Black</Text>
+                </Box>
+              </Flex>
+
+              <div>
+                <Badge colorScheme='green' variant='subtle' fontSize='med'>
+                  Black Timer: {formatTime(blackTimer)}
+                </Badge>
+              </div>
+            </ListItem>
+          </List>
+          <ChessBoard gameAreaController={gameAreaController} />
+        </Box>
+      </Flex>
     </Container>
   );
 }
@@ -343,9 +397,8 @@ export default function ChessAreaWrapper(): JSX.Element {
   }, [townController, gameArea]);
 
   if (gameArea && gameArea.getData('type') === 'Chess') {
-    console.log('IN CHESS AREA');
     return (
-      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false} size={'4xl'}>
+      <Modal isOpen={true} onClose={closeModal} closeOnOverlayClick={false} size={'5xl'}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{gameArea.name}</ModalHeader>
