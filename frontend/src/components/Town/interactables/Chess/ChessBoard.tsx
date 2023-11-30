@@ -315,10 +315,21 @@ export default function ChessBoard({ gameAreaController }: ChessGameProps): JSX.
             setClickedCol(j);
             if (primed && primedPiece) {
               if (primedPiece.piece.type === 'P') {
-                if (primedPiece.row === 1) {
-                  if (i === 0) {
-                    setCanPromote(true);
-                    return;
+                // if we're the black player
+                if (gameAreaController.black === townController.ourPlayer) {
+                  if (primedPiece.row === 1) {
+                    if (i === 0) {
+                      setCanPromote(true);
+                      return; // return statements cut the function off before makeMove is run
+                    }
+                  }
+                  // else, if we're the white player
+                } else if (gameAreaController.white === townController.ourPlayer) {
+                  if (primedPiece.row === 6) {
+                    if (i === 7) {
+                      setCanPromote(true);
+                      return;
+                    }
                   }
                 }
               }
