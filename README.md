@@ -1,3 +1,30 @@
+# Group 411
+
+Group Members:
+
+Olver Marker
+Ryan Witteck
+Aretha Chen
+Hagen Zhang
+
+(This is my forked version from our main project. To view our main page, visit: https://github.com/neu-cs4530/fall23-team-project-group-411 ) 
+
+You may play our chess implementation here: https://chessfinal-project-group-411.onrender.com/ 
+
+IMPORTANT: 
+1. You must open two windows to play against yourself: first create a town in one window, then in the second window, join the town you just created at the bottom of the login page.
+2. Depending on when you are viewing this, our free trial with render.com may have expired, so if the website is down, you will have to run it locally in order to play it. Instructions for running this project locally are listed below.
+
+This chess game is an add-on to Covey.Town, an open source project (more information on Covey.Town can be found below). Our chess project was designed and implemented from scratch, with no API. We have implemented a fully functional board, with each piece having its own move rules like it does in a normal game of chess. 
+
+We have implemented special moves in chess as well, including long and short castling, pawn promotion, and en passant moves. We have implemented each piece off of a general ChessPiece interface, and as such, each piece has its own move rules and limitations. Lots of testing was done for each individual piece, as well as any special moves a piece can do (rook, pawn, etc.)
+
+We have also implemented an arcade style all-time and local leaderboard. Our all-time leaderboard uses Firebase to keep track of all wins/losses across our project. Our local leaderboard is only for a specific Town instance. Both are visible at anytime while playing or waiting to play a game of chess. 
+
+Time constraints are also available in this project, with Normal, Fast, or Lightning games. Normal mode gives each player 10 minutes to play, Fast gives 5, and Lightning gives 1. The first player to join a game sets the time contraint for that game. 
+
+The only design decision that deviates from normal chess is the ability to win on checkmate. In a normal game of chess, you can checkmate your opponent and win the game. However, in our implementation, when you checkmate your opponent, the game does not end. Instead, the win condition is to take the enemy King. Therefore, the game will go on for one extra turn, however it will not impact the game at all, as the player in checkmate will always lose, no matter what move they do. 
+
 # Covey.Town
 
 Covey.Town provides a virtual meeting space where different groups of people can have simultaneous video calls, allowing participants to drift between different conversations, just like in real life.
