@@ -3,13 +3,16 @@
 Group Members:
 
 Olver Marker
+
 Ryan Witteck
+
 Aretha Chen
+
 Hagen Zhang
 
 (This is my forked version from our main project. To view our main page, visit: https://github.com/neu-cs4530/fall23-team-project-group-411 ) 
 
-You may play our chess implementation here: https://chessfinal-project-group-411.onrender.com/ 
+You may play our chess implementation here: https://chess-final-project-group-411.onrender.com/ 
 
 IMPORTANT: 
 1. You must open two windows to play against yourself: first create a town in one window, then in the second window, join the town you just created at the bottom of the login page.
